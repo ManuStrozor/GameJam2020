@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="1d864d1b-0531-46fb-b17a-ce5004c4df36" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectId" id="1X6v4ZKbrehb5Iw3Mx9mnhfxJ7d" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/entities" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="S:\Bureau\GameJam2020\entities" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="GameJam2020" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="S:\Bureau\GameJam2020\main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1d864d1b-0531-46fb-b17a-ce5004c4df36" name="Default Changelist" comment="" />
+      <created>1580379167646</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1580379167646</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="719" y="327" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1580678958701">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state x="719" y="327" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1050/1920.0.1440.870/-1920.-89.1920.1050@0.0.1920.1050" timestamp="1580678958701" />
+    <state x="708" y="361" key="#com.intellij.ide.actions.ChooseComponentsToExportDialog" timestamp="1580634865736">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state x="708" y="361" key="#com.intellij.ide.actions.ChooseComponentsToExportDialog/0.0.1920.1050/1920.0.1440.870/-1920.-89.1920.1050@0.0.1920.1050" timestamp="1580634865736" />
+    <state x="689" y="271" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1580659299061">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state x="689" y="271" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1920.1050/1920.0.1440.870/-1920.-89.1920.1050@0.0.1920.1050" timestamp="1580659299061" />
+    <state x="738" y="266" key="FileChooserDialogImpl" timestamp="1580663384795">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state x="738" y="266" key="FileChooserDialogImpl/0.0.1920.1050/1920.0.1440.870/-1920.-89.1920.1050@0.0.1920.1050" timestamp="1580663384795" />
+    <state width="1897" height="258" key="GridCell.Tab.0.bottom" timestamp="1580681272728">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1897" height="258" key="GridCell.Tab.0.bottom/0.0.1920.1050/1920.0.1440.870/-1920.-89.1920.1050@0.0.1920.1050" timestamp="1580681272728" />
+    <state width="1897" height="258" key="GridCell.Tab.0.center" timestamp="1580681272727">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1897" height="258" key="GridCell.Tab.0.center/0.0.1920.1050/1920.0.1440.870/-1920.-89.1920.1050@0.0.1920.1050" timestamp="1580681272727" />
+    <state width="1897" height="258" key="GridCell.Tab.0.left" timestamp="1580681272727">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1897" height="258" key="GridCell.Tab.0.left/0.0.1920.1050/1920.0.1440.870/-1920.-89.1920.1050@0.0.1920.1050" timestamp="1580681272727" />
+    <state width="1897" height="258" key="GridCell.Tab.0.right" timestamp="1580681272728">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1897" height="258" key="GridCell.Tab.0.right/0.0.1920.1050/1920.0.1440.870/-1920.-89.1920.1050@0.0.1920.1050" timestamp="1580681272728" />
+    <state x="460" y="167" key="SettingsEditor" timestamp="1580663567652">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state x="460" y="167" key="SettingsEditor/0.0.1920.1050/1920.0.1440.870/-1920.-89.1920.1050@0.0.1920.1050" timestamp="1580663567652" />
+  </component>
+</project>
