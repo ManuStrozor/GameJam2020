@@ -19,9 +19,10 @@ class Weapon(pygame.sprite.Sprite):
         self.all_bullets = pygame.sprite.Group()
 
     def draw(self):
-        self.rect.y = self.player.rect.y
         if self.player.crouchState:
-            self.rect.y += 10
+            self.rect.y = self.player.rect.y + 10
+        else:
+            self.rect.y = self.player.rect.y
 
         if self.player.direction == 1:
             self.rect.x = self.player.rect.x

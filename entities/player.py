@@ -92,5 +92,4 @@ class Player(Entity):
             self.speed /= 3
 
     def dead(self):
-        self.game.popupmsg("Game Over !!!", "The game is done, bye bye !")
         self.game.gameover = True

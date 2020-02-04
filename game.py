@@ -14,6 +14,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.framerate = framerate
         self.font = pygame.font.SysFont('comicsans', 30, True)
+        self.screens = {"run": 1, "menu": 1, "game": 0, "gameover": 0}
         self.keyPressed = {}
 
         self.background = pygame.image.load("assets/background.png")
@@ -41,7 +42,7 @@ class Game:
         if self.gameover:
             # Sauvegarde du score avant de Quitter
             self.save_game()
-            return 0
+            self.screen("gameover")
 
         self.max_score = max(self.score, self.max_score)
 
@@ -57,31 +58,29 @@ class Game:
             # Evenements clavier
             if event.type == KEYDOWN:
                 self.keyPressed[event.key] = True
+                if event.key == K_RETURN:
+                    self.player.weapon.fire()
+                if event.key == K_ESCAPE:
+                    self.save_game()
+                    self.screen("menu")
             elif event.type == KEYUP:
                 self.keyPressed[event.key] = False
-
-            # Evenements souris
-            if event.type == MOUSEBUTTONDOWN:
-                if pygame.mouse.get_pressed()[0] == pygame.BUTTON_LEFT:
-                    self.player.weapon.fire()
 
             # Quitter la fenetre
             if event.type == QUIT:
                 # Sauvegarde du score avant de Quitter
                 self.save_game()
-                return 0
+                self.screen("")
+                self.screens.__setitem__("run", 0)
 
         for alien in self.all_aliens:
             alien.update()
         self.player.update()
-        return 1
 
     def draw(self):
         self.window.blit(self.background, self.bgRect)
-        score = self.font.render('Score: ' + str(self.score), 1, (0, 0, 0))
-        max_score = self.font.render('Max score: ' + str(self.max_score), 1, (0, 0, 0))
-        self.window.blit(score, (10, 30))
-        self.window.blit(max_score, (10, 10))
+        self.draw_text('Score: ' + str(self.score), (10, 30), (0, 0, 0))
+        self.draw_text('Max score: ' + str(self.max_score), (10, 10), (0, 0, 0))
 
         for alien in self.all_aliens:
             alien.draw()
@@ -95,11 +94,8 @@ class Game:
         pygame.display.flip()
         self.clock.tick(self.framerate)
 
-    def draw_lifebar(self, entity):
-        pygame.draw.rect(self.window, (0, 0, 0), (entity.rect.x, entity.rect.y - 20, 50, 5))
-        if entity.health > 0:
-            pygame.draw.rect(self.window, (255, 0, 0),
-                             (entity.rect.x, entity.rect.y - 20, (entity.health / entity.max_health) * 50, 5))
+    def draw_text(self, txt, position, color):
+        self.window.blit(self.font.render(txt, 1, color), position)
 
     def setImage(self, entity, newImage):
         if entity.image != newImage:
@@ -116,6 +112,12 @@ class Game:
     def save_game(self):
         with open("save.data", "wb") as f:
             pickle.dump(self.max_score, f)
+
+    def screen(self, screen):
+        self.screens.clear()
+        self.screens.__setitem__("run", 1)
+        if screen != "":
+            self.screens.__setitem__(screen, 1)
 
     def popupmsg(self, title, msg):
         popup = tk.Tk()

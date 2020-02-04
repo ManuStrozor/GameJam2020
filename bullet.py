@@ -41,6 +41,8 @@ class Bullet(pygame.sprite.Sprite):
                 self.remove()
                 if alien.health <= self.weapon.atk:
                     self.weapon.player.game.score += 10
+                alien.health_tmp = alien.health
+                alien.attacker = self.weapon.player
                 alien.health -= self.weapon.atk
 
         if self.rect.x > self.weapon.player.game.window.get_width() or self.rect.x < 0:

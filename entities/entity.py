@@ -11,6 +11,8 @@ class Entity(pygame.sprite.Sprite):
     max_speed = None
     direction = None
     health = None
+    attacker = None
+    health_tmp = None
     speed = None
     atk = None
 
@@ -31,7 +33,17 @@ class Entity(pygame.sprite.Sprite):
 
     def draw(self):
         self.game.window.blit(self.image, self.rect)
-        self.game.draw_lifebar(self)
+        self.draw_lifebar()
+        if self.health != self.health_tmp and self.health_tmp is not None:
+            self.game.draw_text('-' + str(self.attacker.atk), (self.rect.x, self.rect.y - 45), (255, 0, 0))
+            self.attacker = None
+            self.health_tmp = self.health
+
+    def draw_lifebar(self):
+        pygame.draw.rect(self.game.window, (0, 0, 0), (self.rect.x, self.rect.y - 20, 50, 5))
+        if self.health > 0:
+            pygame.draw.rect(self.game.window, (255, 0, 0),
+                             (self.rect.x, self.rect.y - 20, (self.health / self.max_health) * 50, 5))
 
     def move_right(self):
         self.direction = 1
@@ -48,6 +60,8 @@ class Entity(pygame.sprite.Sprite):
         self.rect.y += self.speed
 
     def attack(self, entity):
+        entity.health_tmp = entity.health
+        entity.attacker = self
         entity.health -= self.atk
 
     def dead(self):
