@@ -5,6 +5,7 @@ import tkinter as tk
 from tkinter import ttk
 from entities.player import Player
 from entities.alien import Alien
+from map import Map
 
 
 class Game:
@@ -17,12 +18,10 @@ class Game:
         self.screens = {"run": 1, "menu": 1, "game": 0, "gameover": 0}
         self.keyPressed = {}
 
-        self.background = pygame.image.load("assets/background.png")
+        self.background = pygame.image.load("assets/room.png")
         self.bgRect = self.background.get_rect()
-        self.bgDecalageX = -100
-        self.bgDecalageY = -300
-        self.bgRect.x += self.bgDecalageX
-        self.bgRect.y += self.bgDecalageY
+
+        self.map = Map(self)
 
         self.max_score = 0
         self.score = 0
@@ -50,7 +49,7 @@ class Game:
             self.spw_delay += 1
         else:
             self.spw_delay = 0
-            self.all_aliens.add(Alien(self))
+            # self.all_aliens.add(Alien(self))
 
         # Evenements (clavier + souris)
         for event in pygame.event.get():
@@ -73,6 +72,7 @@ class Game:
                 self.screen("")
                 self.screens.__setitem__("run", 0)
 
+        self.map.update()
         for alien in self.all_aliens:
             alien.update()
         self.player.update()
@@ -84,12 +84,12 @@ class Game:
 
         for alien in self.all_aliens:
             alien.draw()
-
         self.player.draw()
-
         for bullet in self.player.weapon.all_bullets:
             bullet.move()
         self.player.weapon.all_bullets.draw(self.window)
+
+        self.map.draw()
 
         pygame.display.flip()
         self.clock.tick(self.framerate)
@@ -100,14 +100,6 @@ class Game:
     def setImage(self, entity, newImage):
         if entity.image != newImage:
             entity.image = newImage
-
-    def moveBGY(self, y):
-        self.bgDecalageY += y / (self.window.get_height() / 2 / 50)
-        self.bgRect.y = int(self.bgDecalageY)
-
-    def moveBGX(self, x):
-        self.bgDecalageX += x / (self.window.get_width() / 2 / 100)
-        self.bgRect.x = int(self.bgDecalageX)
 
     def save_game(self):
         with open("save.data", "wb") as f:

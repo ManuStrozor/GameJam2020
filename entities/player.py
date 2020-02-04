@@ -8,7 +8,7 @@ class Player(Entity):
     def __init__(self, game):
         super().__init__(game)
 
-        self.set_original_image('assets/player.png')
+        self.set_original_image('assets/entity.png')
         self.crouch_image = pygame.image.load('assets/player_crouch.png')
 
         # Spawn du joueur
@@ -39,7 +39,7 @@ class Player(Entity):
                 self.move_right()
         if not self.jumping:
             if self.game.keyPressed.get(pygame.K_UP) or self.game.keyPressed.get(pygame.K_w):
-                if self.rect.y > 480:
+                if self.rect.y > 0:
                     self.move_up()
             if self.game.keyPressed.get(pygame.K_DOWN) or self.game.keyPressed.get(pygame.K_s):
                 if self.rect.y + self.rect.height + self.speed < self.game.window.get_height():
@@ -79,11 +79,9 @@ class Player(Entity):
 
     def move_right(self):
         super().move_right()
-        self.game.moveBGX(-self.speed)
 
     def move_left(self):
         super().move_left()
-        self.game.moveBGX(self.speed)
 
     def crouch(self, state):
         self.crouchState = state
