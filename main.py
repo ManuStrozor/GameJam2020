@@ -12,6 +12,9 @@ game = Game(win, 120)
 
 font = pygame.font.SysFont('comicsans', 30, True)
 
+# Nommer la page
+pygame.display.set_caption("ToutSaufLaSalle21")
+
 # Boucle infinie
 while game.screens.get("run"):
 
