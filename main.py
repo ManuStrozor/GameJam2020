@@ -6,6 +6,7 @@ pygame.init()
 pygame.display.set_caption("GameJam 2020")
 win = pygame.display.set_mode((1280, 720))
 
+
 # Chargement du jeu
 game = Game(win, 60)
 
