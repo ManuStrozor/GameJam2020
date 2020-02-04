@@ -49,7 +49,6 @@ class Player(Entity):
                 neg = -1
             dist = (self.jumpDist ** 2) * 0.3 * neg
             self.rect.y -= dist
-            self.game.moveBGY(dist)
             self.jumpDist -= 1
         else:
             self.rect.y = alt
