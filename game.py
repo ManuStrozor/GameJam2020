@@ -5,6 +5,47 @@ from entities.player import Player
 from entities.alien import Alien
 from map import Map
 
+screen = pygame.display.set_mode((1024, 768))
+class Wall:
+
+    def __init__(self, pos):
+        walls.append(self)
+        self.rect = pygame.Rect(pos[0], pos[1], 50, 50)
+
+walls = []  # Liste des murs
+# Contenu de la map dans un string
+level = [
+    "WWWWWWWWWWWWWWWWWWWW",
+    "W                  B",
+    "W         WWWWWW   W",
+    "W   WWWW       W   W",
+    "W   W        WWWW  W",
+    "W WWW  WWWW        W",
+    "W   W     W W      W",
+    "W   W     W   WWW WW",
+    "W   WWW WWW   W W  W",
+    "W     W   W   W W  W",
+    "WWW   W   WWWWW W  W",
+    "W W      WW        W",
+    "W W   WWWW   WWW   W",
+    "W     W       W    E",
+    "WWWWWWWW   WWWWWWWWW",
+]
+
+# pour chaque caracteres du string : W = mur, E = porte du bas, B = porte du haut
+x = y = 0
+for row in level:
+    for col in row:
+        if col == "W":
+            Wall((x, y))
+        if col == "E":
+            porte1 = pygame.Rect(x, y, 50, 50)
+        if col == "B":
+            porte2 = pygame.Rect(x, y, 50, 50)
+        x += 50
+    y += 50
+    x = 0
+
 
 class Game:
 
@@ -81,6 +122,12 @@ class Game:
             alien.draw()
         self.player.draw()
         self.map.draw()
+        # Murs
+        for wall in walls:
+            pygame.draw.rect(screen, (255, 255, 255), wall.rect)
+
+        pygame.draw.rect(screen, (0, 255, 0), porte1)
+        pygame.draw.rect(screen, (255, 0, 0), porte2)
 
         pygame.display.flip()
         self.clock.tick(self.framerate)

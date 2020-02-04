@@ -1,5 +1,6 @@
 import pygame
 
+import game
 
 class Entity(pygame.sprite.Sprite):
 
@@ -46,18 +47,42 @@ class Entity(pygame.sprite.Sprite):
 
     def move_right(self):
         self.direction = "right"
+        for wall in game.walls:
+            if self.rect.colliderect(wall.rect):
+                if self.rect.x > 0:  # deplacement droit, si coté gauche du mur touché
+                    self.rect.right = wall.rect.left
+                if self.rect.x < 0:  # deplacement gauche, si coté droit du mur touché
+                    self.rect.left = wall.rect.right
         self.rect.x += self.speed
 
     def move_left(self):
         self.direction = "left"
+        for wall in game.walls:
+            if self.rect.colliderect(wall.rect):
+                if self.rect.x > 0:  # deplacement droit, si coté gauche du mur touché
+                    self.rect.right = wall.rect.left
+                if self.rect.x < 0:  # deplacement gauche, si coté droit du mur touché
+                    self.rect.left = wall.rect.right
         self.rect.x -= self.speed
 
     def move_up(self):
         self.direction = "top"
+        for wall in game.walls:
+            if self.rect.colliderect(wall.rect):
+                if self.rect.y > 0:  # deplacement bas, si coté haut du mur touché
+                    self.rect.bottom = wall.rect.top
+                if self.rect.y < 0:  # deplacement haut, si coté bas du mur touché
+                    self.rect.top = wall.rect.bottom
         self.rect.y -= self.speed
 
     def move_down(self):
         self.direction = "bot"
+        for wall in game.walls:
+            if self.rect.colliderect(wall.rect):
+                if self.rect.y > 0:  # deplacement bas, si coté haut du mur touché
+                    self.rect.bottom = wall.rect.top
+                if self.rect.y < 0:  # deplacement haut, si coté bas du mur touché
+                    self.rect.top = wall.rect.bottom
         self.rect.y += self.speed
 
     def dead(self):

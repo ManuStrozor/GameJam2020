@@ -1,4 +1,5 @@
 import pygame
+
 from entities.entity import Entity
 
 
@@ -26,6 +27,7 @@ class Player(Entity):
         super().update()
 
         # Déplacement (zqsd)
+
         alt = self.rect.y
         if self.game.keyPressed.get(pygame.K_LEFT) or self.game.keyPressed.get(pygame.K_a):
             if self.rect.x - self.speed > 0:
@@ -73,7 +75,6 @@ class Player(Entity):
             self.image_name = "player_crouch"
         else:
             self.image_name = "player"
-
 
     def dead(self):
         self.game.gameover = True
