@@ -1,8 +1,6 @@
 import pygame
 from pygame.locals import *
 import pickle
-import tkinter as tk
-from tkinter import ttk
 from entities.player import Player
 from entities.alien import Alien
 from map import Map
@@ -29,8 +27,7 @@ class Game:
             with open("save.data", "rb") as f:
                 self.max_score = pickle.load(f)
         except IOError:
-            self.popupmsg("Warning message !!!", "The save file \"save.data\" does not exist !\n"
-                                               "Will be created at the next quit")
+            pass
         self.gameover = False
         self.player = Player(self)
         self.all_aliens = pygame.sprite.Group()
@@ -104,12 +101,3 @@ class Game:
         self.screens.__setitem__("run", 1)
         if screen != "":
             self.screens.__setitem__(screen, 1)
-
-    def popupmsg(self, title, msg):
-        popup = tk.Tk()
-        popup.wm_title(title)
-        label = ttk.Label(popup, text=msg, font=('comicsans', 10))
-        label.pack(side="top", fill="x", pady=10)
-        b1 = ttk.Button(popup, text="OK", command=popup.destroy)
-        b1.pack()
-        popup.mainloop()
