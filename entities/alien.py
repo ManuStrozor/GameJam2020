@@ -9,15 +9,13 @@ class Alien(Entity):
         super().__init__(game)
         self.player = self.game.player
 
-        self.set_original_image('assets/alien.png')
-
         # Spawn aléatoire
         if random.randint(0, 2) - 1:
             self.rect.x = game.window.get_width()
-            self.direction = -1
+            self.direction = "left"
         else:
             self.rect.x = -self.rect.width
-            self.direction = 1
+            self.direction = "right"
         self.rect.y = game.window.get_height() - 50 - self.rect.height
 
         self.max_atk_delay = 60
@@ -25,7 +23,6 @@ class Alien(Entity):
 
         self.set_max_health(150)
         self.set_max_speed(2)
-        self.atk = 10
 
     def update(self):
         super().update()
@@ -43,12 +40,6 @@ class Alien(Entity):
                     self.rect.y -= self.speed
                 else:
                     self.rect.y += self.speed
-        else:
-            if self.atk_delay < self.max_atk_delay:
-                self.atk_delay += 1
-            else:
-                self.atk_delay = 0
-                self.attack(self.game.player)
 
     def dead(self):
         self.game.all_aliens.remove(self)

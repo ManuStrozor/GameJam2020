@@ -57,8 +57,6 @@ class Game:
             # Evenements clavier
             if event.type == KEYDOWN:
                 self.keyPressed[event.key] = True
-                if event.key == K_RETURN:
-                    self.player.weapon.fire()
                 if event.key == K_ESCAPE:
                     self.save_game()
                     self.screen("menu")
@@ -85,10 +83,6 @@ class Game:
         for alien in self.all_aliens:
             alien.draw()
         self.player.draw()
-        for bullet in self.player.weapon.all_bullets:
-            bullet.move()
-        self.player.weapon.all_bullets.draw(self.window)
-
         self.map.draw()
 
         pygame.display.flip()

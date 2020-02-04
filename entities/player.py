@@ -1,6 +1,5 @@
 import pygame
 from entities.entity import Entity
-from weapon import Weapon
 
 
 class Player(Entity):
@@ -8,7 +7,7 @@ class Player(Entity):
     def __init__(self, game):
         super().__init__(game)
 
-        self.set_original_image('assets/entity.png')
+        self.image_name = "player"
         self.crouch_image = pygame.image.load('assets/player_crouch.png')
 
         # Spawn du joueur
@@ -22,9 +21,6 @@ class Player(Entity):
 
         self.set_max_health(100)
         self.set_max_speed(8)
-        self.atk = 20
-
-        self.weapon = Weapon(self)
 
     def update(self):
         super().update()
@@ -65,29 +61,20 @@ class Player(Entity):
         # crouch
         if self.game.keyPressed.get(pygame.K_LCTRL) or self.game.keyPressed.get(pygame.K_RCTRL):
             self.crouch(True)
-            self.game.setImage(self, self.crouch_image)
         else:
             self.crouch(False)
-            self.game.setImage(self, self.original_image)
 
-        if self.direction != 1:
-            self.game.setImage(self, pygame.transform.flip(self.image, True, False))
-
-    def draw(self):
-        super().draw()
-        self.weapon.draw()
-
-    def move_right(self):
-        super().move_right()
-
-    def move_left(self):
-        super().move_left()
+        self.set_image(pygame.image.load('assets/'+self.image_name+'_'+self.direction+'.png'))
 
     def crouch(self, state):
         self.crouchState = state
         self.speed = self.max_speed
         if state:
             self.speed /= 3
+            self.image_name = "player_crouch"
+        else:
+            self.image_name = "player"
+
 
     def dead(self):
         self.game.gameover = True
