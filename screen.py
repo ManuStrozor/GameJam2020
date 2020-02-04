@@ -9,14 +9,32 @@ win = pygame.display.set_mode((1024, 768))
 font_titre = pygame.font.SysFont('comicsans', 85, True)
 font = pygame.font.SysFont('comicsans', 40, True)
 
-GREY = pygame.Color(220, 220, 220)
+GREY = (220, 220, 220)
 size = (500, 80)
-bouton = pygame.Surface(size)
-pygame.draw.rect(bouton, GREY, bouton.get_rect())
-bouton_play = bouton
-bouton_cred = bouton
-bouton_help = bouton
-bouton_quit = bouton
+
+bouton_play = pygame.Surface(size)
+rect_play = bouton_play.get_rect()
+rect_play.x = 256
+rect_play.y = 250
+pygame.draw.rect(win, GREY, rect_play)
+
+bouton_cred = pygame.Surface(size)
+rect_cred = bouton_cred.get_rect()
+rect_cred.x = 256
+rect_cred.y = 350
+pygame.draw.rect(win, GREY, rect_cred)
+
+bouton_help = pygame.Surface(size)
+rect_help = bouton_help.get_rect()
+rect_help.x = 256
+rect_help.y = 450
+pygame.draw.rect(win, GREY, rect_help)
+
+bouton_quit = pygame.Surface(size)
+rect_quit = bouton_quit.get_rect()
+rect_quit.x = 256
+rect_quit.y = 550
+pygame.draw.rect(win, GREY, rect_quit)
 
 TEXT = 'Rien..'
 
@@ -48,19 +66,19 @@ def gerer_event():
     if pygame.mouse.get_focused():
         # Trouve position de la souris
         x, y = pygame.mouse.get_pos()
-        over_play = bouton_play.get_rect().collidepoint(x, y)
-        over_cred = bouton_cred.get_rect().collidepoint(x, y)
-        over_help = bouton_help.get_rect().collidepoint(x, y)
-        over_quit = bouton_quit.get_rect().collidepoint(x, y)
+        over_play = rect_play.collidepoint(x, y)
+        over_cred = rect_cred.collidepoint(x, y)
+        over_help = rect_help.collidepoint(x, y)
+        over_quit = rect_quit.collidepoint(x, y)
         if over_play:
             TEXT = 'Je veux jouer'
-        if over_cred:
+        elif over_cred:
             TEXT = 'Voir les crédits'
-        if over_help:
+        elif over_help:
             TEXT = 'Voir l\'aide'
-        if over_quit:
+        elif over_quit:
             TEXT = 'Quitter le jeu'
-        else :
+        else:
             TEXT = 'Rien..'
 
         ## Détecte les clique de souris.
