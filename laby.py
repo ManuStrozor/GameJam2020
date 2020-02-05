@@ -50,7 +50,9 @@ class Player:
         # Collision porte déverrouillée
         for porte_unlock in portes_unlock:
             if self.rect.colliderect(porte_unlock.rect):
-                print("Changement de salle via porte déverrouillée")
+                pygame.mixer.stop()
+                audio_door.set_volume(3)
+                audio_door.play()
 
         # Collision caisse (Pousser et Tirer)
         for caisse in caisses:
@@ -141,7 +143,6 @@ class Player:
                 get_obj(oxygen_bottle.grid[0], oxygen_bottle.grid[1]).type = None
                 pygame.mixer.stop()
                 audio_oxygen_bottle.set_volume(3)
-                audio_oxygen_bottle.set_volume(3)
                 audio_oxygen_bottle.play()
 
         # Collision button
@@ -149,6 +150,9 @@ class Player:
             if self.rect.colliderect(button.rect):
                 buttons.remove(button)
                 get_obj(button.grid[0], button.grid[1]).type = "button_pressed"
+                pygame.mixer.stop()
+                audio_button.set_volume(3)
+                audio_button.play()
                 print("appui boutton")
 
                 # changer l'etat de la porte verouillé en deverouillé
@@ -404,6 +408,9 @@ clock = pygame.time.Clock()
 audio_coins = pygame.mixer.Sound('assets/audio/coins.wav')  # Son de pieces
 audio_walk = pygame.mixer.Sound('assets/audio/walk.wav')  # son de pas (clap, clap)
 audio_oxygen_bottle = pygame.mixer.Sound('assets/audio/air_fill.wav')  # Son de bouteille oxygene
+audio_door = pygame.mixer.Sound('assets/audio/close_door_1.wav')  # son de porte
+audio_button = pygame.mixer.Sound('assets/audio/button_press.wav')  # son de boutton
+
 
 MARGIN_X = (screen.get_width() - 640) / 2
 MARGIN_Y = (screen.get_height() - 480) / 2
@@ -424,9 +431,9 @@ player = None
 level = [
     ".........N..........",
     ".O.M    .          .",
-    "U     C   ......   .",
-    ".   ....       .   .",
-    "Y   .        ....  .",
+    ".Y..      ......   .",
+    ".    .U.       .   .",
+    ".   .        ....  .",
     ". ...  ....        .",
     ".   .     . Z      .",
     "W   .  P  .   ...  E",
