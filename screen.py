@@ -1,6 +1,4 @@
 import pygame
-from math import pi
-from pygame.locals import *
 pygame.font.init()
 
 pygame.init()
@@ -161,7 +159,7 @@ while True:
         if event.type == pygame.QUIT:
             quit()
 
-    #draw_menu()
+    draw_menu()
     #draw_pause()
     pygame.display.update()
 

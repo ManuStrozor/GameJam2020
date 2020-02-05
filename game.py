@@ -39,11 +39,11 @@ for row in level:
         if col == "W":
             Wall((x, y))
         if col == "E":
-            porte1 = pygame.Rect(x, y, 50, 50)
+            porte1 = pygame.Rect(x, y, 1024/len(row), 768/len(level))
         if col == "B":
-            porte2 = pygame.Rect(x, y, 50, 50)
-        x += 50
-    y += 50
+            porte2 = pygame.Rect(x, y, 1024/len(row), 768/len(level))
+        x += 1024/len(row)
+    y += 768/len(level)
     x = 0
 
 

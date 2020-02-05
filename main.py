@@ -3,19 +3,15 @@ from pygame.locals import *
 from game import Game
 pygame.init()
 
-# Fenêtre du jeu
-pygame.display.set_caption("GameJam 2020")
+
+pygame.display.set_caption("ToutSaufLaSalle21")
 win = pygame.display.set_mode((1024, 768))
-
-# Chargement du jeu
-game = Game(win, 120)
-
 font = pygame.font.SysFont('comicsans', 30, True)
 
-# Nommer la page
-pygame.display.set_caption("ToutSaufLaSalle21")
 
-# Boucle infinie
+game = Game(win, 120)
+
+
 while game.screens.get("run"):
 
     while game.screens.get("menu"):
