@@ -125,6 +125,7 @@ def gerer_event_menu():
         if pressed[0] and over_quit:
             TEXT = 'Quitter le jeu'
 
+
 def draw_pause():
     # Dessins
     pygame.draw.rect(win, GREY, rect_resume)

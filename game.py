@@ -2,7 +2,6 @@ import pygame
 from pygame.locals import *
 import pickle
 from entities.player import Player
-from entities.alien import Alien
 from map import Map
 
 screen = pygame.display.set_mode((1024, 768))
@@ -49,37 +48,48 @@ for row in level:
 
 class Game:
 
+    clock = pygame.time.Clock()
+    views = {
+        "run": 1,
+        "menu": 1,
+        "game": 0,
+        "gameover": 0
+    }
+    keyPressed = {}
+
+    background = pygame.image.load("assets/room.png")
+    bgRect = background.get_rect()
+
+    game_lost = False
+    max_score = 0
+    score = 0
+
+    all_aliens = pygame.sprite.Group()
+    max_spw_delay = 120
+    spw_delay = 0
+
+    def __del__(self):
+        pass
+
     def __init__(self, window, framerate):
         self.window = window
-        self.clock = pygame.time.Clock()
         self.framerate = framerate
-        self.font = pygame.font.SysFont('comicsans', 30, True)
-        self.screens = {"run": 1, "menu": 1, "game": 0, "gameover": 0}
-        self.keyPressed = {}
 
-        self.background = pygame.image.load("assets/room.png")
-        self.bgRect = self.background.get_rect()
+        self.font = pygame.font.SysFont('comicsans', 30, True)
 
         self.map = Map(self)
+        self.player = Player(self)
 
-        self.max_score = 0
-        self.score = 0
         try:
             with open("save.data", "rb") as f:
                 self.max_score = pickle.load(f)
         except IOError:
             pass
-        self.gameover = False
-        self.player = Player(self)
-        self.all_aliens = pygame.sprite.Group()
-        self.max_spw_delay = 120
-        self.spw_delay = 0
 
     def update(self):
-        if self.gameover:
-            # Sauvegarde du score avant de Quitter
+        if self.game_lost:
             self.save_game()
-            self.screen("gameover")
+            self.goto("gameover")
 
         self.max_score = max(self.score, self.max_score)
 
@@ -89,34 +99,29 @@ class Game:
             self.spw_delay = 0
             # self.all_aliens.add(Alien(self))
 
-        # Evenements (clavier + souris)
+        for alien in self.all_aliens:
+            alien.update()
+        self.player.update()
+        self.map.update()
+
         for event in pygame.event.get():
 
-            # Evenements clavier
             if event.type == KEYDOWN:
                 self.keyPressed[event.key] = True
                 if event.key == K_ESCAPE:
                     self.save_game()
-                    self.screen("menu")
+                    self.goto("menu")
             elif event.type == KEYUP:
                 self.keyPressed[event.key] = False
 
-            # Quitter la fenetre
             if event.type == QUIT:
-                # Sauvegarde du score avant de Quitter
                 self.save_game()
-                self.screen("")
-                self.screens.__setitem__("run", 0)
-
-        self.map.update()
-        for alien in self.all_aliens:
-            alien.update()
-        self.player.update()
+                self.views.clear()
 
     def draw(self):
         self.window.blit(self.background, self.bgRect)
-        self.draw_text('Score: ' + str(self.score), (10, 30), (0, 0, 0))
         self.draw_text('Max score: ' + str(self.max_score), (10, 10), (0, 0, 0))
+        self.draw_text('Score: ' + str(self.score), (10, 30), (0, 0, 0))
 
         for alien in self.all_aliens:
             alien.draw()
@@ -132,19 +137,17 @@ class Game:
         pygame.display.flip()
         self.clock.tick(self.framerate)
 
-    def draw_text(self, txt, position, color):
-        self.window.blit(self.font.render(txt, 1, color), position)
+    def draw_text(self, txt, position, col):
+        self.window.blit(self.font.render(txt, 1, col), position)
 
-    def setImage(self, entity, newImage):
-        if entity.image != newImage:
-            entity.image = newImage
+    def goto(self, screen):
+        self.views.clear()
+        self.views.__setitem__("run", 1)
+        self.views.__setitem__(screen, 1)
+
+    def get_view(self, view):
+        return self.views.get(view)
 
     def save_game(self):
         with open("save.data", "wb") as f:
             pickle.dump(self.max_score, f)
-
-    def screen(self, screen):
-        self.screens.clear()
-        self.screens.__setitem__("run", 1)
-        if screen != "":
-            self.screens.__setitem__(screen, 1)
