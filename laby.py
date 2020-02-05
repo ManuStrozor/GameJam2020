@@ -422,19 +422,19 @@ player = None
 # Contenu de la map dans un string
 level = [
     ".........N..........",
-    ".O.M    .          .",
+    ".O.     .          .",
     ".     C   ......   .",
-    "Y                  .",
-    ".   .              .",
-    "U ...  ....        .",
+    ".   ....       .   .",
+    ".   .        ....  .",
+    ". ...  ....        .",
     ".   .     . Z      .",
     "W   .  P  .   ...  E",
     ".  C... ...   .P.  .",
     ".     .   ..  .C.  .",
     "..   .   .....  .  .",
     ".P.      ..        .",
-    ". .   ....   ..    U",
-    ".     .       .    Y",
+    ". .   ....   ..    .",
+    ".     .       .    .",
     ".........S.........."
 ]
 
@@ -489,7 +489,7 @@ for row in level:
     y += SIZE_Y
 
 if player is None:
-    player = Player((64 + MARGIN_X, 96 + MARGIN_Y))  # Creation joueur si rien sur la grille
+    player = Player((64, 96))  # Creation joueur si rien sur la grille
 
 wall_image = pygame.transform.scale(pygame.image.load('assets/wall.png'), (SIZE_X, SIZE_Y))
 wind_image = pygame.transform.scale(pygame.image.load('assets/wind_jet.png'), (SIZE_X, SIZE_Y))
