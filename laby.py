@@ -318,7 +318,7 @@ level = [
     "w   W     W W      w",
     "w   W  P  W   WWW Ww",
     "w  CWWW WWW   WPW  w",
-    "w     W   Ww  WCW  w",
+    "w     W   WW  WCW  w",
     "wWW   W   WWWWW W  w",
     "wPW      WW        S",
     "w W   WWWW   WW    w",
@@ -406,15 +406,17 @@ while running:
         if get_type(obj.grid[0], obj.grid[1]) is None or get_type(obj.grid[0], obj.grid[1]) == "coin" or get_type(obj.grid[0], obj.grid[1]) == "box":
             image = floor_image
         screen.blit(image, (obj.rect.x, obj.rect.y))
-
         if get_type(obj.grid[0], obj.grid[1]) == "coin":
             image = coin_image
+        screen.blit(image, (obj.rect.x, obj.rect.y))
+        if get_type(obj.grid[0], obj.grid[1]) == "box":
+            image = box_image
         screen.blit(image, (obj.rect.x, obj.rect.y))
 
     #for wall in walls:
         #pygame.draw.rect(screen, (255, 255, 255), wall.rect)
-    for caisse in caisses:
-        pygame.draw.rect(screen, (255, 0, 255), caisse.rect)
+    #for caisse in caisses:
+        #pygame.draw.rect(screen, (255, 0, 255), caisse.rect)
     #for souffleur in souffleurs:
         #pygame.draw.rect(screen, (0, 0, 255), souffleur.rect)
     #for piece in pieces:
