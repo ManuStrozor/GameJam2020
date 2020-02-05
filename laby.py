@@ -153,6 +153,7 @@ class Player:
 
                 # changer l'etat de la porte verouillé en deverouillé
                 for porte_lock in portes_lock:
+                    portes_lock.remove(porte_lock)
                     get_obj(porte_lock.grid[0], porte_lock.grid[1]).type = "porte_unlock"
 
 
