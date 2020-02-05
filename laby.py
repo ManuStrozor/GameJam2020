@@ -7,6 +7,7 @@ class Player:
     grid_y = None
     speed = 2
     coins = 0
+    oxygen_bottle = 0
 
     def __init__(self, pos):
         self.grid_x = int(pos[0]/SIZE_X)
@@ -110,6 +111,16 @@ class Player:
                 self.coins += 1
                 pieces.remove(piece)
                 get_obj(piece.grid[0], piece.grid[1]).type = None
+                pygame.mixer.stop()
+                audio_coins.set_volume(3)
+                audio_coins.play()
+
+        # Collision oxygen_bottle
+        for oxygen_bottle in oxygen_bottles:
+            if self.rect.colliderect(oxygen_bottle.rect):
+                self.oxygen_bottle += 1
+                oxygen_bottles.remove(oxygen_bottle)
+                get_obj(oxygen_bottle.grid[0], oxygen_bottle.grid[1]).type = None
                 pygame.mixer.stop()
                 audio_coins.set_volume(3)
                 audio_coins.play()
@@ -276,6 +287,31 @@ class Piece(Obj):
         pieces.append(self)
 
 
+class Oxygen_bottle(Obj):
+
+    def __init__(self, pos):
+        super().__init__(pos)
+        self.type = "oxygen"
+        objs.append(self)
+        oxygen_bottles.append(self)
+
+
+class Score():
+    def __init__(self):
+        self.coins = player.coins
+        self.oxygen_bottle = player.oxygen_bottle
+        self.score_font = pygame.font.SysFont('Consolas', 50)
+
+    def update(self):
+        self.player_coins = self.score_font.render("Coins : "+str(self.coins), True, pygame.Color("yellow"), pygame.Color("black"))
+        self.player_oxygen_bottle = self.score_font.render("Bouteille d'Oxygène : "+str(self.oxygen_bottle), True, pygame.Color("lightblue"), pygame.Color("black"))
+
+    def draw(self):
+        screen.blit(self.player_coins, (5, 2))
+        screen.blit(self.player_oxygen_bottle, (5, 40))
+
+
+
 def get_type(x, y):
     index = (y * len(level[0])) + x
     if index < 0 or index >= len(level[0])*len(level):
@@ -305,12 +341,13 @@ walls = []  # Liste des murs
 caisses = []  # Liste des caisses
 souffleurs = []  # Liste des souffleurs
 pieces = []  # Liste des pieces (coins)
+oxygen_bottles = [] # Liste des bouteilles d'oxygene
 player = None
 
 # Contenu de la map dans un string
 level = [
     "wwwwwwwwwSwwwwwwwwww",
-    "w W     W          B",
+    "wOW     W          B",
     "w     C   WWWWWW   w",
     "w X WWWW       W   w",
     "w   W        WWWW  w",
@@ -348,6 +385,8 @@ for row in level:
             Souffleur((x, y))
         elif col == "P":
             Piece((x, y))
+        elif col == "O":
+            Oxygen_bottle((x, y))
         elif col == "X":
             player = Player((x, y))  # Creation joueur ('X' sur la grille)
             objs.append(Obj((x, y)))
@@ -361,10 +400,11 @@ if player is None:
 
 wall_image = pygame.transform.scale(pygame.image.load('assets/wall.png'), (SIZE_X, SIZE_Y))
 wind_image = pygame.transform.scale(pygame.image.load('assets/wind_jet.png'), (SIZE_X, SIZE_Y))
-box_image = pygame.transform.scale(pygame.image.load('assets/box.png'), (SIZE_X, SIZE_Y))
+box_image = pygame.transform.scale(pygame.image.load('assets/Caisse1.png'), (SIZE_X, SIZE_Y))
 coin_image = pygame.transform.scale(pygame.image.load('assets/coin.png'), (SIZE_X, SIZE_Y))
 floor_image = pygame.transform.scale(pygame.image.load('assets/floor.png'), (SIZE_X, SIZE_Y))
 room_image = pygame.transform.scale(pygame.image.load('assets/room.png'), (SIZE_X, SIZE_Y))
+oxygen_image = pygame.transform.scale(pygame.image.load('assets/Oxygen_Bottle.png'), (SIZE_X, SIZE_Y))
 
 running = True
 while running:
@@ -403,7 +443,7 @@ while running:
             image = wall_image
         if get_type(obj.grid[0], obj.grid[1]) == "wind_jet":
             image = wind_image
-        if get_type(obj.grid[0], obj.grid[1]) is None or get_type(obj.grid[0], obj.grid[1]) == "coin" or get_type(obj.grid[0], obj.grid[1]) == "box":
+        if get_type(obj.grid[0], obj.grid[1]) is None or get_type(obj.grid[0], obj.grid[1]) == "coin" or get_type(obj.grid[0], obj.grid[1]) == "box" or get_type(obj.grid[0], obj.grid[1]) == "oxygen":
             image = floor_image
         screen.blit(image, (obj.rect.x, obj.rect.y))
         if get_type(obj.grid[0], obj.grid[1]) == "coin":
@@ -411,6 +451,9 @@ while running:
         screen.blit(image, (obj.rect.x, obj.rect.y))
         if get_type(obj.grid[0], obj.grid[1]) == "box":
             image = box_image
+        screen.blit(image, (obj.rect.x, obj.rect.y))
+        if get_type(obj.grid[0], obj.grid[1]) == "oxygen":
+            image = oxygen_image
         screen.blit(image, (obj.rect.x, obj.rect.y))
 
     #for wall in walls:
@@ -422,8 +465,12 @@ while running:
     #for piece in pieces:
         #pygame.draw.rect(screen, (0, 255, 0), piece.rect)
 
+    score = Score()
+    score.__init__()
+    score.update()
+
     pygame.draw.rect(screen, (255, 0, 0), porte1)
     pygame.draw.rect(screen, (255, 0, 0), porte2)
     pygame.draw.rect(screen, (255, 255, 0), player.rect)
-
+    score.draw()
     pygame.display.flip()
