@@ -421,21 +421,21 @@ player = None
 
 # Contenu de la map dans un string
 level = [
-    "wwwwwwwwwSwwwwwwwwww",
-    "wOWM    W          E",
-    "w     C   WWWWWW   w",
-    "W X WWWW       W   w",
-    "w   W        WWWW  w",
-    "w WWW  WWWW        w",
-    "w   W     W W      w",
-    "w   W  P  W   WWW Ww",
-    "w  CWWW WWW   WPW  w",
-    "w     W   WW  WCW  w",
-    "wWW   W   WWWWW W  w",
-    "wPW      WW        S",
-    "w W   WWWW   WW    W",
-    "w     W       W    L",
-    "wwwwwwwwwwwwwwwwwwww",
+    ".........N..........",
+    ".O.M    .          .",
+    ".     C   ......   .",
+    "Y                  .",
+    ".   .              .",
+    "U ...  ....        .",
+    ".   .     . Z      .",
+    "W   .  P  .   ...  E",
+    ".  C... ...   .P.  .",
+    ".     .   ..  .C.  .",
+    "..   .   .....  .  .",
+    ".P.      ..        .",
+    ". .   ....   ..    U",
+    ".     .       .    Y",
+    ".........S.........."
 ]
 
 SIZE_X = int(640 / len(level[0]))
@@ -446,15 +446,30 @@ y = MARGIN_Y
 for row in level:
     x = MARGIN_X
     for col in row:
-        if col == "W" or col == "w":
+        if col == ".":
             Wall((x, y))
+
+        elif col == "N":
+            porteN = pygame.Rect(x, y, SIZE_X, SIZE_Y)
+            objs.append(Obj((x, y)))
+        elif col == "S":
+            porteS = pygame.Rect(x, y, SIZE_X, SIZE_Y)
+            objs.append(Obj((x, y)))
         elif col == "E":
-            PorteUnlock((x, y))
-        elif col == "L":
+            porteE = pygame.Rect(x, y, SIZE_X, SIZE_Y)
+            objs.append(Obj((x, y)))
+        elif col == "W":
+            porteW = pygame.Rect(x, y, SIZE_X, SIZE_Y)
+            objs.append(Obj((x, y)))
+
+        elif col == "Y":
             PorteLock((x, y))
+        elif col == "U":
+            PorteUnlock((x, y))
+
         elif col == "C":
             Caisse((x, y))
-        elif col == "S":
+        elif col == "Z":
             Souffleur((x, y))
         elif col == "P":
             Piece((x, y))
@@ -469,11 +484,12 @@ for row in level:
             objs.append(Obj((x, y)))
         else:
             objs.append(Obj((x, y)))
+
         x += SIZE_X
     y += SIZE_Y
 
 if player is None:
-    player = Player((64, 96))  # Creation joueur si rien sur la grille
+    player = Player((64 + MARGIN_X, 96 + MARGIN_Y))  # Creation joueur si rien sur la grille
 
 wall_image = pygame.transform.scale(pygame.image.load('assets/wall.png'), (SIZE_X, SIZE_Y))
 wind_image = pygame.transform.scale(pygame.image.load('assets/wind_jet.png'), (SIZE_X, SIZE_Y))
@@ -510,12 +526,18 @@ while running:
         player.move(0, player.speed)
 
     # conditions fin
-    #if player.rect.colliderect(porte1):
-        #print("sortie porte 1")
-        #raise SystemExit # à modif, appel nouvelle fenetre de jeu
-    #if player.rect.colliderect(porte2):
-        #print("sortie porte 2")
-        #raise SystemExit # à modif, appel nouvelle fenetre de jeu
+    if player.rect.colliderect(porteE):
+        print("sortie porte E")
+        raise SystemExit # à modif, appel nouvelle fenetre de jeu
+    if player.rect.colliderect(porteS):
+        print("sortie porte S")
+        raise SystemExit # à modif, appel nouvelle fenetre de jeu
+    if player.rect.colliderect(porteN):
+        print("sortie porte N")
+        raise SystemExit # à modif, appel nouvelle fenetre de jeu
+    if player.rect.colliderect(porteW):
+        print("sortie porte W")
+        raise SystemExit # à modif, appel nouvelle fenetre de jeu
 
     # Draw
     screen.fill((0, 0, 0))
@@ -561,8 +583,10 @@ while running:
     score.__init__()
     score.update()
 
-    #pygame.draw.rect(screen, (255, 0, 0), porte1)
-    #pygame.draw.rect(screen, (255, 0, 0), porte2)
+    pygame.draw.rect(screen, (255, 0, 0), porteE)
+    pygame.draw.rect(screen, (255, 0, 0), porteS)
+    pygame.draw.rect(screen, (255, 0, 0), porteN)
+    pygame.draw.rect(screen, (255, 0, 0), porteW)
     pygame.draw.rect(screen, (255, 255, 0), player.rect)
     score.draw()
     pygame.display.flip()
