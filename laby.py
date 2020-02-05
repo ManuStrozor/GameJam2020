@@ -8,7 +8,6 @@ class Player:
     speed = 2
     coins = 0
     oxygen_bottle = 0
-    room = 0
 
     def __init__(self, pos):
         self.grid_x = int(pos[0]/SIZE_X)
@@ -21,7 +20,7 @@ class Player:
         self.rect.x += dx
         self.rect.y += dy
 
-        bloks = walls + caisses + souffleurs + pieces + portes_lock + portes_unlock
+        bloks = walls + caisses + souffleurs + pieces
 
         # Collision mur
         for wall in walls:
@@ -34,23 +33,6 @@ class Player:
                     self.rect.bottom = wall.rect.top
                 if dy < 0:  # deplacement top
                     self.rect.top = wall.rect.bottom
-
-        # Collision porte verrouillée
-        for porte_lock in portes_lock:
-            if self.rect.colliderect(porte_lock.rect):
-                if dx > 0:  # deplacement right
-                    self.rect.right = porte_lock.rect.left
-                if dx < 0:  # deplacement left
-                    self.rect.left = porte_lock.rect.right
-                if dy > 0:  # deplacement bottom
-                    self.rect.bottom = porte_lock.rect.top
-                if dy < 0:  # deplacement top
-                    self.rect.top = porte_lock.rect.bottom
-
-        # Collision porte déverrouillée
-        for porte_unlock in portes_unlock:
-            if self.rect.colliderect(porte_unlock.rect):
-                print("Changement de salle via porte déverrouillée")
 
         # Collision caisse (Pousser et Tirer)
         for caisse in caisses:
@@ -140,21 +122,9 @@ class Player:
                 oxygen_bottles.remove(oxygen_bottle)
                 get_obj(oxygen_bottle.grid[0], oxygen_bottle.grid[1]).type = None
                 pygame.mixer.stop()
-                audio_oxygen_bottle.set_volume(3)
-                audio_oxygen_bottle.set_volume(3)
-                audio_oxygen_bottle.play()
-
-        # Collision button
-        for button in buttons:
-            if self.rect.colliderect(button.rect):
-                buttons.remove(button)
-                get_obj(button.grid[0], button.grid[1]).type = "button_pressed"
-                print("appui boutton")
-
-                # changer l'etat de la porte verouillé en deverouillé
-                for porte_lock in portes_lock:
-                    get_obj(porte_lock.grid[0], porte_lock.grid[1]).type = "porte_unlock"
-
+                audio_coins.set_volume(3)
+                audio_coins.set_volume(3)
+                audio_coins.play()
 
     def way_right(self, list_of_items):
         for item in list_of_items:
@@ -327,58 +297,19 @@ class Oxygen_bottle(Obj):
         oxygen_bottles.append(self)
 
 
-class Button(Obj):
-
-    def __init__(self, pos):
-        super().__init__(pos)
-        self.type = "button"
-        objs.append(self)
-        buttons.append(self)
-
-
-class ButtonPressed(Obj):
-
-    def __init__(self, pos):
-        super().__init__(pos)
-        self.type = "button_pressed"
-        objs.append(self)
-        buttons_pressed.append(self)
-
-
-class PorteUnlock(Obj):
-
-    def __init__(self, pos):
-        super().__init__(pos)
-        self.type = "porte_unlock"
-        objs.append(self)
-        portes_unlock.append(self)
-
-
-class PorteLock(Obj):
-
-    def __init__(self, pos):
-        super().__init__(pos)
-        self.type = "porte_lock"
-        objs.append(self)
-        portes_lock.append(self)
-
-
 class Score():
     def __init__(self):
         self.coins = player.coins
         self.oxygen_bottle = player.oxygen_bottle
-        self.room = player.room
         self.score_font = pygame.font.SysFont('Consolas', 50)
 
     def update(self):
         self.player_coins = self.score_font.render("Coins : "+str(self.coins), True, pygame.Color("yellow"), pygame.Color("black"))
         self.player_oxygen_bottle = self.score_font.render("Bouteille d'Oxygène : "+str(self.oxygen_bottle), True, pygame.Color("lightblue"), pygame.Color("black"))
-        self.player_room = self.score_font.render("Salle : "+str(self.room), True, pygame.Color("green"), pygame.Color("black"))
 
     def draw(self):
         screen.blit(self.player_coins, (5, 2))
         screen.blit(self.player_oxygen_bottle, (5, 40))
-        screen.blit(self.player_room, (880, 2))
 
 
 
@@ -402,7 +333,6 @@ clock = pygame.time.Clock()
 
 audio_coins = pygame.mixer.Sound('assets/audio/coins.wav')  # Son de pieces
 audio_walk = pygame.mixer.Sound('assets/audio/walk.wav')  # son de pas (clap, clap)
-audio_oxygen_bottle = pygame.mixer.Sound('assets/audio/air_fill.wav')  # Son de bouteille oxygene
 
 MARGIN_X = (screen.get_width() - 640) / 2
 MARGIN_Y = (screen.get_height() - 480) / 2
@@ -412,30 +342,26 @@ walls = []  # Liste des murs
 caisses = []  # Liste des caisses
 souffleurs = []  # Liste des souffleurs
 pieces = []  # Liste des pieces (coins)
-oxygen_bottles = []  # Liste des bouteilles d'oxygene
-buttons = []  # Liste des boutons
-buttons_pressed = []  # Liste des boutons activés
-portes_unlock = []  # Liste des portes deverouilles
-portes_lock = []  # Liste des portes verouilles
+oxygen_bottles = [] # Liste des bouteilles d'oxygene
 player = None
 
 # Contenu de la map dans un string
 level = [
-    "wwwwwwwwwSwwwwwwwwww",
-    "wOWM    W          E",
-    "w     C   WWWWWW   w",
-    "W X WWWW       W   w",
-    "w   W        WWWW  w",
-    "w WWW  WWWW        w",
-    "w   W     W W      w",
-    "w   W  P  W   WWW Ww",
-    "w  CWWW WWW   WPW  w",
-    "w     W   WW  WCW  w",
-    "wWW   W   WWWWW W  w",
-    "wPW      WW        S",
-    "w W   WWWW   WW    W",
-    "w     W       W    L",
-    "wwwwwwwwwwwwwwwwwwww",
+    ".........N..........",
+    ".O.     .          .",
+    ".     C   ......   .",
+    ".   ....       .   .",
+    ".   .        ....  .",
+    ". ...  ....        .",
+    ".   .     . Z      .",
+    "W   .  P  .   ...  E",
+    ".  C... ...   .P.  .",
+    ".     .   ..  .C.  .",
+    "..   .   .....  .  .",
+    ".P.      ..        .",
+    ". .   ....   ..    .",
+    ".     .       .    .",
+    ".........S.........."
 ]
 
 SIZE_X = int(640 / len(level[0]))
@@ -446,34 +372,41 @@ y = MARGIN_Y
 for row in level:
     x = MARGIN_X
     for col in row:
-        if col == "W" or col == "w":
+        if col == ".":
             Wall((x, y))
+
+        elif col == "N":
+            porteN = pygame.Rect(x, y, SIZE_X, SIZE_Y)
+            objs.append(Obj((x, y)))
+        elif col == "S":
+            porteS = pygame.Rect(x, y, SIZE_X, SIZE_Y)
+            objs.append(Obj((x, y)))
         elif col == "E":
-            PorteUnlock((x, y))
-        elif col == "L":
-            PorteLock((x, y))
+            porteE = pygame.Rect(x, y, SIZE_X, SIZE_Y)
+            objs.append(Obj((x, y)))
+        elif col == "W":
+            porteW = pygame.Rect(x, y, SIZE_X, SIZE_Y)
+            objs.append(Obj((x, y)))
+
         elif col == "C":
             Caisse((x, y))
-        elif col == "S":
+        elif col == "Z":
             Souffleur((x, y))
         elif col == "P":
             Piece((x, y))
         elif col == "O":
             Oxygen_bottle((x, y))
-        elif col == "M":
-            Button((x, y))
-        elif col == "I":
-            ButtonPressed((x, y))
         elif col == "X":
             player = Player((x, y))  # Creation joueur ('X' sur la grille)
             objs.append(Obj((x, y)))
         else:
             objs.append(Obj((x, y)))
+
         x += SIZE_X
     y += SIZE_Y
 
 if player is None:
-    player = Player((64, 96))  # Creation joueur si rien sur la grille
+    player = Player((64 + MARGIN_X, 96 + MARGIN_Y))  # Creation joueur si rien sur la grille
 
 wall_image = pygame.transform.scale(pygame.image.load('assets/wall.png'), (SIZE_X, SIZE_Y))
 wind_image = pygame.transform.scale(pygame.image.load('assets/wind_jet.png'), (SIZE_X, SIZE_Y))
@@ -482,10 +415,6 @@ coin_image = pygame.transform.scale(pygame.image.load('assets/coin.png'), (SIZE_
 floor_image = pygame.transform.scale(pygame.image.load('assets/floor.png'), (SIZE_X, SIZE_Y))
 room_image = pygame.transform.scale(pygame.image.load('assets/room.png'), (SIZE_X, SIZE_Y))
 oxygen_image = pygame.transform.scale(pygame.image.load('assets/Oxygen_Bottle.png'), (SIZE_X, SIZE_Y))
-button_image = pygame.transform.scale(pygame.image.load('assets/Red_Button.png'), (SIZE_X, SIZE_Y))
-button_pressed_image = pygame.transform.scale(pygame.image.load('assets/Grey_Button_.png'), (SIZE_X, SIZE_Y))
-porte_unlock_image = pygame.transform.scale(pygame.image.load('assets/Porte_Unlock.png'), (SIZE_X, SIZE_Y))
-porte_lock_image = pygame.transform.scale(pygame.image.load('assets/Porte_Lock.png'), (SIZE_X, SIZE_Y))
 
 running = True
 while running:
@@ -510,12 +439,18 @@ while running:
         player.move(0, player.speed)
 
     # conditions fin
-    #if player.rect.colliderect(porte1):
-        #print("sortie porte 1")
-        #raise SystemExit # à modif, appel nouvelle fenetre de jeu
-    #if player.rect.colliderect(porte2):
-        #print("sortie porte 2")
-        #raise SystemExit # à modif, appel nouvelle fenetre de jeu
+    if player.rect.colliderect(porteE):
+        print("sortie porte E")
+        raise SystemExit # à modif, appel nouvelle fenetre de jeu
+    if player.rect.colliderect(porteS):
+        print("sortie porte S")
+        raise SystemExit # à modif, appel nouvelle fenetre de jeu
+    if player.rect.colliderect(porteN):
+        print("sortie porte N")
+        raise SystemExit # à modif, appel nouvelle fenetre de jeu
+    if player.rect.colliderect(porteW):
+        print("sortie porte W")
+        raise SystemExit # à modif, appel nouvelle fenetre de jeu
 
     # Draw
     screen.fill((0, 0, 0))
@@ -524,7 +459,7 @@ while running:
             image = wall_image
         if get_type(obj.grid[0], obj.grid[1]) == "wind_jet":
             image = wind_image
-        if get_type(obj.grid[0], obj.grid[1]) is None or get_type(obj.grid[0], obj.grid[1]) == "coin" or get_type(obj.grid[0], obj.grid[1]) == "box" or get_type(obj.grid[0], obj.grid[1]) == "oxygen" or get_type(obj.grid[0], obj.grid[1]) == "button" or get_type(obj.grid[0], obj.grid[1]) == "button_pressed":
+        if get_type(obj.grid[0], obj.grid[1]) is None or get_type(obj.grid[0], obj.grid[1]) == "coin" or get_type(obj.grid[0], obj.grid[1]) == "box" or get_type(obj.grid[0], obj.grid[1]) == "oxygen":
             image = floor_image
         screen.blit(image, (obj.rect.x, obj.rect.y))
         if get_type(obj.grid[0], obj.grid[1]) == "coin":
@@ -535,17 +470,6 @@ while running:
         screen.blit(image, (obj.rect.x, obj.rect.y))
         if get_type(obj.grid[0], obj.grid[1]) == "oxygen":
             image = oxygen_image
-        screen.blit(image, (obj.rect.x, obj.rect.y))
-        if get_type(obj.grid[0], obj.grid[1]) == "button":
-            image = button_image
-        if get_type(obj.grid[0], obj.grid[1]) == "button_pressed":
-            image = button_pressed_image
-        screen.blit(image, (obj.rect.x, obj.rect.y))
-        if get_type(obj.grid[0], obj.grid[1]) == "porte_lock":
-            image = porte_lock_image
-        screen.blit(image, (obj.rect.x, obj.rect.y))
-        if get_type(obj.grid[0], obj.grid[1]) == "porte_unlock":
-            image = porte_unlock_image
         screen.blit(image, (obj.rect.x, obj.rect.y))
 
     #for wall in walls:
@@ -561,8 +485,10 @@ while running:
     score.__init__()
     score.update()
 
-    #pygame.draw.rect(screen, (255, 0, 0), porte1)
-    #pygame.draw.rect(screen, (255, 0, 0), porte2)
+    pygame.draw.rect(screen, (255, 0, 0), porteE)
+    pygame.draw.rect(screen, (255, 0, 0), porteS)
+    pygame.draw.rect(screen, (255, 0, 0), porteN)
+    pygame.draw.rect(screen, (255, 0, 0), porteW)
     pygame.draw.rect(screen, (255, 255, 0), player.rect)
     score.draw()
     pygame.display.flip()
