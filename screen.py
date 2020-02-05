@@ -9,10 +9,10 @@ font = pygame.font.SysFont('comicsans', 40, True)
 
 TEXT = 'Rien..'
 
-###################### Ecran Menu  ########################
-
 GREY = (220, 220, 220)
 size = (512, 80)
+
+###################### Ecran Menu  ########################
 
 bouton_play = pygame.Surface(size)
 rect_play = bouton_play.get_rect()
@@ -51,11 +51,16 @@ rect_return = bouton_return.get_rect()
 rect_return.x = 256
 rect_return.y = 550
 
-##################### Game Over  ########################
+##################### Game Over ########################
 
 
 
-################## Winner Ending  ########################
+################## Winner Ending ########################
+
+
+
+################### Score screen ########################
+
 
 
 def draw_menu():
@@ -110,8 +115,15 @@ def gerer_event_menu():
 
         ## Détecte les clique de souris.
         pressed = pygame.mouse.get_pressed()
-        if pressed[0]:  # 0=gauche, 1=milieu, 2=droite
-            print('Click gauche')
+        if pressed[0] and over_play:  # 0=gauche, 1=milieu, 2=droite
+            draw_pause()
+            pygame.display.update()
+        if pressed[0] and over_cred:
+            TEXT = 'Voir les crédits'
+        if pressed[0] and over_help:
+            TEXT = 'Voir l\'aide'
+        if pressed[0] and over_quit:
+            TEXT = 'Quitter le jeu'
 
 def draw_pause():
     # Dessins
@@ -144,30 +156,33 @@ def gerer_event_pause():
     if pygame.mouse.get_focused():
         # Trouve position de la souris
         x, y = pygame.mouse.get_pos()
-        over_play = rect_resume.collidepoint(x, y)
-        over_cred = rect_save.collidepoint(x, y)
-        over_quit = rect_return.collidepoint(x, y)
-        if over_play:
+        over_resume = rect_resume.collidepoint(x, y)
+        over_save = rect_save.collidepoint(x, y)
+        over_return = rect_return.collidepoint(x, y)
+        if over_resume:
             TEXT = 'Reprendre la partie'
-        elif over_cred:
+        elif over_save:
             TEXT = 'Sauvegarder la partie'
-        elif over_quit:
+        elif over_return:
             TEXT = 'Sauvegarder et retourner a l\'acceuil'
         else:
             TEXT = 'Rien..'
 
         ## Détecte les clique de souris.
         pressed = pygame.mouse.get_pressed()
-        if pressed[0]:  # 0=gauche, 1=milieu, 2=droite
-            print('Click gauche')
-
+        if pressed[0] and over_resume:  # 0=gauche, 1=milieu, 2=droite
+            TEXT = 'Reprendre la partie'
+        if pressed[0] and over_save:  # 0=gauche, 1=milieu, 2=droite
+            TEXT = 'Sauvegarder la partie'
+        if pressed[0] and over_return:  # 0=gauche, 1=milieu, 2=droite
+            draw_menu()
+            pygame.display.update()
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             quit()
 
     draw_menu()
-    #draw_pause()
     pygame.display.update()
 
 pygame.quit()
