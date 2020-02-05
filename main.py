@@ -3,14 +3,11 @@ from pygame.locals import *
 from game import Game
 pygame.init()
 
-
 pygame.display.set_caption("ToutSaufLaSalle21")
 win = pygame.display.set_mode((1024, 768))
 font = pygame.font.SysFont('comicsans', 30, True)
 
-
 game = Game(win, 120)
-
 
 while game.screens.get("run"):
 

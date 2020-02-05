@@ -123,7 +123,6 @@ class Player:
                 get_obj(oxygen_bottle.grid[0], oxygen_bottle.grid[1]).type = None
                 pygame.mixer.stop()
                 audio_coins.set_volume(3)
-                audio_coins.set_volume(3)
                 audio_coins.play()
 
     def way_right(self, list_of_items):
