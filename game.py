@@ -53,6 +53,9 @@ class Game:
         "run": 1,
         "menu": 1,
         "game": 0,
+        "pause": 0,
+        "cred": 0,
+        "help": 0,
         "gameover": 0
     }
     keyPressed = {}
@@ -109,8 +112,7 @@ class Game:
             if event.type == KEYDOWN:
                 self.keyPressed[event.key] = True
                 if event.key == K_ESCAPE:
-                    self.save_game()
-                    self.goto("menu")
+                    self.goto("pause")
             elif event.type == KEYUP:
                 self.keyPressed[event.key] = False
 
