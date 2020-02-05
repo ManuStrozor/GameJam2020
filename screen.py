@@ -34,7 +34,7 @@ rect_quit = bouton_quit.get_rect()
 rect_quit.x = 256
 rect_quit.y = 550
 
-###################### Ecran Pause  ########################
+#################### Ecran Pause  ########################
 
 bouton_resume = pygame.Surface(size)
 rect_resume = bouton_resume.get_rect()
@@ -50,6 +50,13 @@ bouton_return = pygame.Surface(size)
 rect_return = bouton_return.get_rect()
 rect_return.x = 256
 rect_return.y = 550
+
+##################### Game Over  ########################
+
+
+
+################## Winner Ending  ########################
+
 
 def draw_menu():
     # Dessins

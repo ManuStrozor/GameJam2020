@@ -14,7 +14,7 @@ class Player:
         self.rect = pygame.Rect(pos[0], pos[1], SIZE_X, SIZE_Y)
 
     def move(self, dx, dy):
-        audio_walk.set_volume(0.1)
+        audio_walk.set_volume(0.05)
         audio_walk.play()
         self.rect.x += dx
         self.rect.y += dy
@@ -108,10 +108,11 @@ class Player:
         for piece in pieces:
             if self.rect.colliderect(piece.rect):
                 self.coins += 1
-                pygame.mixer.stop()
-                audio_coins.play()
                 pieces.remove(piece)
                 get_obj(piece.grid[0], piece.grid[1]).type = None
+                pygame.mixer.stop()
+                audio_coins.set_volume(3)
+                audio_coins.play()
 
     def way_right(self, list_of_items):
         for item in list_of_items:
