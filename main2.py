@@ -1,16 +1,29 @@
 import pygame
-pygame.font.init()
+import os
+from game import Game
 
+from tkinter import *
+
+root = Tk()
+width = root.winfo_screenwidth()
+height = root.winfo_screenheight()
+
+x = width / 2 - 1024 / 2
+y = height / 2 - 768 / 2
+os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (x, y)
 pygame.init()
+pygame.display.set_caption("Lonely Space v1.0")
 win = pygame.display.set_mode((1024, 768))
 
 font_titre = pygame.font.SysFont('comicsans', 85, True)
 font = pygame.font.SysFont('comicsans', 40, True)
 
-TEXT = 'Rien..'
+game = Game(win, 120)
 
+TEXT = None
 GREY = (220, 220, 220)
 size = (512, 80)
+
 
 ###################### Ecran Menu  ########################
 
@@ -34,7 +47,9 @@ rect_quit = bouton_quit.get_rect()
 rect_quit.x = 256
 rect_quit.y = 550
 
+
 #################### Ecran Pause  ########################
+
 
 bouton_resume = pygame.Surface(size)
 rect_resume = bouton_resume.get_rect()
@@ -51,16 +66,14 @@ rect_return = bouton_return.get_rect()
 rect_return.x = 256
 rect_return.y = 550
 
-##################### Game Over ########################
 
+##################### Game Over ########################
 
 
 ################## Winner Ending ########################
 
 
-
 ################### Score screen ########################
-
 
 
 def draw_menu():
@@ -69,6 +82,7 @@ def draw_menu():
     pygame.draw.rect(win, GREY, rect_cred)
     pygame.draw.rect(win, GREY, rect_help)
     pygame.draw.rect(win, GREY, rect_quit)
+
     # Textes
     win.blit(pygame.image.load('assets/background.png'), (0, 0))
     text_menu = font_titre.render('Menu', 1, (255, 0, 255))
@@ -90,10 +104,17 @@ def draw_menu():
     win.blit(text_quit, (512-text_quit.get_rect().centerx, 550+bouton_quit.get_rect().centery-15))
     win.blit(text_survol, (512-text_survol.get_rect().centerx, 650))
 
-    gerer_event_menu()
+    pygame.display.flip()
 
-def gerer_event_menu():
+
+def update_menu():
     global TEXT
+
+    over_play = None
+    over_cred = None
+    over_help = None
+    over_quit = None
+
     # Si le focus est sur la fenêtre.
     if pygame.mouse.get_focused():
         # Trouve position de la souris
@@ -102,6 +123,7 @@ def gerer_event_menu():
         over_cred = rect_cred.collidepoint(x, y)
         over_help = rect_help.collidepoint(x, y)
         over_quit = rect_quit.collidepoint(x, y)
+
         if over_play:
             TEXT = 'Commencer a jouer'
         elif over_cred:
@@ -111,19 +133,22 @@ def gerer_event_menu():
         elif over_quit:
             TEXT = 'Quitter le jeu'
         else:
-            TEXT = 'Rien..'
+            TEXT = None
 
-        ## Détecte les clique de souris.
-        pressed = pygame.mouse.get_pressed()
-        if pressed[0] and over_play:  # 0=gauche, 1=milieu, 2=droite
-            draw_pause()
-            pygame.display.update()
-        if pressed[0] and over_cred:
-            TEXT = 'Voir les crédits'
-        if pressed[0] and over_help:
-            TEXT = 'Voir l\'aide'
-        if pressed[0] and over_quit:
-            TEXT = 'Quitter le jeu'
+    for e in pygame.event.get():
+        if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
+            if over_play:  # 0=gauche, 1=milieu, 2=droite
+                game.goto("game")
+            elif over_cred:
+                #game.goto("cred")
+                pass
+            elif over_help:
+                #game.goto("help")
+                pass
+            elif over_quit:
+                game.views.clear()
+        if e.type == pygame.QUIT:
+            game.views.clear()
 
 
 def draw_pause():
@@ -149,10 +174,16 @@ def draw_pause():
     win.blit(text_return, (512-text_return.get_rect().centerx, 550+bouton_return.get_rect().centery-15))
     win.blit(text_survol, (512-text_survol.get_rect().centerx, 650))
 
-    gerer_event_pause()
+    pygame.display.flip()
 
-def gerer_event_pause():
+
+def update_pause():
     global TEXT
+
+    over_resume = None
+    over_save = None
+    over_return = None
+
     # Si le focus est sur la fenêtre.
     if pygame.mouse.get_focused():
         # Trouve position de la souris
@@ -165,25 +196,76 @@ def gerer_event_pause():
         elif over_save:
             TEXT = 'Sauvegarder la partie'
         elif over_return:
-            TEXT = 'Sauvegarder et retourner a l\'acceuil'
+            TEXT = 'Retourner a l\'acceuil'
         else:
-            TEXT = 'Rien..'
+            TEXT = None
 
-        ## Détecte les clique de souris.
-        pressed = pygame.mouse.get_pressed()
-        if pressed[0] and over_resume:  # 0=gauche, 1=milieu, 2=droite
-            TEXT = 'Reprendre la partie'
-        if pressed[0] and over_save:  # 0=gauche, 1=milieu, 2=droite
-            TEXT = 'Sauvegarder la partie'
-        if pressed[0] and over_return:  # 0=gauche, 1=milieu, 2=droite
-            draw_menu()
-            pygame.display.update()
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            quit()
+    for e in pygame.event.get():
+        if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
+            if over_resume:  # 0=gauche, 1=milieu, 2=droite
+                game.goto("game")
+            elif over_save:  # 0=gauche, 1=milieu, 2=droite
+                game.save_game()
+            elif over_return:  # 0=gauche, 1=milieu, 2=droite
+                game.goto("menu")
+        if e.type == pygame.QUIT:
+            game.views.clear()
 
-    draw_menu()
-    pygame.display.update()
+
+def update_gameover():
+    print("update gameover")
+    pass
+
+
+def draw_gameover():
+    print("draw gameover")
+    pass
+
+
+def update_cred():
+    print("update cred")
+    pass
+
+
+def draw_cred():
+    print("draw cred")
+    pass
+
+
+def update_help():
+    print("update help")
+    pass
+
+
+def draw_help():
+    print("draw help")
+    pass
+
+
+while game.views.get("run"):
+
+    while game.views.get("menu"):
+        update_menu()
+        draw_menu()
+
+    while game.views.get("game"):
+        game.update()
+        game.draw()
+
+    while game.views.get("pause"):
+        update_pause()
+        draw_pause()
+
+    while game.views.get("cred"):
+        update_cred()
+        draw_cred()
+
+    while game.views.get("help"):
+        update_help()
+        draw_help()
+
+    while game.views.get("gameover"):
+        update_gameover()
+        draw_gameover()
 
 pygame.quit()
