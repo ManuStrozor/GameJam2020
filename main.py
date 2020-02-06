@@ -11,6 +11,7 @@ height = root.winfo_screenheight()
 x = width / 2 - 1024 / 2
 y = height / 2 - 768 / 2
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (x, y)
+
 pygame.init()
 pygame.display.set_caption("Lonely Space v1.0")
 win = pygame.display.set_mode((1024, 768))

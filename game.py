@@ -1,54 +1,18 @@
 import pygame
 from pygame.locals import *
 import pickle
-from entities.player import Player
-from map import Map
 
-screen = pygame.display.set_mode((1024, 768))
-class Wall:
-
-    def __init__(self, pos):
-        walls.append(self)
-        self.rect = pygame.Rect(pos[0], pos[1], 50, 50)
-
-walls = []  # Liste des murs
-# Contenu de la map dans un string
-level = [
-    "WWWWWWWWWWWWWWWWWWWW",
-    "W                  B",
-    "W         WWWWWW   W",
-    "W   WWWW       W   W",
-    "W   W        WWWW  W",
-    "W WWW  WWWW        W",
-    "W   W     W W      W",
-    "W   W     W   WWW WW",
-    "W   WWW WWW   W W  W",
-    "W     W   W   W W  W",
-    "WWW   W   WWWWW W  W",
-    "W W      WW        W",
-    "W W   WWWW   WWW   W",
-    "W     W       W    E",
-    "WWWWWWWW   WWWWWWWWW",
-]
-
-# pour chaque caracteres du string : W = mur, E = porte du bas, B = porte du haut
-x = y = 0
-for row in level:
-    for col in row:
-        if col == "W":
-            Wall((x, y))
-        if col == "E":
-            porte1 = pygame.Rect(x, y, 1024/len(row), 768/len(level))
-        if col == "B":
-            porte2 = pygame.Rect(x, y, 1024/len(row), 768/len(level))
-        x += 1024/len(row)
-    y += 768/len(level)
-    x = 0
+from niveau import Niveau
+from score import Score
 
 
 class Game:
 
+    WIDTH = 1020
+    HEIGHT = 760
+
     clock = pygame.time.Clock()
+
     views = {
         "run": 1,
         "menu": 1,
@@ -58,18 +22,25 @@ class Game:
         "help": 0,
         "gameover": 0
     }
-    keyPressed = {}
 
-    background = pygame.image.load("assets/room.png")
-    bgRect = background.get_rect()
+    all_saas = []  # liste des saas
+    objs = []  # Liste de tous les blocs
+    walls = []  # Liste des murs
+    caisses = []  # Liste des caisses
+    souffleurs = []  # Liste des souffleurs
+    pieces = []  # Liste des pieces (coins)
+    oxygen_bottles = []  # Liste des bouteilles d'oxygene
+    buttons = []  # Liste des boutons
+    buttons_pressed = []  # Liste des boutons activés
+    portes_unlock = []  # Liste des portes deverouilles
+    portes_lock = []  # Liste des portes verouilles
+    dalles_electriques = []  # Liste des dalles electriques
+    chaussures = []  # Liste des chaussures à propulsion
+    dalles_innondes = []  # Liste des dalles innondes
 
     game_lost = False
     max_score = 0
     score = 0
-
-    all_aliens = pygame.sprite.Group()
-    max_spw_delay = 120
-    spw_delay = 0
 
     def __del__(self):
         pass
@@ -78,10 +49,44 @@ class Game:
         self.window = window
         self.framerate = framerate
 
-        self.font = pygame.font.SysFont('comicsans', 30, True)
+        self.MARGIN_X = (window.get_width() - self.WIDTH) / 2
+        self.MARGIN_Y = (window.get_height() - self.HEIGHT) / 2
 
-        self.map = Map(self)
-        self.player = Player(self)
+        self.niveau = Niveau(self)
+        self.niveau.generer("rooms/room1.txt")
+        self.player = self.niveau.afficher()
+        self.score = Score(self)
+
+        self.audio_coins = pygame.mixer.Sound('assets/audio/coins.wav')  # Son de pieces
+        self.audio_walk = pygame.mixer.Sound('assets/audio/walk.wav')  # son de pas (clap, clap)
+        self.audio_oxygen_bottle = pygame.mixer.Sound('assets/audio/air_fill.wav')  # Son de bouteille oxygene
+        self.audio_door = pygame.mixer.Sound('assets/audio/close_door_1.wav')  # son de porte
+        self.audio_button = pygame.mixer.Sound('assets/audio/button_press.wav')  # son de boutton
+        self.audio_chaussure_propulsion = pygame.mixer.Sound('assets/audio/chaussure_propulsion.wav')  # son de propulsion air
+        self.audio_chaussure_recup = pygame.mixer.Sound('assets/audio/chaussure_lacet.wav')  # son d'enfilage de chaussure
+        self.audio_electric = pygame.mixer.Sound('assets/audio/electric.wav')  # son d'electricité
+        self.audio_moving_box = pygame.mixer.Sound('assets/audio/moving_box_s.wav')  # son d'electricité
+
+        self.wall_image = pygame.transform.scale(pygame.image.load('assets/wall.png'), (self.niveau.size_x, self.niveau.size_y))
+        self.wind_image = pygame.transform.scale(pygame.image.load('assets/wind_jet.png'), (self.niveau.size_x, self.niveau.size_y))
+        self.box_image = pygame.transform.scale(pygame.image.load('assets/caisse.png'), (self.niveau.size_x, self.niveau.size_y))
+        self.coin_image = pygame.transform.scale(pygame.image.load('assets/coin.png'), (self.niveau.size_x, self.niveau.size_y))
+        self.floor_image = pygame.transform.scale(pygame.image.load('assets/floor.png'), (self.niveau.size_x, self.niveau.size_y))
+        self.room_image = pygame.transform.scale(pygame.image.load('assets/room.png'), (self.niveau.size_x, self.niveau.size_y))
+        self.oxygen_image = pygame.transform.scale(pygame.image.load('assets/oxygen_bottle.png'), (self.niveau.size_x, self.niveau.size_y))
+        self.button_image = pygame.transform.scale(pygame.image.load('assets/red_button.png'), (self.niveau.size_x, self.niveau.size_y))
+        self.button_pressed_image = pygame.transform.scale(pygame.image.load('assets/grey_button.png'), (self.niveau.size_x, self.niveau.size_y))
+        self.porte_unlock_image = pygame.transform.scale(pygame.image.load('assets/porte_unlock.png'), (self.niveau.size_x, self.niveau.size_y))
+        self.porte_lock_image = pygame.transform.scale(pygame.image.load('assets/porte_lock.png'), (self.niveau.size_x, self.niveau.size_y))
+        self.dalle_electrique_image = pygame.transform.scale(pygame.image.load('assets/electric.png'), (self.niveau.size_x, self.niveau.size_y))
+        self.chaussure_image = pygame.transform.scale(pygame.image.load('assets/flashy_boots.png'), (self.niveau.size_x, self.niveau.size_y))
+        self.dalle_innonde_image = pygame.transform.scale(pygame.image.load('assets/floor_water.png'), (self.niveau.size_x, self.niveau.size_y))
+        self.decor_etagere_image = pygame.transform.scale(pygame.image.load('assets/decor_etagere.png'), (self.niveau.size_x, self.niveau.size_y))
+        self.decor_pillier_electrique_image = pygame.transform.scale(pygame.image.load('assets/decor_electric_pillar.png'), (self.niveau.size_x, self.niveau.size_y))
+        self.decor_poubelle_image = pygame.transform.scale(pygame.image.load('assets/decor_poubelle.png'), (self.niveau.size_x, self.niveau.size_y))
+        self.decor_boite_image = pygame.transform.scale(pygame.image.load('assets/decor_boite.png'), (self.niveau.size_x, self.niveau.size_y))
+        self.decor_four_image = pygame.transform.scale(pygame.image.load('assets/decor_four.png'), (self.niveau.size_x, self.niveau.size_y))
+        self.saas_image = pygame.transform.scale(pygame.image.load('assets/room.png'), (self.niveau.size_x, self.niveau.size_y))
 
         try:
             with open("save.data", "rb") as f:
@@ -90,57 +95,101 @@ class Game:
             pass
 
     def update(self):
+
+        self.clock.tick(self.framerate)
+
         if self.game_lost:
             self.save_game()
             self.goto("gameover")
 
-        self.max_score = max(self.score, self.max_score)
-
-        if self.spw_delay < self.max_spw_delay:
-            self.spw_delay += 1
-        else:
-            self.spw_delay = 0
-            # self.all_aliens.add(Alien(self))
-
-        for alien in self.all_aliens:
-            alien.update()
         self.player.update()
-        self.map.update()
+        self.score.update()
 
-        for event in pygame.event.get():
-
-            if event.type == KEYDOWN:
-                self.keyPressed[event.key] = True
-                if event.key == K_ESCAPE:
-                    self.goto("pause")
-            elif event.type == KEYUP:
-                self.keyPressed[event.key] = False
-
-            if event.type == QUIT:
+        for e in pygame.event.get():
+            if e.type == KEYDOWN and e.key == K_ESCAPE:
+                self.goto("pause")
+            if e.type == QUIT:
                 self.save_game()
                 self.views.clear()
 
     def draw(self):
-        self.window.blit(self.background, self.bgRect)
-        self.draw_text('Max score: ' + str(self.max_score), (10, 10), (0, 0, 0))
-        self.draw_text('Score: ' + str(self.score), (10, 30), (0, 0, 0))
+        # Affichage du sol
+        self.window.fill((0, 0, 0))
+        y = 0
+        while y < self.niveau.height:
+            x = 0
+            while x < self.niveau.width:
+                self.window.blit(self.floor_image, (x * self.niveau.size_x + self.MARGIN_X, y * self.niveau.size_y + self.MARGIN_Y))
+                x += 1
+            y += 1
 
-        for alien in self.all_aliens:
-            alien.draw()
-        self.player.draw()
-        self.map.draw()
-        # Murs
-        for wall in walls:
-            pygame.draw.rect(screen, (255, 255, 255), wall.rect)
+        # Affichage des blocs
+        for obj in self.objs:
+            image = None
+            if obj.type == "wall":
+                image = self.wall_image
+            elif obj.type == "box":
+                image = self.box_image
+            elif obj.type == "wind_jet":
+                image = self.wind_image
+            elif obj.type == "coin":
+                image = self.coin_image
+            elif obj.type == "oxygen":
+                image = self.oxygen_image
+            elif obj.type == "button":
+                image = self.button_image
+            elif obj.type == "button_pressed":
+                image = self.button_pressed_image
+            elif obj.type == "porte_lock":
+                image = self.porte_lock_image
+            elif obj.type == "porte_unlock":
+                image = self.porte_unlock_image
+            elif obj.type == "dalle_electrique":
+                image = self.dalle_electrique_image
+            elif obj.type == "chaussure":
+                image = self.chaussure_image
+            elif obj.type == "saas":
+                image = self.saas_image
+            elif obj.type == "dalle_innonde":
+                image = self.dalle_innonde_image
 
-        pygame.draw.rect(screen, (0, 255, 0), porte1)
-        pygame.draw.rect(screen, (255, 0, 0), porte2)
+            if image is not None:
+                self.window.blit(image, (obj.rect.x, obj.rect.y))
+
+        # Affichage des saas
+        for saas in self.all_saas:
+            pygame.draw.rect(self.window, (255, 0, 0), saas.rect)
+
+        pygame.draw.rect(self.window, (255, 255, 0), self.player.rect)
+
+        self.score.draw()
 
         pygame.display.flip()
-        self.clock.tick(self.framerate)
 
-    def draw_text(self, txt, position, col):
-        self.window.blit(self.font.render(txt, 1, col), position)
+    def clear_bloks(self):
+        self.walls.clear()
+        self.caisses.clear()
+        self.souffleurs.clear()
+        self.pieces.clear()
+        self.oxygen_bottles.clear()
+        self.chaussures.clear()
+        self.dalles_electriques.clear()
+        self.dalles_innondes.clear()
+        self.portes_lock.clear()
+        self.portes_unlock.clear()
+        self.all_saas.clear()
+        self.objs.clear()
+
+    def get_saas(self, card):
+        for saas in self.all_saas:
+            if saas.cardinal == card:
+                return saas
+
+    def get_obj(self, x, y):
+        return self.objs.__getitem__(y * 20 + x)
+
+    #def draw_text(self, txt, position, col):
+        #self.window.blit(self.font.render(txt, 1, col), position)
 
     def goto(self, screen):
         self.views.clear()
