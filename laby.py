@@ -8,12 +8,11 @@ class Player:
     speed = 2
     coins = 0
     oxygen_bottle = 0
-    room = 0
 
     def __init__(self, pos):
-        self.grid_x = int(pos[0]/SIZE_X)
-        self.grid_y = int(pos[1]/SIZE_Y)
-        self.rect = pygame.Rect(pos[0], pos[1], SIZE_X, SIZE_Y)
+        self.grid_x = int(pos[0]/niveau.size_x)
+        self.grid_y = int(pos[1]/niveau.size_y)
+        self.rect = pygame.Rect(pos[0], pos[1], niveau.size_x, niveau.size_y)
 
     def move(self, dx, dy):
         audio_walk.set_volume(0.05)
@@ -211,8 +210,8 @@ class Obj:
     type = None
 
     def __init__(self, pos):
-        self.grid = [int(pos[0] / SIZE_X) - int(MARGIN_X / SIZE_X), int(pos[1] / SIZE_Y) - int(MARGIN_Y / SIZE_Y)]
-        self.rect = pygame.Rect(pos[0], pos[1], SIZE_X, SIZE_Y)
+        self.grid = [int(pos[0] / niveau.size_x) - int(MARGIN_X / niveau.size_x), int(pos[1] / niveau.size_y) - int(MARGIN_Y / niveau.size_y)]
+        self.rect = pygame.Rect(pos[0], pos[1], niveau.size_x, niveau.size_y)
 
 
 class Wall(Obj):
@@ -368,17 +367,22 @@ class PorteLock(Obj):
         portes_lock.append(self)
 
 
-class Score():
+class Score:
+
+    player_coins = None
+    player_oxygen_bottle = None
+    player_room = None
+
     def __init__(self):
         self.coins = player.coins
         self.oxygen_bottle = player.oxygen_bottle
-        self.room = player.room
+        self.room = niveau
         self.score_font = pygame.font.SysFont('Consolas', 50)
 
     def update(self):
         self.player_coins = self.score_font.render("Coins : "+str(self.coins), True, pygame.Color("yellow"), pygame.Color("black"))
         self.player_oxygen_bottle = self.score_font.render("Bouteille d'Oxygène : "+str(self.oxygen_bottle), True, pygame.Color("lightblue"), pygame.Color("black"))
-        self.player_room = self.score_font.render("Salle : "+str(self.room), True, pygame.Color("green"), pygame.Color("black"))
+        self.player_room = self.score_font.render("Salle : "+niveau.num_level, True, pygame.Color("green"), pygame.Color("black"))
 
     def draw(self):
         screen.blit(self.player_coins, (5, 2))
@@ -386,70 +390,94 @@ class Score():
         screen.blit(self.player_room, (880, 2))
 
 
-
-def get_type(x, y):
-    index = (y * 20) + x
-    if index < 0 or index >= 20*15:
-        return None
-    return objs.__getitem__(index).type
-
-
-def get_obj(x, y):
-    return objs.__getitem__(y * 20 + x)
-
-SIZE_X = int(640 / 20)
-SIZE_Y = int(480 / 15)
-
 class Niveau:
 
+    num_level = None
+
+    width = None
+    height = None
+    size_x = None
+    size_y = None
 
     porteE = None
     porteS = None
     porteW = None
     porteN = None
-    sortie = None
-    roomsuivante = None
+
+    sortieN = None
+    sortieW = None
+    sortieE = None
+    sortieS = None
+
+    def __del__(self):
+        pass
+
     def __init__(self, fichier):
         self.fichier = fichier
-        self.structure = 0
+        self.num_level = fichier[10:-4]
+        self.structure = None
+
     def generer(self):
-        #Méthode permettant de générer le niveau en fonction du fichier
-        with open(self.fichier, "r") as fichier:
-            structure_niveau = []
-            for ligne in fichier:
+        # Méthode permettant de générer le niveau en fonction du fichier
+
+        f = open(self.fichier, "r")
+
+        first_line = f.readline()
+
+        self.width = int(first_line[:2])
+        self.height = int(first_line[3:])
+
+        self.size_x = int(640 / self.width)
+        self.size_y = int(480 / self.height)
+
+        structure_niveau = []
+        for line in f:
+            if line != "\n":
                 ligne_niveau = []
-                for sprite in ligne:
-                    if sprite == '@':
-                        self.sortie = ligne[1:2]
-                        self.roomsuivante = ligne[2:17]
-                        break
-                    elif sprite != '\n':
-                        ligne_niveau.append(sprite)
+                for car in line:
+                    if car != '\n':
+                        ligne_niveau.append(car)
                 structure_niveau.append(ligne_niveau)
-            self.structure = structure_niveau
-    def afficher(self, fenetre):
-        #Méthode permettant d'afficher le niveau en fonction de la liste de structure renvoyé par la fonction generer
+            else:
+                break
+        self.structure = structure_niveau
+
+        for line in f:
+            if line[0] == 'N':
+                self.sortieN = 'rooms/' + line[2:-1] + '.txt'
+            elif line[0] == 'W':
+                self.sortieW = 'rooms/' + line[2:-1] + '.txt'
+            elif line[0] == 'E':
+                self.sortieE = 'rooms/' + line[2:-1] + '.txt'
+            elif line[0] == 'S':
+                self.sortieS = 'rooms/' + line[2:-1] + '.txt'
+        
+        f.close()
+
+    def afficher(self):
+        # Méthode permettant d'afficher le niveau en fonction de la liste de structure renvoyé par la fonction generer
+        playerlol = None
         num_ligne = 0
         for ligne in self.structure:
             num_case = 0
             for sprite in ligne:
-                x = num_case * SIZE_X + MARGIN_X
-                y = num_ligne * SIZE_Y + MARGIN_Y
+                x = num_case * self.size_x + MARGIN_X
+                y = num_ligne * self.size_y + MARGIN_Y
                 if sprite == '.':
                     Wall((x, y))
                 elif sprite == 'C':
                     Caisse((x, y))
                 elif sprite == "N":
-                    self.porteN = pygame.Rect(x, y, SIZE_X, SIZE_Y)
+                    self.porteN = pygame.Rect(x, y, self.size_x, self.size_y)
                     objs.append(Obj((x, y)))
                 elif sprite == "S":
-                    self.porteS = pygame.Rect(x, y, SIZE_X, SIZE_Y)
+                    self.porteS = pygame.Rect(x, y, self.size_x, self.size_y)
                     objs.append(Obj((x, y)))
                 elif sprite == "E":
-                    self.porteE = pygame.Rect(x, y, SIZE_X, SIZE_Y)
+                    self.porteE = pygame.Rect(x, y, self.size_x, self.size_y)
                     objs.append(Obj((x, y)))
                 elif sprite == "W":
-                    self.porteW = pygame.Rect(x, y, SIZE_X, SIZE_Y)
+                    self.porteW = pygame.Rect(x, y, self.size_x, self.size_y)
                     objs.append(Obj((x, y)))
                 elif sprite == 'Z':
                     Souffleur((x, y))
@@ -457,9 +485,8 @@ class Niveau:
                     Piece((x, y))
                 elif sprite == "O":
                     Oxygen_bottle((x, y))
-                elif sprite== "X":
-                    Player.player = Player((x, y))  # Creation joueur ('X' sur la grille)
-                    print(x)
+                elif sprite == "X":
+                    playerlol = Player((x, y))  # Creation joueur ('X' sur la grille)
                     objs.append(Obj((x, y)))
                 elif sprite == "Y":
                     PorteLock((x, y))
@@ -474,6 +501,32 @@ class Niveau:
                 num_case += 1
             num_ligne += 1
 
+        return playerlol
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+def clear_all():
+    walls.clear()
+    caisses.clear()
+    souffleurs.clear()
+    pieces.clear()
+    oxygen_bottles.clear()
+    objs.clear()
+
+
+def get_type(x, y):
+    index = (y * 20) + x
+    if index < 0 or index >= 20*15:
+        return None
+    return objs.__getitem__(index).type
+
+
+def get_obj(x, y):
+    return objs.__getitem__(y * 20 + x)
+
+
 pygame.init()
 
 pygame.display.set_caption("Sortez par une porte rouge!")
@@ -486,7 +539,6 @@ audio_walk = pygame.mixer.Sound('assets/audio/walk.wav')  # son de pas (clap, cl
 audio_oxygen_bottle = pygame.mixer.Sound('assets/audio/air_fill.wav')  # Son de bouteille oxygene
 audio_door = pygame.mixer.Sound('assets/audio/close_door_1.wav')  # son de porte
 audio_button = pygame.mixer.Sound('assets/audio/button_press.wav')  # son de boutton
-
 
 MARGIN_X = (screen.get_width() - 640) / 2
 MARGIN_Y = (screen.get_height() - 480) / 2
@@ -501,29 +553,23 @@ buttons = []  # Liste des boutons
 buttons_pressed = []  # Liste des boutons activés
 portes_unlock = []  # Liste des portes deverouilles
 portes_lock = []  # Liste des portes verouilles
-player = None
 
-choix="rooms/room1.txt"
-niveau=Niveau(choix)
+
+niveau = Niveau("rooms/room1.txt")
 niveau.generer()
-niveau.afficher(screen)
+player = niveau.afficher()
 
-
-
-if player is None:
-    player = Player((64 + MARGIN_X, 96 + MARGIN_Y))  # Creation joueur si rien sur la grille
-
-wall_image = pygame.transform.scale(pygame.image.load('assets/wall.png'), (SIZE_X, SIZE_Y))
-wind_image = pygame.transform.scale(pygame.image.load('assets/wind_jet.png'), (SIZE_X, SIZE_Y))
-box_image = pygame.transform.scale(pygame.image.load('assets/Caisse1.png'), (SIZE_X, SIZE_Y))
-coin_image = pygame.transform.scale(pygame.image.load('assets/coin.png'), (SIZE_X, SIZE_Y))
-floor_image = pygame.transform.scale(pygame.image.load('assets/floor.png'), (SIZE_X, SIZE_Y))
-room_image = pygame.transform.scale(pygame.image.load('assets/room.png'), (SIZE_X, SIZE_Y))
-oxygen_image = pygame.transform.scale(pygame.image.load('assets/Oxygen_Bottle.png'), (SIZE_X, SIZE_Y))
-button_image = pygame.transform.scale(pygame.image.load('assets/Red_Button.png'), (SIZE_X, SIZE_Y))
-button_pressed_image = pygame.transform.scale(pygame.image.load('assets/Grey_Button_.png'), (SIZE_X, SIZE_Y))
-porte_unlock_image = pygame.transform.scale(pygame.image.load('assets/Porte_Unlock.png'), (SIZE_X, SIZE_Y))
-porte_lock_image = pygame.transform.scale(pygame.image.load('assets/Porte_Lock.png'), (SIZE_X, SIZE_Y))
+wall_image = pygame.transform.scale(pygame.image.load('assets/wall.png'), (niveau.size_x, niveau.size_y))
+wind_image = pygame.transform.scale(pygame.image.load('assets/wind_jet.png'), (niveau.size_x, niveau.size_y))
+box_image = pygame.transform.scale(pygame.image.load('assets/Caisse1.png'), (niveau.size_x, niveau.size_y))
+coin_image = pygame.transform.scale(pygame.image.load('assets/coin.png'), (niveau.size_x, niveau.size_y))
+floor_image = pygame.transform.scale(pygame.image.load('assets/floor.png'), (niveau.size_x, niveau.size_y))
+room_image = pygame.transform.scale(pygame.image.load('assets/room.png'), (niveau.size_x, niveau.size_y))
+oxygen_image = pygame.transform.scale(pygame.image.load('assets/Oxygen_Bottle.png'), (niveau.size_x, niveau.size_y))
+button_image = pygame.transform.scale(pygame.image.load('assets/Red_Button.png'), (niveau.size_x, niveau.size_y))
+button_pressed_image = pygame.transform.scale(pygame.image.load('assets/Grey_Button_.png'), (niveau.size_x, niveau.size_y))
+porte_unlock_image = pygame.transform.scale(pygame.image.load('assets/Porte_Unlock.png'), (niveau.size_x, niveau.size_y))
+porte_lock_image = pygame.transform.scale(pygame.image.load('assets/Porte_Lock.png'), (niveau.size_x, niveau.size_y))
 
 running = True
 while running:
@@ -549,106 +595,56 @@ while running:
 
     # conditions fin
     if niveau.porteE is not None and player.rect.colliderect(niveau.porteE):
-        if niveau.sortie == "E":
-            objs.clear()
-            walls.clear()
-            caisses.clear()
-            souffleurs.clear()
-            pieces.clear()
-            oxygen_bottles.clear()
-
-            choix = niveau.roomsuivante
-            niveau = Niveau(choix)
-            niveau.generer()
-            niveau.afficher(screen)
-
-            wall_image = pygame.transform.scale(pygame.image.load('assets/wall.png'), (SIZE_X, SIZE_Y))
-            wind_image = pygame.transform.scale(pygame.image.load('assets/wind_jet.png'), (SIZE_X, SIZE_Y))
-            box_image = pygame.transform.scale(pygame.image.load('assets/Caisse1.png'), (SIZE_X, SIZE_Y))
-            coin_image = pygame.transform.scale(pygame.image.load('assets/coin.png'), (SIZE_X, SIZE_Y))
-            floor_image = pygame.transform.scale(pygame.image.load('assets/floor.png'), (SIZE_X, SIZE_Y))
-            room_image = pygame.transform.scale(pygame.image.load('assets/room.png'), (SIZE_X, SIZE_Y))
-            oxygen_image = pygame.transform.scale(pygame.image.load('assets/Oxygen_Bottle.png'), (SIZE_X, SIZE_Y))
-            pygame.display.flip()
+        clear_all()
+        a = niveau.sortieE
+        niveau.__del__()
+        niveau = Niveau(a)
+        niveau.generer()
+        niveau.afficher()
+        player = Player((niveau.porteW.x + niveau.size_x, niveau.porteW.y))
 
     if niveau.porteS is not None and player.rect.colliderect(niveau.porteS):
-        if niveau.sortie == "S":
-            objs.clear()
-            walls.clear()
-            caisses.clear()
-            souffleurs.clear()
-            pieces.clear()
-            oxygen_bottles.clear()
+        clear_all()
+        a = niveau.sortieS
+        niveau.__del__()
+        niveau = Niveau(a)
+        niveau.generer()
+        niveau.afficher()
+        player = Player((niveau.porteN.x, niveau.porteN.y + niveau.size_y))
 
-            choix = niveau.roomsuivante
-            niveau = Niveau(choix)
-            niveau.generer()
-            niveau.afficher(screen)
+    if niveau.porteN is not None and player.rect.colliderect(niveau.porteN):
+        clear_all()
+        a = niveau.sortieN
+        niveau.__del__()
+        niveau = Niveau(a)
+        niveau.generer()
+        niveau.afficher()
+        player = Player((niveau.porteS.x, niveau.porteS.y - niveau.size_y))
 
-            wall_image = pygame.transform.scale(pygame.image.load('assets/wall.png'), (SIZE_X, SIZE_Y))
-            wind_image = pygame.transform.scale(pygame.image.load('assets/wind_jet.png'), (SIZE_X, SIZE_Y))
-            box_image = pygame.transform.scale(pygame.image.load('assets/Caisse1.png'), (SIZE_X, SIZE_Y))
-            coin_image = pygame.transform.scale(pygame.image.load('assets/coin.png'), (SIZE_X, SIZE_Y))
-            floor_image = pygame.transform.scale(pygame.image.load('assets/floor.png'), (SIZE_X, SIZE_Y))
-            room_image = pygame.transform.scale(pygame.image.load('assets/room.png'), (SIZE_X, SIZE_Y))
-            oxygen_image = pygame.transform.scale(pygame.image.load('assets/Oxygen_Bottle.png'), (SIZE_X, SIZE_Y))
-            pygame.display.flip()
-
-    if  niveau.porteN is not None and player.rect.colliderect(niveau.porteN):
-        if niveau.sortie == "N":
-            objs.clear()
-            walls.clear()
-            caisses.clear()
-            souffleurs.clear()
-            pieces.clear()
-            oxygen_bottles.clear()
-
-            choix = niveau.roomsuivante
-            niveau = Niveau(choix)
-            niveau.generer()
-            niveau.afficher(screen)
-
-            wall_image = pygame.transform.scale(pygame.image.load('assets/wall.png'), (SIZE_X, SIZE_Y))
-            wind_image = pygame.transform.scale(pygame.image.load('assets/wind_jet.png'), (SIZE_X, SIZE_Y))
-            box_image = pygame.transform.scale(pygame.image.load('assets/Caisse1.png'), (SIZE_X, SIZE_Y))
-            coin_image = pygame.transform.scale(pygame.image.load('assets/coin.png'), (SIZE_X, SIZE_Y))
-            floor_image = pygame.transform.scale(pygame.image.load('assets/floor.png'), (SIZE_X, SIZE_Y))
-            room_image = pygame.transform.scale(pygame.image.load('assets/room.png'), (SIZE_X, SIZE_Y))
-            oxygen_image = pygame.transform.scale(pygame.image.load('assets/Oxygen_Bottle.png'), (SIZE_X, SIZE_Y))
-            pygame.display.flip()
-
-    if  niveau.porteW is not None and player.rect.colliderect(niveau.porteW):
-        if niveau.sortie == "W":
-            objs.clear()
-            walls.clear()
-            caisses.clear()
-            souffleurs.clear()
-            pieces.clear()
-            oxygen_bottles.clear()
-
-            choix = niveau.roomsuivante
-            niveau = Niveau(choix)
-            niveau.generer()
-            niveau.afficher(screen)
-
-            wall_image = pygame.transform.scale(pygame.image.load('assets/wall.png'), (SIZE_X, SIZE_Y))
-            wind_image = pygame.transform.scale(pygame.image.load('assets/wind_jet.png'), (SIZE_X, SIZE_Y))
-            box_image = pygame.transform.scale(pygame.image.load('assets/Caisse1.png'), (SIZE_X, SIZE_Y))
-            coin_image = pygame.transform.scale(pygame.image.load('assets/coin.png'), (SIZE_X, SIZE_Y))
-            floor_image = pygame.transform.scale(pygame.image.load('assets/floor.png'), (SIZE_X, SIZE_Y))
-            room_image = pygame.transform.scale(pygame.image.load('assets/room.png'), (SIZE_X, SIZE_Y))
-            oxygen_image = pygame.transform.scale(pygame.image.load('assets/Oxygen_Bottle.png'), (SIZE_X, SIZE_Y))
-            pygame.display.flip()
+    if niveau.porteW is not None and player.rect.colliderect(niveau.porteW):
+        clear_all()
+        a = niveau.sortieW
+        niveau.__del__()
+        niveau = Niveau(a)
+        niveau.generer()
+        niveau.afficher()
+        player = Player((niveau.porteE.x - niveau.size_x, niveau.porteE.y))
 
 
     # Draw
     screen.fill((0, 0, 0))
     for obj in objs:
+        image = None
         if get_type(obj.grid[0], obj.grid[1]) == "wall":
             image = wall_image
         if get_type(obj.grid[0], obj.grid[1]) == "wind_jet":
             image = wind_image
-        if get_type(obj.grid[0], obj.grid[1]) is None or get_type(obj.grid[0], obj.grid[1]) == "coin" or get_type(obj.grid[0], obj.grid[1]) == "box" or get_type(obj.grid[0], obj.grid[1]) == "oxygen" or get_type(obj.grid[0], obj.grid[1]) == "button" or get_type(obj.grid[0], obj.grid[1]) == "button_pressed":
+        if get_type(obj.grid[0], obj.grid[1]) is None\
+            or get_type(obj.grid[0], obj.grid[1]) == "coin"\
+                or get_type(obj.grid[0], obj.grid[1]) == "box"\
+                or get_type(obj.grid[0], obj.grid[1]) == "oxygen"\
+                or get_type(obj.grid[0], obj.grid[1]) == "button"\
+                or get_type(obj.grid[0], obj.grid[1]) == "button_pressed":
             image = floor_image
         screen.blit(image, (obj.rect.x, obj.rect.y))
         if get_type(obj.grid[0], obj.grid[1]) == "coin":
@@ -672,15 +668,6 @@ while running:
             image = porte_unlock_image
         screen.blit(image, (obj.rect.x, obj.rect.y))
 
-    #for wall in walls:
-        #pygame.draw.rect(screen, (255, 255, 255), wall.rect)
-    #for caisse in caisses:
-        #pygame.draw.rect(screen, (255, 0, 255), caisse.rect)
-    #for souffleur in souffleurs:
-        #pygame.draw.rect(screen, (0, 0, 255), souffleur.rect)
-    #for piece in pieces:
-        #pygame.draw.rect(screen, (0, 255, 0), piece.rect)
-
     score = Score()
     score.__init__()
     score.update()
@@ -693,6 +680,7 @@ while running:
         pygame.draw.rect(screen, (255, 0, 0), niveau.porteN)
     if niveau.porteW is not None:
         pygame.draw.rect(screen, (255, 0, 0), niveau.porteW)
+
     pygame.draw.rect(screen, (255, 255, 0), player.rect)
     score.draw()
     pygame.display.flip()
