@@ -23,7 +23,7 @@ class Player:
 
         bloks = walls + caisses + souffleurs + pieces + portes_lock + portes_unlock
 
-        # Collision mur
+        # Collision mur (petit bug d'1 pixel)
         for wall in walls:
             if self.rect.colliderect(wall.rect):
                 if dx > 0:  # deplacement right
@@ -34,6 +34,56 @@ class Player:
                     self.rect.bottom = wall.rect.top
                 if dy < 0:  # deplacement top
                     self.rect.top = wall.rect.bottom
+
+        # Collision Saas
+        for saas in all_saas:
+            if saas.cardinal == "North"\
+                    and saas.rect.collidepoint(self.rect.x + self.rect.width/2, self.rect.y - 1)\
+                    or saas.cardinal == "East"\
+                    and saas.rect.collidepoint(self.rect.x + self.rect.width + 1, self.rect.y + self.rect.height/2)\
+                    or saas.cardinal == "West"\
+                    and saas.rect.collidepoint(self.rect.x - 1, self.rect.y + self.rect.height/2)\
+                    or saas.cardinal == "South"\
+                    and saas.rect.collidepoint(self.rect.x + self.rect.width/2, self.rect.y + self.rect.height + 1):
+
+                if saas.cardinal == "East":
+                    a = niveau.sortieE
+                elif saas.cardinal == "South":
+                    a = niveau.sortieS
+                elif saas.cardinal == "North":
+                    a = niveau.sortieN
+                elif saas.cardinal == "West":
+                    a = niveau.sortieW
+
+                niveau.generer(a)
+
+                walls.clear()
+                caisses.clear()
+                souffleurs.clear()
+                pieces.clear()
+                oxygen_bottles.clear()
+                chaussures.clear()
+                dalles_electriques.clear()
+                dalles_innondes.clear()
+                portes_lock.clear()
+                portes_unlock.clear()
+                all_saas.clear()
+                objs.clear()
+
+                niveau.afficher()
+
+                if saas.cardinal == "East":
+                    self.rect.x = get_saas("West").rect.x + niveau.size_x
+                    self.rect.y = get_saas("West").rect.y
+                elif saas.cardinal == "South":
+                    self.rect.x = get_saas("North").rect.x
+                    self.rect.y = get_saas("North").rect.y + niveau.size_y
+                elif saas.cardinal == "North":
+                    self.rect.x = get_saas("South").rect.x
+                    self.rect.y = get_saas("South").rect.y - niveau.size_y
+                elif saas.cardinal == "West":
+                    self.rect.x = get_saas("East").rect.x - niveau.size_x
+                    self.rect.y = get_saas("East").rect.y
 
         # Collision porte verrouillée
         for porte_lock in portes_lock:
@@ -72,8 +122,8 @@ class Player:
         for dalle_innonde in dalles_innondes:
             if self.rect.colliderect(dalle_innonde.rect) and self.oxygen_bottle <= 0:
                 pygame.mixer.stop()
-                audio_electric.set_volume(1)
-                audio_electric.play()
+                audio_electric.set_volume(1)  # a changer
+                audio_electric.play()  # a changer
                 if dx > 0:  # deplacement right
                     self.rect.right = dalle_innonde.rect.left
                 if dx < 0:  # deplacement left
@@ -142,29 +192,29 @@ class Player:
             if pygame.key.get_pressed()[pygame.K_LCTRL]:  # Tirer la caisse quand la touche (Ctrl gauche) est appuyé
                 tmp = caisse.rect
                 if dx > 0:  # deplacement right
-                    if caisse.way_right(bloks) and self.rect.collidepoint(tmp.x + dx + tmp.width, tmp.y + int(tmp.height/2))\
-                            or self.rect.collidepoint(tmp.x + dx - self.speed, tmp.y + int(tmp.height/2)):
+                    if caisse.way_right(bloks) and self.rect.collidepoint(tmp.x + dx + self.rect.width + self.speed, tmp.y + int(tmp.height/2))\
+                            or self.rect.collidepoint(tmp.x + dx + self.speed - 1, tmp.y + int(tmp.height/2)):
                         caisse.rect.right = self.rect.left
                         pygame.mixer.stop()
                         audio_moving_box.set_volume(3)
                         audio_moving_box.play()
                 if dx < 0:  # deplacement left
                     if caisse.way_left(bloks) and self.rect.collidepoint(tmp.x + dx - self.speed, tmp.y + int(tmp.height/2))\
-                            or self.rect.collidepoint(tmp.x + dx + tmp.width, tmp.y + int(tmp.height/2)):
+                            or self.rect.collidepoint(tmp.x + dx + self.rect.width + self.speed - 1, tmp.y + int(tmp.height/2)):
                         caisse.rect.left = self.rect.right
                         pygame.mixer.stop()
                         audio_moving_box.set_volume(3)
                         audio_moving_box.play()
                 if dy > 0:  # deplacement bottom
-                    if caisse.way_bottom(bloks) and self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy + tmp.height)\
-                            or self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy - self.speed):
+                    if caisse.way_bottom(bloks) and self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy + self.rect.height + self.speed)\
+                            or self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy + self.speed - 1):
                         caisse.rect.bottom = self.rect.top
                         pygame.mixer.stop()
                         audio_moving_box.set_volume(3)
                         audio_moving_box.play()
                 if dy < 0:  # deplacement top
                     if caisse.way_top(bloks) and self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy - self.speed)\
-                            or self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy + tmp.height):
+                            or self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy + self.rect.height + self.speed - 1):
                         caisse.rect.top = self.rect.bottom
                         pygame.mixer.stop()
                         audio_moving_box.set_volume(3)
@@ -179,25 +229,25 @@ class Player:
                 if souf_right.colliderect(caisse.rect):
                     caisse.move(self.speed, 0)
                 if souf_right.colliderect(self.rect):
-                    self.rect.x += self.speed*1
+                    self.rect.x += self.speed
 
                 souf_left = pygame.Rect(tmp.x - tmp.width, tmp.y, tmp.width, tmp.height)
                 if souf_left.colliderect(caisse.rect):
                     caisse.move(-self.speed, 0)
                 if souf_left.colliderect(self.rect):
-                    self.rect.x -= self.speed*1
+                    self.rect.x -= self.speed
 
                 souf_bottom = pygame.Rect(tmp.x, tmp.y + tmp.height, tmp.width, tmp.height)
                 if souf_bottom.colliderect(caisse.rect):
                     caisse.move(0, self.speed)
                 if souf_bottom.colliderect(self.rect):
-                    self.rect.y += self.speed*1
+                    self.rect.y += self.speed
 
                 souf_top = pygame.Rect(tmp.x, tmp.y - tmp.height, tmp.width, tmp.height)
                 if souf_top.colliderect(caisse.rect):
                     caisse.move(0, -self.speed)
                 if souf_top.colliderect(self.rect):
-                    self.rect.y -= self.speed*1
+                    self.rect.y -= self.speed
 
         # Collision piece (coins)
         for piece in pieces:
@@ -299,6 +349,18 @@ class Obj:
     def __init__(self, pos):
         self.grid = [int(pos[0] / niveau.size_x) - int(MARGIN_X / niveau.size_x), int(pos[1] / niveau.size_y) - int(MARGIN_Y / niveau.size_y)]
         self.rect = pygame.Rect(pos[0], pos[1], niveau.size_x, niveau.size_y)
+
+
+class Saas(Obj):
+
+    cardinal = None
+
+    def __init__(self, pos, cardinal):
+        super().__init__(pos)
+        self.cardinal = cardinal
+        self.type = "saas"
+        objs.append(self)
+        all_saas.append(self)
 
 
 class Wall(Obj):
@@ -480,6 +542,7 @@ class DalleInnonde(Obj):
         objs.append(self)
         dalles_innondes.append(self)
 
+
 class Score:
 
     player_coins = None
@@ -514,35 +577,24 @@ class Score:
 
 class Niveau:
 
-    num_level = None
-
     width = None
     height = None
     size_x = None
     size_y = None
-
-    porteE = None
-    porteS = None
-    porteW = None
-    porteN = None
+    num_level = None
 
     sortieN = None
     sortieW = None
     sortieE = None
     sortieS = None
 
-    def __del__(self):
-        pass
-
-    def __init__(self, fichier):
-        self.fichier = fichier
-        self.num_level = fichier[10:-4]
+    def __init__(self):
         self.structure = None
 
-    def generer(self):
-        # Méthode permettant de générer le niveau en fonction du fichier
+    def generer(self, fichier):  # Méthode permettant de générer le niveau en fonction du fichier
+        self.num_level = fichier[10:-4]
 
-        f = open(self.fichier, "r")
+        f = open(fichier, "r")
 
         first_line = f.readline()
 
@@ -582,47 +634,44 @@ class Niveau:
         num_ligne = 0
         for ligne in self.structure:
             num_case = 0
-            for sprite in ligne:
+            for ch in ligne:
                 x = num_case * self.size_x + MARGIN_X
                 y = num_ligne * self.size_y + MARGIN_Y
-                if sprite == ".":
+
+                if ch == ".":
                     Wall((x, y))
-                elif sprite == "C":
+                elif ch == "C":
                     Caisse((x, y))
-                elif sprite == "N":
-                    self.porteN = pygame.Rect(x, y, self.size_x, self.size_y)
-                    objs.append(Obj((x, y)))
-                elif sprite == "S":
-                    self.porteS = pygame.Rect(x, y, self.size_x, self.size_y)
-                    objs.append(Obj((x, y)))
-                elif sprite == "E":
-                    self.porteE = pygame.Rect(x, y, self.size_x, self.size_y)
-                    objs.append(Obj((x, y)))
-                elif sprite == "W":
-                    self.porteW = pygame.Rect(x, y, self.size_x, self.size_y)
-                    objs.append(Obj((x, y)))
-                elif sprite == "Z":
+                elif ch == "N":
+                    Saas((x, y), "North")
+                elif ch == "S":
+                    Saas((x, y), "South")
+                elif ch == "E":
+                    Saas((x, y), "East")
+                elif ch == "W":
+                    Saas((x, y), "West")
+                elif ch == "Z" or ch == "z" or ch == 'Z' or ch == 'z':
                     Souffleur((x, y))
-                elif sprite == "P":
+                elif ch == "P":
                     Piece((x, y))
-                elif sprite == "O":
+                elif ch == "O":
                     Oxygen_bottle((x, y))
-                elif sprite == "X":
+                elif ch == "X":
                     playerlol = Player((x, y))  # Creation joueur ('X' sur la grille)
                     objs.append(Obj((x, y)))
-                elif sprite == "Y":
+                elif ch == "Y":
                     PorteLock((x, y))
-                elif sprite == "U":
+                elif ch == "U":
                     PorteUnlock((x, y))
-                elif sprite == "M":
+                elif ch == "M":
                     Button((x, y))
-                elif sprite == "I":
+                elif ch == "I":
                     ButtonPressed((x, y))
-                elif sprite == "G":
+                elif ch == "G":
                     DalleElectrique((x, y))
-                elif sprite == "J":
+                elif ch == "J":
                     Chaussure((x, y))
-                elif sprite == "Q":
+                elif ch == "Q":
                     DalleInnonde((x, y))
                 else:
                     objs.append(Obj((x, y)))
@@ -635,26 +684,10 @@ class Niveau:
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def clear_all():
-    walls.clear()
-    caisses.clear()
-    souffleurs.clear()
-    pieces.clear()
-    oxygen_bottles.clear()
-    chaussures.clear()
-    dalles_electriques.clear()
-    dalles_innondes.clear()
-    portes_lock.clear()
-    portes_unlock.clear()
-    objs.clear()
-
-
-def get_type(x, y):
-    index = (y * 20) + x
-    if index < 0 or index >= 20*15:
-        return None
-    return objs.__getitem__(index).type
-
+def get_saas(card):
+    for saas in all_saas:
+        if saas.cardinal == card:
+            return saas
 
 def get_obj(x, y):
     return objs.__getitem__(y * 20 + x)
@@ -667,20 +700,11 @@ screen = pygame.display.set_mode((1024, 768))
 
 clock = pygame.time.Clock()
 
-audio_coins = pygame.mixer.Sound('assets/audio/coins.wav')  # Son de pieces
-audio_walk = pygame.mixer.Sound('assets/audio/walk.wav')  # son de pas (clap, clap)
-audio_oxygen_bottle = pygame.mixer.Sound('assets/audio/air_fill.wav')  # Son de bouteille oxygene
-audio_door = pygame.mixer.Sound('assets/audio/close_door_1.wav')  # son de porte
-audio_button = pygame.mixer.Sound('assets/audio/button_press.wav')  # son de boutton
-audio_chaussure_propulsion = pygame.mixer.Sound('assets/audio/chaussure_propulsion.wav')  # son de propulsion air
-audio_chaussure_recup = pygame.mixer.Sound('assets/audio/chaussure_lacet.wav')  # son d'enfilage de chaussure
-audio_electric = pygame.mixer.Sound('assets/audio/electric.wav')  # son d'electricité
-audio_moving_box = pygame.mixer.Sound('assets/audio/moving_box_s.wav')  # son d'electricité
-
-
 MARGIN_X = (screen.get_width() - 640) / 2
 MARGIN_Y = (screen.get_height() - 480) / 2
 
+
+all_saas = []  # liste des saas
 objs = []  # Liste de tous les blocs
 walls = []  # Liste des murs
 caisses = []  # Liste des caisses
@@ -696,9 +720,22 @@ chaussures = [] # Liste des chaussures à propulsion
 dalles_innondes = [] # Liste des dalles innondes
 
 
-niveau = Niveau("rooms/room1.txt")
-niveau.generer()
+niveau = Niveau()
+niveau.generer("rooms/room1.txt")
 player = niveau.afficher()
+score = Score()
+
+
+audio_coins = pygame.mixer.Sound('assets/audio/coins.wav')  # Son de pieces
+audio_walk = pygame.mixer.Sound('assets/audio/walk.wav')  # son de pas (clap, clap)
+audio_oxygen_bottle = pygame.mixer.Sound('assets/audio/air_fill.wav')  # Son de bouteille oxygene
+audio_door = pygame.mixer.Sound('assets/audio/close_door_1.wav')  # son de porte
+audio_button = pygame.mixer.Sound('assets/audio/button_press.wav')  # son de boutton
+audio_chaussure_propulsion = pygame.mixer.Sound('assets/audio/chaussure_propulsion.wav')  # son de propulsion air
+audio_chaussure_recup = pygame.mixer.Sound('assets/audio/chaussure_lacet.wav')  # son d'enfilage de chaussure
+audio_electric = pygame.mixer.Sound('assets/audio/electric.wav')  # son d'electricité
+audio_moving_box = pygame.mixer.Sound('assets/audio/moving_box_s.wav')  # son d'electricité
+
 
 wall_image = pygame.transform.scale(pygame.image.load('assets/wall.png'), (niveau.size_x, niveau.size_y))
 wind_image = pygame.transform.scale(pygame.image.load('assets/wind_jet.png'), (niveau.size_x, niveau.size_y))
@@ -719,6 +756,7 @@ decor_pillier_electrique_image = pygame.transform.scale(pygame.image.load('asset
 decor_poubelle_image = pygame.transform.scale(pygame.image.load('assets/decor_poubelle.png'), (niveau.size_x, niveau.size_y))
 decor_boite_image = pygame.transform.scale(pygame.image.load('assets/decor_boite.png'), (niveau.size_x, niveau.size_y))
 decor_four_image = pygame.transform.scale(pygame.image.load('assets/decor_four.png'), (niveau.size_x, niveau.size_y))
+saas_image = pygame.transform.scale(pygame.image.load('assets/room.png'), (niveau.size_x, niveau.size_y))
 
 running = True
 while running:
@@ -742,45 +780,11 @@ while running:
     if key[pygame.K_DOWN]:
         player.move(0, player.speed)
 
-    # collisions portes
-    if niveau.porteE is not None and player.rect.colliderect(niveau.porteE):
-        clear_all()
-        a = niveau.sortieE
-        niveau.__del__()
-        niveau = Niveau(a)
-        niveau.generer()
-        niveau.afficher()
-        player.rect.x = niveau.porteW.x + niveau.size_x
-        player.rect.y = niveau.porteW.y
-    elif niveau.porteS is not None and player.rect.colliderect(niveau.porteS):
-        clear_all()
-        a = niveau.sortieS
-        niveau.__del__()
-        niveau = Niveau(a)
-        niveau.generer()
-        niveau.afficher()
-        player.rect.x = niveau.porteN.x
-        player.rect.y = niveau.porteN.y + niveau.size_y
-    elif niveau.porteN is not None and player.rect.colliderect(niveau.porteN):
-        clear_all()
-        a = niveau.sortieN
-        niveau.__del__()
-        niveau = Niveau(a)
-        niveau.generer()
-        niveau.afficher()
-        player.rect.x = niveau.porteS.x
-        player.rect.y = niveau.porteS.y - niveau.size_y
-    elif niveau.porteW is not None and player.rect.colliderect(niveau.porteW):
-        clear_all()
-        a = niveau.sortieW
-        niveau.__del__()
-        niveau = Niveau(a)
-        niveau.generer()
-        niveau.afficher()
-        player.rect.x = niveau.porteE.x - niveau.size_x
-        player.rect.y = niveau.porteE.y
+    # Update du score
+    score.update()
 
     # Affichage du sol
+    screen.fill((0, 0, 0))
     y = 0
     while y < niveau.height:
         x = 0
@@ -814,23 +818,17 @@ while running:
             image = dalle_electrique_image
         elif obj.type == "chaussure":
             image = chaussure_image
+        elif obj.type == "saas":
+            image = saas_image
         elif obj.type == "dalle_innonde":
             image = dalle_innonde_image
 
         if image is not None:
             screen.blit(image, (obj.rect.x, obj.rect.y))
 
-    score = Score()
-    score.update()
-
-    if niveau.porteE is not None:
-        pygame.draw.rect(screen, (255, 0, 0), niveau.porteE)
-    if niveau.porteS is not None:
-        pygame.draw.rect(screen, (255, 0, 0), niveau.porteS)
-    if niveau.porteN is not None:
-        pygame.draw.rect(screen, (255, 0, 0), niveau.porteN)
-    if niveau.porteW is not None:
-        pygame.draw.rect(screen, (255, 0, 0), niveau.porteW)
+    # Affichage des saas
+    for saas in all_saas:
+        pygame.draw.rect(screen, (255, 0, 0), saas.rect)
 
     pygame.draw.rect(screen, (255, 255, 0), player.rect)
     score.draw()
