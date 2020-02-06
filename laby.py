@@ -409,9 +409,12 @@ class Niveau:
     porteN = None
     sortie = None
     roomsuivante = None
+    ligne_roomsuivante = []
+
     def __init__(self, fichier):
         self.fichier = fichier
         self.structure = 0
+
     def generer(self):
         #Méthode permettant de générer le niveau en fonction du fichier
         with open(self.fichier, "r") as fichier:
@@ -419,14 +422,17 @@ class Niveau:
             for ligne in fichier:
                 ligne_niveau = []
                 for sprite in ligne:
-                    if sprite == '@':
-                        self.sortie = ligne[1:2]
-                        self.roomsuivante = ligne[2:17]
-                        break
-                    elif sprite != '\n':
+                    if sprite != '\n' and sprite!='@':
                         ligne_niveau.append(sprite)
+                        print("sprite(else) : " + sprite)
+                    if sprite == '@':
+                        self.ligne_roomsuivante.append(ligne[1:2])
+                        self.ligne_roomsuivante.append(ligne[2:17])
+                        print(self.ligne_roomsuivante)
+                        break
                 structure_niveau.append(ligne_niveau)
             self.structure = structure_niveau
+
     def afficher(self, fenetre):
         #Méthode permettant d'afficher le niveau en fonction de la liste de structure renvoyé par la fonction generer
         num_ligne = 0
@@ -549,38 +555,46 @@ while running:
 
     # conditions fin
     if niveau.porteE is not None and player.rect.colliderect(niveau.porteE):
-        if niveau.sortie == "E":
-            objs.clear()
-            walls.clear()
-            caisses.clear()
-            souffleurs.clear()
-            pieces.clear()
-            oxygen_bottles.clear()
+                i = niveau.ligne_roomsuivante.index('E')
+                objs.clear()
+                walls.clear()
+                caisses.clear()
+                souffleurs.clear()
+                pieces.clear()
+                oxygen_bottles.clear()
+                buttons = []  # Liste des boutons
+                buttons_pressed = []  # Liste des boutons activés
+                portes_unlock = []  # Liste des portes deverouilles
+                portes_lock = []  # Liste des portes verouilles
 
-            choix = niveau.roomsuivante
-            niveau = Niveau(choix)
-            niveau.generer()
-            niveau.afficher(screen)
+                choix = niveau.ligne_roomsuivante[i+1]
+                niveau = Niveau(choix)
+                niveau.generer()
+                niveau.afficher(screen)
 
-            wall_image = pygame.transform.scale(pygame.image.load('assets/wall.png'), (SIZE_X, SIZE_Y))
-            wind_image = pygame.transform.scale(pygame.image.load('assets/wind_jet.png'), (SIZE_X, SIZE_Y))
-            box_image = pygame.transform.scale(pygame.image.load('assets/Caisse1.png'), (SIZE_X, SIZE_Y))
-            coin_image = pygame.transform.scale(pygame.image.load('assets/coin.png'), (SIZE_X, SIZE_Y))
-            floor_image = pygame.transform.scale(pygame.image.load('assets/floor.png'), (SIZE_X, SIZE_Y))
-            room_image = pygame.transform.scale(pygame.image.load('assets/room.png'), (SIZE_X, SIZE_Y))
-            oxygen_image = pygame.transform.scale(pygame.image.load('assets/Oxygen_Bottle.png'), (SIZE_X, SIZE_Y))
-            pygame.display.flip()
+                wall_image = pygame.transform.scale(pygame.image.load('assets/wall.png'), (SIZE_X, SIZE_Y))
+                wind_image = pygame.transform.scale(pygame.image.load('assets/wind_jet.png'), (SIZE_X, SIZE_Y))
+                box_image = pygame.transform.scale(pygame.image.load('assets/Caisse1.png'), (SIZE_X, SIZE_Y))
+                coin_image = pygame.transform.scale(pygame.image.load('assets/coin.png'), (SIZE_X, SIZE_Y))
+                floor_image = pygame.transform.scale(pygame.image.load('assets/floor.png'), (SIZE_X, SIZE_Y))
+                room_image = pygame.transform.scale(pygame.image.load('assets/room.png'), (SIZE_X, SIZE_Y))
+                oxygen_image = pygame.transform.scale(pygame.image.load('assets/Oxygen_Bottle.png'), (SIZE_X, SIZE_Y))
+                pygame.display.flip()
 
     if niveau.porteS is not None and player.rect.colliderect(niveau.porteS):
-        if niveau.sortie == "S":
+            i = niveau.ligne_roomsuivante.index('S')
             objs.clear()
             walls.clear()
             caisses.clear()
             souffleurs.clear()
             pieces.clear()
             oxygen_bottles.clear()
+            buttons = []  # Liste des boutons
+            buttons_pressed = []  # Liste des boutons activés
+            portes_unlock = []  # Liste des portes deverouilles
+            portes_lock = []  # Liste des portes verouilles
 
-            choix = niveau.roomsuivante
+            choix = niveau.ligne_roomsuivante[i+1]
             niveau = Niveau(choix)
             niveau.generer()
             niveau.afficher(screen)
@@ -595,15 +609,19 @@ while running:
             pygame.display.flip()
 
     if  niveau.porteN is not None and player.rect.colliderect(niveau.porteN):
-        if niveau.sortie == "N":
+            i = niveau.ligne_roomsuivante.index('N')
             objs.clear()
             walls.clear()
             caisses.clear()
             souffleurs.clear()
             pieces.clear()
             oxygen_bottles.clear()
+            buttons = []  # Liste des boutons
+            buttons_pressed = []  # Liste des boutons activés
+            portes_unlock = []  # Liste des portes deverouilles
+            portes_lock = []  # Liste des portes verouilles
 
-            choix = niveau.roomsuivante
+            choix = niveau.ligne_roomsuivante[i+1]
             niveau = Niveau(choix)
             niveau.generer()
             niveau.afficher(screen)
@@ -618,15 +636,19 @@ while running:
             pygame.display.flip()
 
     if  niveau.porteW is not None and player.rect.colliderect(niveau.porteW):
-        if niveau.sortie == "W":
+            i = niveau.ligne_roomsuivante.index('W')
             objs.clear()
             walls.clear()
             caisses.clear()
             souffleurs.clear()
             pieces.clear()
             oxygen_bottles.clear()
+            buttons = []  # Liste des boutons
+            buttons_pressed = []  # Liste des boutons activés
+            portes_unlock = []  # Liste des portes deverouilles
+            portes_lock = []  # Liste des portes verouilles
 
-            choix = niveau.roomsuivante
+            choix = niveau.ligne_roomsuivante[i+1]
             niveau = Niveau(choix)
             niveau.generer()
             niveau.afficher(screen)
