@@ -8,8 +8,8 @@ from score import Score
 
 class Game:
 
-    WIDTH = 1020
-    HEIGHT = 760
+    WIDTH = 800
+    HEIGHT = 600
 
     clock = pygame.time.Clock()
 
@@ -72,7 +72,6 @@ class Game:
         self.box_image = pygame.transform.scale(pygame.image.load('assets/caisse.png'), (self.niveau.size_x, self.niveau.size_y))
         self.coin_image = pygame.transform.scale(pygame.image.load('assets/coin.png'), (self.niveau.size_x, self.niveau.size_y))
         self.floor_image = pygame.transform.scale(pygame.image.load('assets/floor.png'), (self.niveau.size_x, self.niveau.size_y))
-        self.room_image = pygame.transform.scale(pygame.image.load('assets/room.png'), (self.niveau.size_x, self.niveau.size_y))
         self.oxygen_image = pygame.transform.scale(pygame.image.load('assets/oxygen_bottle.png'), (self.niveau.size_x, self.niveau.size_y))
         self.button_image = pygame.transform.scale(pygame.image.load('assets/red_button.png'), (self.niveau.size_x, self.niveau.size_y))
         self.button_pressed_image = pygame.transform.scale(pygame.image.load('assets/grey_button.png'), (self.niveau.size_x, self.niveau.size_y))
@@ -86,7 +85,7 @@ class Game:
         self.decor_poubelle_image = pygame.transform.scale(pygame.image.load('assets/decor_poubelle.png'), (self.niveau.size_x, self.niveau.size_y))
         self.decor_boite_image = pygame.transform.scale(pygame.image.load('assets/decor_boite.png'), (self.niveau.size_x, self.niveau.size_y))
         self.decor_four_image = pygame.transform.scale(pygame.image.load('assets/decor_four.png'), (self.niveau.size_x, self.niveau.size_y))
-        self.saas_image = pygame.transform.scale(pygame.image.load('assets/room.png'), (self.niveau.size_x, self.niveau.size_y))
+        self.saas_image = pygame.transform.scale(pygame.image.load('assets/saas.png'), (self.niveau.size_x, self.niveau.size_y))
 
         try:
             with open("save.data", "rb") as f:
@@ -158,7 +157,7 @@ class Game:
 
         # Affichage des saas
         for saas in self.all_saas:
-            pygame.draw.rect(self.window, (255, 0, 0), saas.rect)
+            self.window.blit(self.saas_image, (saas.rect.x, saas.rect.y))
 
         pygame.draw.rect(self.window, (255, 255, 0), self.player.rect)
 
