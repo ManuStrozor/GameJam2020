@@ -153,27 +153,27 @@ class Player:
 
                 souf_right = pygame.Rect(tmp.x + tmp.width, tmp.y, tmp.width, tmp.height)
                 if souf_right.colliderect(caisse.rect):
-                    caisse.move(self.speed * 3, 0)
+                    caisse.move(self.speed, 0)
                 if souf_right.colliderect(self.rect):
-                    self.rect.x += self.speed*3
+                    self.rect.x += self.speed*1
 
                 souf_left = pygame.Rect(tmp.x - tmp.width, tmp.y, tmp.width, tmp.height)
                 if souf_left.colliderect(caisse.rect):
-                    caisse.move(-self.speed * 3, 0)
+                    caisse.move(-self.speed, 0)
                 if souf_left.colliderect(self.rect):
-                    self.rect.x -= self.speed*3
+                    self.rect.x -= self.speed*1
 
                 souf_bottom = pygame.Rect(tmp.x, tmp.y + tmp.height, tmp.width, tmp.height)
                 if souf_bottom.colliderect(caisse.rect):
-                    caisse.move(0, self.speed*3)
+                    caisse.move(0, self.speed)
                 if souf_bottom.colliderect(self.rect):
-                    self.rect.y += self.speed*3
+                    self.rect.y += self.speed*1
 
                 souf_top = pygame.Rect(tmp.x, tmp.y - tmp.height, tmp.width, tmp.height)
                 if souf_top.colliderect(caisse.rect):
-                    caisse.move(0, -self.speed*3)
+                    caisse.move(0, -self.speed)
                 if souf_top.colliderect(self.rect):
-                    self.rect.y -= self.speed*3
+                    self.rect.y -= self.speed*1
 
         # Collision piece (coins)
         for piece in pieces:
