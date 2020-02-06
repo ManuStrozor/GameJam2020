@@ -5,7 +5,7 @@ class Player:
 
     grid_x = None
     grid_y = None
-    speed = 2
+    speed = 8
     coins = 0
     oxygen_bottle = 0
     chaussure = False
@@ -625,19 +625,19 @@ niveau = Niveau("rooms/room1.txt")
 niveau.generer()
 player = niveau.afficher()
 
-wall_image = pygame.transform.scale(pygame.image.load('assets/wall.png'), (SIZE_X, SIZE_Y))
-wind_image = pygame.transform.scale(pygame.image.load('assets/wind_jet.png'), (SIZE_X, SIZE_Y))
-box_image = pygame.transform.scale(pygame.image.load('assets/Caisse1.png'), (SIZE_X, SIZE_Y))
-coin_image = pygame.transform.scale(pygame.image.load('assets/coin.png'), (SIZE_X, SIZE_Y))
-floor_image = pygame.transform.scale(pygame.image.load('assets/floor.png'), (SIZE_X, SIZE_Y))
-room_image = pygame.transform.scale(pygame.image.load('assets/room.png'), (SIZE_X, SIZE_Y))
-oxygen_image = pygame.transform.scale(pygame.image.load('assets/Oxygen_Bottle.png'), (SIZE_X, SIZE_Y))
-button_image = pygame.transform.scale(pygame.image.load('assets/Red_Button.png'), (SIZE_X, SIZE_Y))
-button_pressed_image = pygame.transform.scale(pygame.image.load('assets/Grey_Button_.png'), (SIZE_X, SIZE_Y))
-porte_unlock_image = pygame.transform.scale(pygame.image.load('assets/Porte_Unlock.png'), (SIZE_X, SIZE_Y))
-porte_lock_image = pygame.transform.scale(pygame.image.load('assets/Porte_Lock.png'), (SIZE_X, SIZE_Y))
-dalle_electrique_image = pygame.transform.scale(pygame.image.load('assets/Electric.png'), (SIZE_X, SIZE_Y))
-chaussure_image = pygame.transform.scale(pygame.image.load('assets/Flashy_Boots.png'), (SIZE_X, SIZE_Y))
+wall_image = pygame.transform.scale(pygame.image.load('assets/wall.png'), (niveau.size_x, niveau.size_y))
+wind_image = pygame.transform.scale(pygame.image.load('assets/wind_jet.png'), (niveau.size_x, niveau.size_y))
+box_image = pygame.transform.scale(pygame.image.load('assets/Caisse1.png'), (niveau.size_x, niveau.size_y))
+coin_image = pygame.transform.scale(pygame.image.load('assets/coin.png'), (niveau.size_x, niveau.size_y))
+floor_image = pygame.transform.scale(pygame.image.load('assets/floor.png'), (niveau.size_x, niveau.size_y))
+room_image = pygame.transform.scale(pygame.image.load('assets/room.png'), (niveau.size_x, niveau.size_y))
+oxygen_image = pygame.transform.scale(pygame.image.load('assets/Oxygen_Bottle.png'), (niveau.size_x, niveau.size_y))
+button_image = pygame.transform.scale(pygame.image.load('assets/Red_Button.png'), (niveau.size_x, niveau.size_y))
+button_pressed_image = pygame.transform.scale(pygame.image.load('assets/Grey_Button_.png'), (niveau.size_x, niveau.size_y))
+porte_unlock_image = pygame.transform.scale(pygame.image.load('assets/Porte_Unlock.png'), (niveau.size_x, niveau.size_y))
+porte_lock_image = pygame.transform.scale(pygame.image.load('assets/Porte_Lock.png'), (niveau.size_x, niveau.size_y))
+dalle_electrique_image = pygame.transform.scale(pygame.image.load('assets/Electric.png'), (niveau.size_x, niveau.size_y))
+chaussure_image = pygame.transform.scale(pygame.image.load('assets/Flashy_Boots.png'), (niveau.size_x, niveau.size_y))
 
 running = True
 while running:
