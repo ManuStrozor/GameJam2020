@@ -618,6 +618,8 @@ def clear_all():
     chaussures.clear()
     dalles_electriques.clear()
     dalles_innondes.clear()
+    portes_lock.clear()
+    portes_unlock.clear()
     objs.clear()
 
 
