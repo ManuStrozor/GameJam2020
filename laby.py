@@ -573,6 +573,8 @@ def clear_all():
     souffleurs.clear()
     pieces.clear()
     oxygen_bottles.clear()
+    chaussures.clear()
+    dalles_electriques.clear()
     objs.clear()
 
 
@@ -669,7 +671,8 @@ while running:
         niveau = Niveau(a)
         niveau.generer()
         niveau.afficher()
-        player = Player((niveau.porteW.x + niveau.size_x, niveau.porteW.y))
+        player.rect.x = niveau.porteW.x + niveau.size_x
+        player.rect.y = niveau.porteW.y
 
     if niveau.porteS is not None and player.rect.colliderect(niveau.porteS):
         clear_all()
@@ -678,7 +681,8 @@ while running:
         niveau = Niveau(a)
         niveau.generer()
         niveau.afficher()
-        player = Player((niveau.porteN.x, niveau.porteN.y + niveau.size_y))
+        player.rect.x = niveau.porteN.x
+        player.rect.y = niveau.porteN.y + niveau.size_y
 
     if niveau.porteN is not None and player.rect.colliderect(niveau.porteN):
         clear_all()
@@ -687,7 +691,8 @@ while running:
         niveau = Niveau(a)
         niveau.generer()
         niveau.afficher()
-        player = Player((niveau.porteS.x, niveau.porteS.y - niveau.size_y))
+        player.rect.x = niveau.porteS.x
+        player.rect.y = niveau.porteS.y - niveau.size_y
 
     if niveau.porteW is not None and player.rect.colliderect(niveau.porteW):
         clear_all()
@@ -696,7 +701,8 @@ while running:
         niveau = Niveau(a)
         niveau.generer()
         niveau.afficher()
-        player = Player((niveau.porteE.x - niveau.size_x, niveau.porteE.y))
+        player.rect.x = niveau.porteE.x - niveau.size_x
+        player.rect.y = niveau.porteE.y
 
 
     # Draw
