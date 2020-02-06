@@ -719,9 +719,6 @@ while running:
         if get_type(obj.grid[0], obj.grid[1]) == "coin":
             image = coin_image
         screen.blit(image, (obj.rect.x, obj.rect.y))
-        if get_type(obj.grid[0], obj.grid[1]) == "box":
-            image = box_image
-        screen.blit(image, (obj.rect.x, obj.rect.y))
         if get_type(obj.grid[0], obj.grid[1]) == "oxygen":
             image = oxygen_image
         screen.blit(image, (obj.rect.x, obj.rect.y))
@@ -742,6 +739,9 @@ while running:
         if get_type(obj.grid[0], obj.grid[1]) == "chaussure":
             image = chaussure_image
         screen.blit(image, (obj.rect.x, obj.rect.y))
+
+    for caisse in caisses:
+        screen.blit(box_image, (caisse.rect.x, caisse.rect.y))
 
     score = Score()
     score.__init__()
