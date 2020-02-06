@@ -87,10 +87,12 @@ class Player:
             if self.rect.colliderect(dalle_innonde.rect) and self.oxygen_bottle > 0:
                 self.oxygen_bottle = self.oxygen_bottle - 0.3
                 if self.oxygen_bottle <= 0.5:
-                #   ================= GAME OVER NO oXYGEN
+                #   =============================================================
+                #   ================= GAME OVER NO OXYGEN
                     print("Game Over - Asphyxie")
                     raise SystemExit
-                #   ================ GAME OVER NO oXYGEN
+                #   ================ GAME OVER NO OXYGEN
+                #   =============================================================
                 pygame.mixer.stop()
                 audio_chaussure_propulsion.set_volume(1)
                 audio_chaussure_propulsion.play()
@@ -671,17 +673,17 @@ player = niveau.afficher()
 
 wall_image = pygame.transform.scale(pygame.image.load('assets/wall.png'), (niveau.size_x, niveau.size_y))
 wind_image = pygame.transform.scale(pygame.image.load('assets/wind_jet.png'), (niveau.size_x, niveau.size_y))
-box_image = pygame.transform.scale(pygame.image.load('assets/Caisse1.png'), (niveau.size_x, niveau.size_y))
+box_image = pygame.transform.scale(pygame.image.load('assets/caisse.png'), (niveau.size_x, niveau.size_y))
 coin_image = pygame.transform.scale(pygame.image.load('assets/coin.png'), (niveau.size_x, niveau.size_y))
 floor_image = pygame.transform.scale(pygame.image.load('assets/floor.png'), (niveau.size_x, niveau.size_y))
 room_image = pygame.transform.scale(pygame.image.load('assets/room.png'), (niveau.size_x, niveau.size_y))
-oxygen_image = pygame.transform.scale(pygame.image.load('assets/Oxygen_Bottle.png'), (niveau.size_x, niveau.size_y))
-button_image = pygame.transform.scale(pygame.image.load('assets/Red_Button.png'), (niveau.size_x, niveau.size_y))
-button_pressed_image = pygame.transform.scale(pygame.image.load('assets/Grey_Button_.png'), (niveau.size_x, niveau.size_y))
-porte_unlock_image = pygame.transform.scale(pygame.image.load('assets/Porte_Unlock.png'), (niveau.size_x, niveau.size_y))
-porte_lock_image = pygame.transform.scale(pygame.image.load('assets/Porte_Lock.png'), (niveau.size_x, niveau.size_y))
-dalle_electrique_image = pygame.transform.scale(pygame.image.load('assets/Electric.png'), (niveau.size_x, niveau.size_y))
-chaussure_image = pygame.transform.scale(pygame.image.load('assets/Flashy_Boots.png'), (niveau.size_x, niveau.size_y))
+oxygen_image = pygame.transform.scale(pygame.image.load('assets/oxygen_bottle.png'), (niveau.size_x, niveau.size_y))
+button_image = pygame.transform.scale(pygame.image.load('assets/red_button.png'), (niveau.size_x, niveau.size_y))
+button_pressed_image = pygame.transform.scale(pygame.image.load('assets/grey_button.png'), (niveau.size_x, niveau.size_y))
+porte_unlock_image = pygame.transform.scale(pygame.image.load('assets/porte_unlock.png'), (niveau.size_x, niveau.size_y))
+porte_lock_image = pygame.transform.scale(pygame.image.load('assets/porte_lock.png'), (niveau.size_x, niveau.size_y))
+dalle_electrique_image = pygame.transform.scale(pygame.image.load('assets/electric.png'), (niveau.size_x, niveau.size_y))
+chaussure_image = pygame.transform.scale(pygame.image.load('assets/flashy_boots.png'), (niveau.size_x, niveau.size_y))
 dalle_innonde_image = pygame.transform.scale(pygame.image.load('assets/floor_water.png'), (niveau.size_x, niveau.size_y))
 
 running = True
