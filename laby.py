@@ -5,7 +5,7 @@ class Player:
 
     grid_x = None
     grid_y = None
-    speed = 8
+    speed = 2
     coins = 0
     oxygen_bottle = 0
     chaussure = False
@@ -101,18 +101,18 @@ class Player:
                 tmp = caisse.rect
                 if dx > 0:  # deplacement right
                     if caisse.way_right(bloks) and self.rect.collidepoint(tmp.x + dx + tmp.width, tmp.y + int(tmp.height/2))\
-                            or self.rect.collidepoint(tmp.x + dx - 1, tmp.y + int(tmp.height/2)):
+                            or self.rect.collidepoint(tmp.x + dx - self.speed, tmp.y + int(tmp.height/2)):
                         caisse.rect.right = self.rect.left
                 if dx < 0:  # deplacement left
-                    if caisse.way_left(bloks) and self.rect.collidepoint(tmp.x + dx - 1, tmp.y + int(tmp.height/2))\
+                    if caisse.way_left(bloks) and self.rect.collidepoint(tmp.x + dx - self.speed, tmp.y + int(tmp.height/2))\
                             or self.rect.collidepoint(tmp.x + dx + tmp.width, tmp.y + int(tmp.height/2)):
                         caisse.rect.left = self.rect.right
                 if dy > 0:  # deplacement bottom
                     if caisse.way_bottom(bloks) and self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy + tmp.height)\
-                            or self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy - 1):
+                            or self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy - self.speed):
                         caisse.rect.bottom = self.rect.top
                 if dy < 0:  # deplacement top
-                    if caisse.way_top(bloks) and self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy - 1)\
+                    if caisse.way_top(bloks) and self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy - self.speed)\
                             or self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy + tmp.height):
                         caisse.rect.top = self.rect.bottom
 
@@ -519,9 +519,9 @@ class Niveau:
             for sprite in ligne:
                 x = num_case * self.size_x + MARGIN_X
                 y = num_ligne * self.size_y + MARGIN_Y
-                if sprite == '.':
+                if sprite == ".":
                     Wall((x, y))
-                elif sprite == 'C':
+                elif sprite == "C":
                     Caisse((x, y))
                 elif sprite == "N":
                     self.porteN = pygame.Rect(x, y, self.size_x, self.size_y)
@@ -535,9 +535,9 @@ class Niveau:
                 elif sprite == "W":
                     self.porteW = pygame.Rect(x, y, self.size_x, self.size_y)
                     objs.append(Obj((x, y)))
-                elif sprite == 'Z':
+                elif sprite == "Z":
                     Souffleur((x, y))
-                elif sprite == 'P':
+                elif sprite == "P":
                     Piece((x, y))
                 elif sprite == "O":
                     Oxygen_bottle((x, y))
@@ -663,7 +663,7 @@ while running:
     if key[pygame.K_DOWN]:
         player.move(0, player.speed)
 
-    # conditions fin
+    # collisions portes
     if niveau.porteE is not None and player.rect.colliderect(niveau.porteE):
         clear_all()
         a = niveau.sortieE
@@ -673,8 +673,7 @@ while running:
         niveau.afficher()
         player.rect.x = niveau.porteW.x + niveau.size_x
         player.rect.y = niveau.porteW.y
-
-    if niveau.porteS is not None and player.rect.colliderect(niveau.porteS):
+    elif niveau.porteS is not None and player.rect.colliderect(niveau.porteS):
         clear_all()
         a = niveau.sortieS
         niveau.__del__()
@@ -683,8 +682,7 @@ while running:
         niveau.afficher()
         player.rect.x = niveau.porteN.x
         player.rect.y = niveau.porteN.y + niveau.size_y
-
-    if niveau.porteN is not None and player.rect.colliderect(niveau.porteN):
+    elif niveau.porteN is not None and player.rect.colliderect(niveau.porteN):
         clear_all()
         a = niveau.sortieN
         niveau.__del__()
@@ -693,8 +691,7 @@ while running:
         niveau.afficher()
         player.rect.x = niveau.porteS.x
         player.rect.y = niveau.porteS.y - niveau.size_y
-
-    if niveau.porteW is not None and player.rect.colliderect(niveau.porteW):
+    elif niveau.porteW is not None and player.rect.colliderect(niveau.porteW):
         clear_all()
         a = niveau.sortieW
         niveau.__del__()
@@ -704,47 +701,45 @@ while running:
         player.rect.x = niveau.porteE.x - niveau.size_x
         player.rect.y = niveau.porteE.y
 
+    # Affichage du sol
+    y = 0
+    while y < niveau.height:
+        x = 0
+        while x < niveau.width:
+            screen.blit(floor_image, (x * niveau.size_x + MARGIN_X, y * niveau.size_y + MARGIN_Y))
+            x += 1
+        y += 1
 
-    # Draw
-    screen.fill((0, 0, 0))
+    # Affichage des blocs
     for obj in objs:
         image = None
-        if get_type(obj.grid[0], obj.grid[1]) == "wall":
+        if obj.type == "wall":
             image = wall_image
-        if get_type(obj.grid[0], obj.grid[1]) == "wind_jet":
-            image = wind_image
-        if get_type(obj.grid[0], obj.grid[1]) is None or get_type(obj.grid[0], obj.grid[1]) == "coin" or get_type(obj.grid[0], obj.grid[1]) == "box" or get_type(obj.grid[0], obj.grid[1]) == "oxygen" or get_type(obj.grid[0], obj.grid[1]) == "button" or get_type(obj.grid[0], obj.grid[1]) == "button_pressed" or get_type(obj.grid[0], obj.grid[1]) == "dalle_electrique" or get_type(obj.grid[0], obj.grid[1]) == "chaussure":
-            image = floor_image
-        screen.blit(image, (obj.rect.x, obj.rect.y))
-        if get_type(obj.grid[0], obj.grid[1]) == "coin":
-            image = coin_image
-        screen.blit(image, (obj.rect.x, obj.rect.y))
-        if get_type(obj.grid[0], obj.grid[1]) == "box":
+        elif obj.type == "box":
             image = box_image
-        screen.blit(image, (obj.rect.x, obj.rect.y))
-        if get_type(obj.grid[0], obj.grid[1]) == "oxygen":
+        elif obj.type == "wind_jet":
+            image = wind_image
+        elif obj.type == "coin":
+            image = coin_image
+        elif obj.type == "oxygen":
             image = oxygen_image
-        screen.blit(image, (obj.rect.x, obj.rect.y))
-        if get_type(obj.grid[0], obj.grid[1]) == "button":
+        elif obj.type == "button":
             image = button_image
-        if get_type(obj.grid[0], obj.grid[1]) == "button_pressed":
+        elif obj.type == "button_pressed":
             image = button_pressed_image
-        screen.blit(image, (obj.rect.x, obj.rect.y))
-        if get_type(obj.grid[0], obj.grid[1]) == "porte_lock":
+        elif obj.type == "porte_lock":
             image = porte_lock_image
-        screen.blit(image, (obj.rect.x, obj.rect.y))
-        if get_type(obj.grid[0], obj.grid[1]) == "porte_unlock":
+        elif obj.type == "porte_unlock":
             image = porte_unlock_image
-        screen.blit(image, (obj.rect.x, obj.rect.y))
-        if get_type(obj.grid[0], obj.grid[1]) == "dalle_electrique":
+        elif obj.type == "dalle_electrique":
             image = dalle_electrique_image
-        screen.blit(image, (obj.rect.x, obj.rect.y))
-        if get_type(obj.grid[0], obj.grid[1]) == "chaussure":
+        elif obj.type == "chaussure":
             image = chaussure_image
-        screen.blit(image, (obj.rect.x, obj.rect.y))
+
+        if image is not None:
+            screen.blit(image, (obj.rect.x, obj.rect.y))
 
     score = Score()
-    score.__init__()
     score.update()
 
     if niveau.porteE is not None:
