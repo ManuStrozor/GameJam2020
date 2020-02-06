@@ -61,8 +61,36 @@ class Player:
                     self.rect.bottom = dalle_electrique.rect.top
                 if dy < 0:  # deplacement top
                     self.rect.top = dalle_electrique.rect.bottom
-            # Collision dalle electrique SANS chaussures à propulsion
+
+            # Collision dalle electrique AVEC chaussures à propulsion
             if self.rect.colliderect(dalle_electrique.rect) and self.chaussure is True:
+                pygame.mixer.stop()
+                audio_chaussure_propulsion.set_volume(1)
+                audio_chaussure_propulsion.play()
+
+        # Collision dalle innonde SANS oxygene
+        for dalle_innonde in dalles_innondes:
+            if self.rect.colliderect(dalle_innonde.rect) and self.oxygen_bottle <= 0:
+                pygame.mixer.stop()
+                audio_electric.set_volume(1)
+                audio_electric.play()
+                if dx > 0:  # deplacement right
+                    self.rect.right = dalle_innonde.rect.left
+                if dx < 0:  # deplacement left
+                    self.rect.left = dalle_innonde.rect.right
+                if dy > 0:  # deplacement bottom
+                    self.rect.bottom = dalle_innonde.rect.top
+                if dy < 0:  # deplacement top
+                    self.rect.top = dalle_innonde.rect.bottom
+
+            # Collision dalle innonde AVEC oxygene
+            if self.rect.colliderect(dalle_innonde.rect) and self.oxygen_bottle > 0:
+                self.oxygen_bottle = self.oxygen_bottle - 0.3
+                if self.oxygen_bottle <= 0.5:
+                #   ================= GAME OVER NO oXYGEN
+                    print("Game Over - Asphyxie")
+                    raise SystemExit
+                #   ================ GAME OVER NO oXYGEN
                 pygame.mixer.stop()
                 audio_chaussure_propulsion.set_volume(1)
                 audio_chaussure_propulsion.play()
@@ -158,9 +186,10 @@ class Player:
         # Collision oxygen_bottle
         for oxygen_bottle in oxygen_bottles:
             if self.rect.colliderect(oxygen_bottle.rect):
-                self.oxygen_bottle += 1
+                self.oxygen_bottle += 100
                 oxygen_bottles.remove(oxygen_bottle)
                 get_obj(oxygen_bottle.grid[0], oxygen_bottle.grid[1]).type = None
+                print("bouteille oxygene récup")
                 pygame.mixer.stop()
                 audio_oxygen_bottle.set_volume(3)
                 audio_oxygen_bottle.play()
@@ -416,6 +445,15 @@ class DalleElectrique(Obj):
         objs.append(self)
         dalles_electriques.append(self)
 
+
+class DalleInnonde(Obj):
+
+    def __init__(self, pos):
+        super().__init__(pos)
+        self.type = "dalle_innonde"
+        objs.append(self)
+        dalles_innondes.append(self)
+
 class Score:
 
     player_coins = None
@@ -556,6 +594,8 @@ class Niveau:
                     DalleElectrique((x, y))
                 elif sprite == "J":
                     Chaussure((x, y))
+                elif sprite == "Q":
+                    DalleInnonde((x, y))
                 else:
                     objs.append(Obj((x, y)))
                 num_case += 1
@@ -575,6 +615,7 @@ def clear_all():
     oxygen_bottles.clear()
     chaussures.clear()
     dalles_electriques.clear()
+    dalles_innondes.clear()
     objs.clear()
 
 
@@ -621,6 +662,7 @@ portes_unlock = []  # Liste des portes deverouilles
 portes_lock = []  # Liste des portes verouilles
 dalles_electriques = []  # Liste des dalles electriques
 chaussures = [] # Liste des chaussures à propulsion
+dalles_innondes = [] # Liste des dalles innondes
 
 
 niveau = Niveau("rooms/room1.txt")
@@ -640,6 +682,7 @@ porte_unlock_image = pygame.transform.scale(pygame.image.load('assets/Porte_Unlo
 porte_lock_image = pygame.transform.scale(pygame.image.load('assets/Porte_Lock.png'), (niveau.size_x, niveau.size_y))
 dalle_electrique_image = pygame.transform.scale(pygame.image.load('assets/Electric.png'), (niveau.size_x, niveau.size_y))
 chaussure_image = pygame.transform.scale(pygame.image.load('assets/Flashy_Boots.png'), (niveau.size_x, niveau.size_y))
+dalle_innonde_image = pygame.transform.scale(pygame.image.load('assets/floor_water.png'), (niveau.size_x, niveau.size_y))
 
 running = True
 while running:
@@ -735,6 +778,8 @@ while running:
             image = dalle_electrique_image
         elif obj.type == "chaussure":
             image = chaussure_image
+        elif obj.type == "dalle_innonde":
+            image = dalle_innonde_image
 
         if image is not None:
             screen.blit(image, (obj.rect.x, obj.rect.y))
