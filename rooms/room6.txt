@@ -15,6 +15,6 @@ W     C  .  P      E
 .                  .
 .........S..........
 
-E room6
-W room10
-S room7
+E room7
+W room13
+S room5

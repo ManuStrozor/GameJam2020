@@ -16,5 +16,5 @@ W     C  .  P      .
 .........S..........
 
 N room12
-W room8
-S room6
+W room6
+S room8
