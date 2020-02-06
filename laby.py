@@ -8,6 +8,7 @@ class Player:
     speed = 2
     coins = 0
     oxygen_bottle = 0
+    chaussure = False
 
     def __init__(self, pos):
         self.grid_x = int(pos[0]/niveau.size_x)
@@ -45,6 +46,26 @@ class Player:
                     self.rect.bottom = porte_lock.rect.top
                 if dy < 0:  # deplacement top
                     self.rect.top = porte_lock.rect.bottom
+
+        # Collision dalle electrique SANS chaussures à propulsion
+        for dalle_electrique in dalles_electriques:
+            if self.rect.colliderect(dalle_electrique.rect) and self.chaussure is not True:
+                pygame.mixer.stop()
+                audio_electric.set_volume(1)
+                audio_electric.play()
+                if dx > 0:  # deplacement right
+                    self.rect.right = dalle_electrique.rect.left
+                if dx < 0:  # deplacement left
+                    self.rect.left = dalle_electrique.rect.right
+                if dy > 0:  # deplacement bottom
+                    self.rect.bottom = dalle_electrique.rect.top
+                if dy < 0:  # deplacement top
+                    self.rect.top = dalle_electrique.rect.bottom
+            # Collision dalle electrique SANS chaussures à propulsion
+            if self.rect.colliderect(dalle_electrique.rect) and self.chaussure is True:
+                pygame.mixer.stop()
+                audio_chaussure_propulsion.set_volume(1)
+                audio_chaussure_propulsion.play()
 
         # Collision porte déverrouillée
         for porte_unlock in portes_unlock:
@@ -143,6 +164,17 @@ class Player:
                 pygame.mixer.stop()
                 audio_oxygen_bottle.set_volume(3)
                 audio_oxygen_bottle.play()
+
+        # Collision chaussure
+        for chaussure in chaussures:
+            if self.rect.colliderect(chaussure.rect):
+                self.chaussure = True
+                chaussures.remove(chaussure)
+                get_obj(chaussure.grid[0], chaussure.grid[1]).type = None
+                print("chaussure récup")
+                pygame.mixer.stop()
+                audio_chaussure_recup.set_volume(1)
+                audio_chaussure_recup.play()
 
         # Collision button
         for button in buttons:
@@ -322,6 +354,15 @@ class Piece(Obj):
         pieces.append(self)
 
 
+class Chaussure(Obj):
+
+    def __init__(self, pos):
+        super().__init__(pos)
+        self.type = "chaussure"
+        objs.append(self)
+        chaussures.append(self)
+
+
 class Oxygen_bottle(Obj):
 
     def __init__(self, pos):
@@ -367,6 +408,14 @@ class PorteLock(Obj):
         portes_lock.append(self)
 
 
+class DalleElectrique(Obj):
+
+    def __init__(self, pos):
+        super().__init__(pos)
+        self.type = "dalle_electrique"
+        objs.append(self)
+        dalles_electriques.append(self)
+
 class Score:
 
     player_coins = None
@@ -377,17 +426,24 @@ class Score:
         self.coins = player.coins
         self.oxygen_bottle = player.oxygen_bottle
         self.room = niveau
+        self.chaussure = player.chaussure
         self.score_font = pygame.font.SysFont('Consolas', 50)
 
     def update(self):
         self.player_coins = self.score_font.render("Coins : "+str(self.coins), True, pygame.Color("yellow"), pygame.Color("black"))
         self.player_oxygen_bottle = self.score_font.render("Bouteille d'Oxygène : "+str(self.oxygen_bottle), True, pygame.Color("lightblue"), pygame.Color("black"))
         self.player_room = self.score_font.render("Salle : "+niveau.num_level, True, pygame.Color("green"), pygame.Color("black"))
+        if player.chaussure is True:
+            etat_chaussure = "Acquise"
+        elif player.chaussure is False:
+            etat_chaussure = "Non Acquise"
+        self.player_chaussure = self.score_font.render("Chaussures à propulsion : "+str(etat_chaussure), True, pygame.Color("red"), pygame.Color("black"))
 
     def draw(self):
         screen.blit(self.player_coins, (5, 2))
         screen.blit(self.player_oxygen_bottle, (5, 40))
-        screen.blit(self.player_room, (880, 2))
+        screen.blit(self.player_room, (screen.get_width()/1.2, screen.get_height()/20))
+        screen.blit(self.player_chaussure, (5, 80))
 
 
 class Niveau:
@@ -451,7 +507,7 @@ class Niveau:
                 self.sortieE = 'rooms/' + line[2:-1] + '.txt'
             elif line[0] == 'S':
                 self.sortieS = 'rooms/' + line[2:-1] + '.txt'
-        
+
         f.close()
 
     def afficher(self):
@@ -496,6 +552,10 @@ class Niveau:
                     Button((x, y))
                 elif sprite == "I":
                     ButtonPressed((x, y))
+                elif sprite == "G":
+                    DalleElectrique((x, y))
+                elif sprite == "J":
+                    Chaussure((x, y))
                 else:
                     objs.append(Obj((x, y)))
                 num_case += 1
@@ -539,6 +599,10 @@ audio_walk = pygame.mixer.Sound('assets/audio/walk.wav')  # son de pas (clap, cl
 audio_oxygen_bottle = pygame.mixer.Sound('assets/audio/air_fill.wav')  # Son de bouteille oxygene
 audio_door = pygame.mixer.Sound('assets/audio/close_door_1.wav')  # son de porte
 audio_button = pygame.mixer.Sound('assets/audio/button_press.wav')  # son de boutton
+audio_chaussure_propulsion = pygame.mixer.Sound('assets/audio/chaussure_propulsion.wav')  # son de propulsion air
+audio_chaussure_recup = pygame.mixer.Sound('assets/audio/chaussure_lacet.wav')  # son d'enfilage de chaussure
+audio_electric = pygame.mixer.Sound('assets/audio/electric.wav')  # son d'electricité
+
 
 MARGIN_X = (screen.get_width() - 640) / 2
 MARGIN_Y = (screen.get_height() - 480) / 2
@@ -553,23 +617,27 @@ buttons = []  # Liste des boutons
 buttons_pressed = []  # Liste des boutons activés
 portes_unlock = []  # Liste des portes deverouilles
 portes_lock = []  # Liste des portes verouilles
+dalles_electriques = []  # Liste des dalles electriques
+chaussures = [] # Liste des chaussures à propulsion
 
 
 niveau = Niveau("rooms/room1.txt")
 niveau.generer()
 player = niveau.afficher()
 
-wall_image = pygame.transform.scale(pygame.image.load('assets/wall.png'), (niveau.size_x, niveau.size_y))
-wind_image = pygame.transform.scale(pygame.image.load('assets/wind_jet.png'), (niveau.size_x, niveau.size_y))
-box_image = pygame.transform.scale(pygame.image.load('assets/Caisse1.png'), (niveau.size_x, niveau.size_y))
-coin_image = pygame.transform.scale(pygame.image.load('assets/coin.png'), (niveau.size_x, niveau.size_y))
-floor_image = pygame.transform.scale(pygame.image.load('assets/floor.png'), (niveau.size_x, niveau.size_y))
-room_image = pygame.transform.scale(pygame.image.load('assets/room.png'), (niveau.size_x, niveau.size_y))
-oxygen_image = pygame.transform.scale(pygame.image.load('assets/Oxygen_Bottle.png'), (niveau.size_x, niveau.size_y))
-button_image = pygame.transform.scale(pygame.image.load('assets/Red_Button.png'), (niveau.size_x, niveau.size_y))
-button_pressed_image = pygame.transform.scale(pygame.image.load('assets/Grey_Button_.png'), (niveau.size_x, niveau.size_y))
-porte_unlock_image = pygame.transform.scale(pygame.image.load('assets/Porte_Unlock.png'), (niveau.size_x, niveau.size_y))
-porte_lock_image = pygame.transform.scale(pygame.image.load('assets/Porte_Lock.png'), (niveau.size_x, niveau.size_y))
+wall_image = pygame.transform.scale(pygame.image.load('assets/wall.png'), (SIZE_X, SIZE_Y))
+wind_image = pygame.transform.scale(pygame.image.load('assets/wind_jet.png'), (SIZE_X, SIZE_Y))
+box_image = pygame.transform.scale(pygame.image.load('assets/Caisse1.png'), (SIZE_X, SIZE_Y))
+coin_image = pygame.transform.scale(pygame.image.load('assets/coin.png'), (SIZE_X, SIZE_Y))
+floor_image = pygame.transform.scale(pygame.image.load('assets/floor.png'), (SIZE_X, SIZE_Y))
+room_image = pygame.transform.scale(pygame.image.load('assets/room.png'), (SIZE_X, SIZE_Y))
+oxygen_image = pygame.transform.scale(pygame.image.load('assets/Oxygen_Bottle.png'), (SIZE_X, SIZE_Y))
+button_image = pygame.transform.scale(pygame.image.load('assets/Red_Button.png'), (SIZE_X, SIZE_Y))
+button_pressed_image = pygame.transform.scale(pygame.image.load('assets/Grey_Button_.png'), (SIZE_X, SIZE_Y))
+porte_unlock_image = pygame.transform.scale(pygame.image.load('assets/Porte_Unlock.png'), (SIZE_X, SIZE_Y))
+porte_lock_image = pygame.transform.scale(pygame.image.load('assets/Porte_Lock.png'), (SIZE_X, SIZE_Y))
+dalle_electrique_image = pygame.transform.scale(pygame.image.load('assets/Electric.png'), (SIZE_X, SIZE_Y))
+chaussure_image = pygame.transform.scale(pygame.image.load('assets/Flashy_Boots.png'), (SIZE_X, SIZE_Y))
 
 running = True
 while running:
@@ -639,12 +707,7 @@ while running:
             image = wall_image
         if get_type(obj.grid[0], obj.grid[1]) == "wind_jet":
             image = wind_image
-        if get_type(obj.grid[0], obj.grid[1]) is None\
-            or get_type(obj.grid[0], obj.grid[1]) == "coin"\
-                or get_type(obj.grid[0], obj.grid[1]) == "box"\
-                or get_type(obj.grid[0], obj.grid[1]) == "oxygen"\
-                or get_type(obj.grid[0], obj.grid[1]) == "button"\
-                or get_type(obj.grid[0], obj.grid[1]) == "button_pressed":
+        if get_type(obj.grid[0], obj.grid[1]) is None or get_type(obj.grid[0], obj.grid[1]) == "coin" or get_type(obj.grid[0], obj.grid[1]) == "box" or get_type(obj.grid[0], obj.grid[1]) == "oxygen" or get_type(obj.grid[0], obj.grid[1]) == "button" or get_type(obj.grid[0], obj.grid[1]) == "button_pressed" or get_type(obj.grid[0], obj.grid[1]) == "dalle_electrique" or get_type(obj.grid[0], obj.grid[1]) == "chaussure":
             image = floor_image
         screen.blit(image, (obj.rect.x, obj.rect.y))
         if get_type(obj.grid[0], obj.grid[1]) == "coin":
@@ -666,6 +729,12 @@ while running:
         screen.blit(image, (obj.rect.x, obj.rect.y))
         if get_type(obj.grid[0], obj.grid[1]) == "porte_unlock":
             image = porte_unlock_image
+        screen.blit(image, (obj.rect.x, obj.rect.y))
+        if get_type(obj.grid[0], obj.grid[1]) == "dalle_electrique":
+            image = dalle_electrique_image
+        screen.blit(image, (obj.rect.x, obj.rect.y))
+        if get_type(obj.grid[0], obj.grid[1]) == "chaussure":
+            image = chaussure_image
         screen.blit(image, (obj.rect.x, obj.rect.y))
 
     score = Score()
