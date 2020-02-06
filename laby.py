@@ -427,7 +427,7 @@ class Score:
         self.oxygen_bottle = player.oxygen_bottle
         self.room = niveau
         self.chaussure = player.chaussure
-        self.score_font = pygame.font.SysFont('Consolas', 50)
+        self.score_font = pygame.font.SysFont('Consolas', 30)
 
     def update(self):
         self.player_coins = self.score_font.render("Coins : "+str(self.coins), True, pygame.Color("yellow"), pygame.Color("black"))
