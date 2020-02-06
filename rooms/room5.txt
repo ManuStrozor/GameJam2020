@@ -1,18 +1,18 @@
 20 15
 .........N..........
-.O                 .
-.                  .
-.        .         .
-.        .         .
-.        Z         .
-.        .         .
-W     C  .  P      .
-.        .         .
-.        Z         .
-.        .         .
-.        .         .
-.                  .
-.                  .
+.QQQQQQQQ QQQQQQQQQ.
+.QQQQQQQQQQQQQQQQQQ.
+.QQQQQQQQQQQQQQQQQQ.
+.QQQQQQQQQQQQQQQQQQ.
+.QQQQQQQQQQQQQQQQQQ.
+.QQQQQQQQQQQQQQQQQQ.
+W QQQQQQQQQQQQQQQQQ.
+.QQQQQQQQQQQQQQQQQQ.
+.QQQQQQQQQQQQQQQQQQ.
+.QQQQQQQQQQQQQQQQQQ.
+.QQQQQQQQQQQQQQQQQQ.
+.QQQQQQQQQQQQQQQQQQ.
+.QQQQQQQQQQQQQQQQQQ.
 ....................
 
 N room6

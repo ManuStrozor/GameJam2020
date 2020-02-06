@@ -1,18 +1,18 @@
 20 15
 ....................
-.O                 .
-.    P        P    .
-.        .         .
-.        .         .
-.        Z         .
-.        .         .
-.     C  .  P      .
-.        .         .
-.        Z         .
-.        .         .
-.        .         .
-.     P     P      .
-.                  .
+.PPP .        . PPP.
+.PP  .        .  PP.
+.P   .        .   P.
+.        PP        .
+....    PPPP    ....
+.PP    PPPPPP    PP.
+.PP     PPPP     PP.
+.PP    PPPPPP    PP.
+....    PPPP    ....
+.        PP        .
+.P   .        .   P.
+.PP  .        .  PP.
+.PPP .        . PPP.
 .........S..........
 
 S room7

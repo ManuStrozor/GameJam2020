@@ -85,7 +85,7 @@ class Player:
 
             # Collision dalle innonde AVEC oxygene
             if self.rect.colliderect(dalle_innonde.rect) and self.oxygen_bottle > 0:
-                self.oxygen_bottle = self.oxygen_bottle - 0.3
+                self.oxygen_bottle = self.oxygen_bottle - 0.1
                 if self.oxygen_bottle <= 0.5:
                 #   =============================================================
                 #   ================= GAME OVER NO OXYGEN
