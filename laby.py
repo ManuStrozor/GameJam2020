@@ -110,21 +110,33 @@ class Player:
                 if dx > 0:  # deplacement right
                     if caisse.way_right(bloks):
                         caisse.rect.right += dx
+                        pygame.mixer.stop()
+                        audio_moving_box.set_volume(3)
+                        audio_moving_box.play()
                     else:
                         self.rect.x -= dx
                 if dx < 0:  # deplacement left
                     if caisse.way_left(bloks):
                         caisse.rect.left += dx
+                        pygame.mixer.stop()
+                        audio_moving_box.set_volume(3)
+                        audio_moving_box.play()
                     else:
                         self.rect.x -= dx
                 if dy > 0:  # deplacement bottom
                     if caisse.way_bottom(bloks):
                         caisse.rect.bottom += dy
+                        pygame.mixer.stop()
+                        audio_moving_box.set_volume(3)
+                        audio_moving_box.play()
                     else:
                         self.rect.y -= dy
                 if dy < 0:  # deplacement top
                     if caisse.way_top(bloks):
                         caisse.rect.top += dy
+                        pygame.mixer.stop()
+                        audio_moving_box.set_volume(3)
+                        audio_moving_box.play()
                     else:
                         self.rect.y -= dy
             if pygame.key.get_pressed()[pygame.K_LCTRL]:  # Tirer la caisse quand la touche (Ctrl gauche) est appuyé
@@ -133,18 +145,30 @@ class Player:
                     if caisse.way_right(bloks) and self.rect.collidepoint(tmp.x + dx + tmp.width, tmp.y + int(tmp.height/2))\
                             or self.rect.collidepoint(tmp.x + dx - self.speed, tmp.y + int(tmp.height/2)):
                         caisse.rect.right = self.rect.left
+                        pygame.mixer.stop()
+                        audio_moving_box.set_volume(3)
+                        audio_moving_box.play()
                 if dx < 0:  # deplacement left
                     if caisse.way_left(bloks) and self.rect.collidepoint(tmp.x + dx - self.speed, tmp.y + int(tmp.height/2))\
                             or self.rect.collidepoint(tmp.x + dx + tmp.width, tmp.y + int(tmp.height/2)):
                         caisse.rect.left = self.rect.right
+                        pygame.mixer.stop()
+                        audio_moving_box.set_volume(3)
+                        audio_moving_box.play()
                 if dy > 0:  # deplacement bottom
                     if caisse.way_bottom(bloks) and self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy + tmp.height)\
                             or self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy - self.speed):
                         caisse.rect.bottom = self.rect.top
+                        pygame.mixer.stop()
+                        audio_moving_box.set_volume(3)
+                        audio_moving_box.play()
                 if dy < 0:  # deplacement top
                     if caisse.way_top(bloks) and self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy - self.speed)\
                             or self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy + tmp.height):
                         caisse.rect.top = self.rect.bottom
+                        pygame.mixer.stop()
+                        audio_moving_box.set_volume(3)
+                        audio_moving_box.play()
 
         # Interaction souffleur
         for souffleur in souffleurs:
@@ -472,12 +496,14 @@ class Score:
     def update(self):
         self.player_coins = self.score_font.render("Coins : "+str(self.coins), True, pygame.Color("yellow"), pygame.Color("black"))
         self.player_oxygen_bottle = self.score_font.render("Bouteille d'Oxygène : "+str(self.oxygen_bottle), True, pygame.Color("lightblue"), pygame.Color("black"))
-        self.player_room = self.score_font.render("Salle : "+niveau.num_level, True, pygame.Color("green"), pygame.Color("black"))
+        self.player_room = self.score_font.render("Salle : "+niveau.num_level, True, pygame.Color("darkorange"), pygame.Color("black"))
         if player.chaussure is True:
-            etat_chaussure = "Acquise"
+            #etat_chaussure = "        Acquise"
+            self.player_chaussure = self.score_font.render("Chaussures à propulsion        Acquise ", True, pygame.Color("green"), pygame.Color("black"))
         elif player.chaussure is False:
             etat_chaussure = "Non Acquise"
-        self.player_chaussure = self.score_font.render("Chaussures à propulsion : "+str(etat_chaussure), True, pygame.Color("red"), pygame.Color("black"))
+            self.player_chaussure = self.score_font.render("Chaussures à propulsion Non Acquise ", True, pygame.Color("red"), pygame.Color("black"))
+        #self.player_chaussure = self.score_font.render("Chaussures à propulsion : "+str(etat_chaussure), True, pygame.Color("red"), pygame.Color("black"))
 
     def draw(self):
         screen.blit(self.player_coins, (5, 2))
@@ -649,6 +675,7 @@ audio_button = pygame.mixer.Sound('assets/audio/button_press.wav')  # son de bou
 audio_chaussure_propulsion = pygame.mixer.Sound('assets/audio/chaussure_propulsion.wav')  # son de propulsion air
 audio_chaussure_recup = pygame.mixer.Sound('assets/audio/chaussure_lacet.wav')  # son d'enfilage de chaussure
 audio_electric = pygame.mixer.Sound('assets/audio/electric.wav')  # son d'electricité
+audio_moving_box = pygame.mixer.Sound('assets/audio/moving_box_s.wav')  # son d'electricité
 
 
 MARGIN_X = (screen.get_width() - 640) / 2
@@ -687,6 +714,11 @@ porte_lock_image = pygame.transform.scale(pygame.image.load('assets/porte_lock.p
 dalle_electrique_image = pygame.transform.scale(pygame.image.load('assets/electric.png'), (niveau.size_x, niveau.size_y))
 chaussure_image = pygame.transform.scale(pygame.image.load('assets/flashy_boots.png'), (niveau.size_x, niveau.size_y))
 dalle_innonde_image = pygame.transform.scale(pygame.image.load('assets/floor_water.png'), (niveau.size_x, niveau.size_y))
+decor_etagere_image = pygame.transform.scale(pygame.image.load('assets/decor_etagere.png'), (niveau.size_x, niveau.size_y))
+decor_pillier_electrique_image = pygame.transform.scale(pygame.image.load('assets/decor_electric_pillar.png'), (niveau.size_x, niveau.size_y))
+decor_poubelle_image = pygame.transform.scale(pygame.image.load('assets/decor_poubelle.png'), (niveau.size_x, niveau.size_y))
+decor_boite_image = pygame.transform.scale(pygame.image.load('assets/decor_boite.png'), (niveau.size_x, niveau.size_y))
+decor_four_image = pygame.transform.scale(pygame.image.load('assets/decor_four.png'), (niveau.size_x, niveau.size_y))
 
 running = True
 while running:
