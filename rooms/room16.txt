@@ -1,18 +1,18 @@
 20 15
 ....................
-.P                P.
-.P                P.
-..                ..
-. ...   .  .   ... .
-.O   ..  ..  ..   O.
-.     P.    .P     .
 .                  .
-.     P.    .P     .
-.O  ...      ...  O.
-. ..     ..     .. .
-..  C          C  ..
-.P   C        C   P.
-.   C          C   .
-..........S.........
+.    PPPP     PPPP .
+.  PPPPPP   PPPPPP .
+. PPPP     PPPP    .
+.PPP      PPP      .
+.PP  PPPP PP  PPPP .
+.PP   PP  PP   PP  .
+.PP     P PP     P .
+.PPP  PPP PPP  PPP .
+. PPPPPP   PPPPPP  .
+.  PPP      PPP    .
+.                  .
+.                  .
+.........S..........
 
 S room15

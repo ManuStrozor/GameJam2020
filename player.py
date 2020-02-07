@@ -4,7 +4,7 @@ import pygame
 class Player:
 
     coins = 0
-    oxygen_bottle = 0
+    oxygen_bottle = 5000
 
     speed = 4
     chaussure = False
