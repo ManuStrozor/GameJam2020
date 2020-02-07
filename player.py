@@ -4,9 +4,9 @@ import pygame
 class Player:
 
     coins = 0
-    oxygen_bottle = 500
+    oxygen_bottle = 0
 
-    speed = 4
+    speed = 2
     chaussure = False
     direction = 0
     num_sprite = 0
@@ -108,8 +108,8 @@ class Player:
         # Collision dalle electrique SANS chaussures à propulsion
         for dalle_electrique in self.game.niveau.dalles_electriques:
             if self.rect.colliderect(dalle_electrique.rect) and self.chaussure is not True:
-                pygame.mixer.stop()
-                self.game.get_audio("electric").set_volume(1)
+                #pygame.mixer.stop()
+                self.game.get_audio("electric").set_volume(0.5)
                 self.game.get_audio("electric").play()
                 if dx > 0:  # deplacement right
                     self.rect.right = dalle_electrique.rect.left
@@ -122,16 +122,13 @@ class Player:
 
             # Collision dalle electrique AVEC chaussures à propulsion
             if self.rect.colliderect(dalle_electrique.rect) and self.chaussure is True:
-                pygame.mixer.stop()
-                self.game.get_audio("chaussure_propulsion").set_volume(1)
+                #pygame.mixer.stop()
+                self.game.get_audio("chaussure_propulsion").set_volume(0.5)
                 self.game.get_audio("chaussure_propulsion").play()
 
         # Collision dalle innonde SANS oxygene
         for dalle_innonde in self.game.niveau.dalles_innondes:
             if self.rect.colliderect(dalle_innonde.rect) and self.oxygen_bottle <= 0:
-                pygame.mixer.stop()
-                self.game.get_audio("electric").set_volume(1)  # a changer
-                self.game.get_audio("electric").play()  # a changer
                 if dx > 0:  # deplacement right
                     self.rect.right = dalle_innonde.rect.left
                 if dx < 0:  # deplacement left
@@ -146,15 +143,15 @@ class Player:
                 self.oxygen_bottle = self.oxygen_bottle - 0.1
                 if self.oxygen_bottle <= 0.5:
                     self.game.game_lost = True
-                pygame.mixer.stop()
-                self.game.get_audio("chaussure_propulsion").set_volume(1)
-                self.game.get_audio("chaussure_propulsion").play()
+                #pygame.mixer.stop()
+                self.game.get_audio("water").set_volume(0.5)
+                self.game.get_audio("water").play()
 
         # Collision porte déverrouillée
         for porte_unlock in self.game.niveau.portes_unlock:
             if self.rect.colliderect(porte_unlock.rect):
-                pygame.mixer.stop()
-                self.game.get_audio("door").set_volume(3)
+                #pygame.mixer.stop()
+                self.game.get_audio("door").set_volume(0.5)
                 self.game.get_audio("door").play()
 
         # Collision caisse (Pousser et Tirer)
@@ -163,32 +160,32 @@ class Player:
                 if dx > 0:  # deplacement right
                     if caisse.way_right(bloks):
                         caisse.rect.right += dx
-                        pygame.mixer.stop()
-                        self.game.get_audio("moving_box").set_volume(3)
+                        #pygame.mixer.stop()
+                        self.game.get_audio("moving_box").set_volume(0.1)
                         self.game.get_audio("moving_box").play()
                     else:
                         self.rect.x -= dx
                 if dx < 0:  # deplacement left
                     if caisse.way_left(bloks):
                         caisse.rect.left += dx
-                        pygame.mixer.stop()
-                        self.game.get_audio("moving_box").set_volume(3)
+                        #pygame.mixer.stop()
+                        self.game.get_audio("moving_box").set_volume(0.1)
                         self.game.get_audio("moving_box").play()
                     else:
                         self.rect.x -= dx
                 if dy > 0:  # deplacement bottom
                     if caisse.way_bottom(bloks):
                         caisse.rect.bottom += dy
-                        pygame.mixer.stop()
-                        self.game.get_audio("moving_box").set_volume(3)
+                        #pygame.mixer.stop()
+                        self.game.get_audio("moving_box").set_volume(0.1)
                         self.game.get_audio("moving_box").play()
                     else:
                         self.rect.y -= dy
                 if dy < 0:  # deplacement top
                     if caisse.way_top(bloks):
                         caisse.rect.top += dy
-                        pygame.mixer.stop()
-                        self.game.get_audio("moving_box").set_volume(3)
+                        #pygame.mixer.stop()
+                        self.game.get_audio("moving_box").set_volume(0.1)
                         self.game.get_audio("moving_box").play()
                     else:
                         self.rect.y -= dy
@@ -198,29 +195,29 @@ class Player:
                     if caisse.way_right(bloks) and self.rect.collidepoint(tmp.x + dx + self.rect.width + self.speed, tmp.y + int(tmp.height/2))\
                             or self.rect.collidepoint(tmp.x + dx + self.speed - 1, tmp.y + int(tmp.height/2)):
                         caisse.rect.right = self.rect.left
-                        pygame.mixer.stop()
-                        self.game.get_audio("moving_box").set_volume(3)
+                        #pygame.mixer.stop()
+                        self.game.get_audio("moving_box").set_volume(0.1)
                         self.game.get_audio("moving_box").play()
                 if dx < 0:  # deplacement left
                     if caisse.way_left(bloks) and self.rect.collidepoint(tmp.x + dx - self.speed, tmp.y + int(tmp.height/2))\
                             or self.rect.collidepoint(tmp.x + dx + self.rect.width + self.speed - 1, tmp.y + int(tmp.height/2)):
                         caisse.rect.left = self.rect.right
-                        pygame.mixer.stop()
-                        self.game.get_audio("moving_box").set_volume(3)
+                        #pygame.mixer.stop()
+                        self.game.get_audio("moving_box").set_volume(0.1)
                         self.game.get_audio("moving_box").play()
                 if dy > 0:  # deplacement bottom
                     if caisse.way_bottom(bloks) and self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy + self.rect.height + self.speed)\
                             or self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy + self.speed - 1):
                         caisse.rect.bottom = self.rect.top
-                        pygame.mixer.stop()
-                        self.game.get_audio("moving_box").set_volume(3)
+                        #pygame.mixer.stop()
+                        self.game.get_audio("moving_box").set_volume(0.1)
                         self.game.get_audio("moving_box").play()
                 if dy < 0:  # deplacement top
                     if caisse.way_top(bloks) and self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy - self.speed)\
                             or self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy + self.rect.height + self.speed - 1):
                         caisse.rect.top = self.rect.bottom
-                        pygame.mixer.stop()
-                        self.game.get_audio("moving_box").set_volume(3)
+                        #pygame.mixer.stop()
+                        self.game.get_audio("moving_box").set_volume(0.1)
                         self.game.get_audio("moving_box").play()
 
         # Interaction souffleur
@@ -258,18 +255,17 @@ class Player:
                 self.coins += 1
                 self.game.niveau.pieces.remove(piece)
                 piece.type = None
-                pygame.mixer.stop()
+                #pygame.mixer.stop()
                 self.game.get_audio("coins").set_volume(3)
                 self.game.get_audio("coins").play()
 
         # Collision oxygen_bottle
         for oxygen_bottle in self.game.niveau.oxygen_bottles:
             if self.rect.colliderect(oxygen_bottle.rect):
-                self.oxygen_bottle += 100
+                self.oxygen_bottle += 500
                 self.game.niveau.oxygen_bottles.remove(oxygen_bottle)
                 oxygen_bottle.type = None
-                print("bouteille oxygene récup")
-                pygame.mixer.stop()
+                #pygame.mixer.stop()
                 self.game.get_audio("oxygen_bottle").set_volume(3)
                 self.game.get_audio("oxygen_bottle").play()
 
@@ -279,8 +275,7 @@ class Player:
                 self.chaussure = True
                 self.game.niveau.chaussures.remove(chaussure)
                 chaussure.type = None
-                print("chaussure récup")
-                pygame.mixer.stop()
+                #pygame.mixer.stop()
                 self.game.get_audio("chaussure").set_volume(1)
                 self.game.get_audio("chaussure").play()
 
@@ -289,7 +284,7 @@ class Player:
             if self.rect.colliderect(button.rect):
                 self.game.niveau.buttons.remove(button)
                 button.type = "button_pressed"
-                pygame.mixer.stop()
+                #pygame.mixer.stop()
                 self.game.get_audio("button").set_volume(3)
                 self.game.get_audio("button").play()
 

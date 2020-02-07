@@ -15,6 +15,8 @@ os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (x, y)
 pygame.init()
 pygame.display.set_caption("Lonely Space v1.0")
 win = pygame.display.set_mode((1024, 768))
+icon_32x32 = pygame.image.load("assets/lonely_space_32.png")
+pygame.display.set_icon(icon_32x32)
 
 font_titre = pygame.font.SysFont('comicsans', 85, True)
 font = pygame.font.SysFont('comicsans', 40, True)
@@ -42,6 +44,16 @@ bouton_help = pygame.Surface(size)
 rect_help = bouton_help.get_rect()
 rect_help.x = 256
 rect_help.y = 450
+
+bouton_back2 = pygame.Surface(size)
+rect_back2 = bouton_back2.get_rect()
+rect_back2.x = 256
+rect_back2.y = 400
+
+bouton_back = pygame.Surface(size)
+rect_back = bouton_back.get_rect()
+rect_back.x = 256
+rect_back.y = 550
 
 bouton_quit = pygame.Surface(size)
 rect_quit = bouton_quit.get_rect()
@@ -73,10 +85,6 @@ rect_return.y = 550
 
 ################## Winner Ending ########################
 
-
-################### Score screen ########################
-
-
 def draw_menu():
     # Dessins
     pygame.draw.rect(win, GREY, rect_play)
@@ -86,7 +94,7 @@ def draw_menu():
 
     # Textes
     win.blit(pygame.image.load('assets/background.png'), (0, 0))
-    text_menu = font_titre.render('Menu', 1, (255, 0, 255))
+    text_menu = font_titre.render('-= Lonely Space =-', 1, (255, 0, 255))
     text_play = font.render('Jouer', 1, (255, 0, 255))
     text_cred = font.render('Crédits', 1, (255, 0, 255))
     text_help = font.render('Aide', 1, (255, 0, 255))
@@ -141,11 +149,10 @@ def update_menu():
             if over_play:  # 0=gauche, 1=milieu, 2=droite
                 game.goto("game")
             elif over_cred:
-                #game.goto("cred")
+                game.goto("cred")
                 pass
             elif over_help:
-                #game.goto("help")
-                pass
+                game.goto("help")
             elif over_quit:
                 game.views.clear()
         if e.type == pygame.QUIT:
@@ -213,6 +220,97 @@ def update_pause():
             game.views.clear()
 
 
+def draw_cred():
+
+    # Textes
+    win.blit(pygame.image.load('assets/background.png'), (0, 0))
+    text_credis = font_titre.render('Made by ToutSaufLaSalle21', 1, (255, 0, 255))
+    text_manu = font.render('The Full of lover : Emmanuel Turbet-Delof', 1, (255, 0, 255))
+    text_loic1 = font.render('The Glitcher : Loïc Allemand', 1, (255, 0, 255))
+    text_yassine = font.render('The Debuger : Yassine El Mimouni', 1, (255, 0, 255))
+    text_loic2 = font.render('The Assets finder : Loïc Chareron', 1, (255, 0, 255))
+    text_yann = font.render('The Canada dryer : Yann Galan', 1, (255, 0, 255))
+    text_quit = font.render('Retour', 1, (255, 0, 255))
+    text_survol = font.render(TEXT, 1, (255, 0, 255))
+
+    # Blit
+    win.blit(text_credis, (512 - text_credis.get_rect().centerx, 130))
+    win.blit(text_manu, (512 - text_manu.get_rect().centerx, 250 + bouton_play.get_rect().centery - 15))
+    win.blit(text_loic1, (512 - text_loic1.get_rect().centerx, 300 + bouton_cred.get_rect().centery - 15))
+    win.blit(text_yassine, (512 - text_yassine.get_rect().centerx, 350 + bouton_help.get_rect().centery - 15))
+    win.blit(text_loic2, (512 - text_loic2.get_rect().centerx, 400 + bouton_quit.get_rect().centery - 15))
+    win.blit(text_yann, (512 - text_yann.get_rect().centerx, 450 + bouton_quit.get_rect().centery - 15))
+    win.blit(bouton_back, rect_back)
+    win.blit(text_quit, (512 - text_quit.get_rect().centerx, 550 + bouton_quit.get_rect().centery - 15))
+    win.blit(text_survol, (512 - text_survol.get_rect().centerx, 650))
+
+    pygame.display.flip()
+
+
+def update_cred():
+    global TEXT
+
+    over_back = None
+
+    # Si le focus est sur la fenêtre.
+    if pygame.mouse.get_focused():
+        # Trouve position de la souris
+        x, y = pygame.mouse.get_pos()
+        over_back = rect_back.collidepoint(x, y)
+
+        if over_back:
+            TEXT = 'Retour au menu'
+        else:
+            TEXT = None
+
+    for e in pygame.event.get():
+        if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
+            if over_back:  # 0=gauche, 1=milieu, 2=droite
+                game.goto("menu")
+        if e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE:
+            game.goto("menu")
+        if e.type == pygame.QUIT:
+            game.views.clear()
+
+
+def update_help():
+    global TEXT
+
+    over_back = None
+
+    # Si le focus est sur la fenêtre.
+    if pygame.mouse.get_focused():
+        # Trouve position de la souris
+        x, y = pygame.mouse.get_pos()
+        over_back = rect_back2.collidepoint(x, y)
+
+        if over_back:
+            TEXT = 'Retour au menu'
+        else:
+            TEXT = None
+
+    for e in pygame.event.get():
+        if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
+            if over_back:  # 0=gauche, 1=milieu, 2=droite
+                game.goto("menu")
+        if e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE:
+            game.goto("menu")
+        if e.type == pygame.QUIT:
+            game.views.clear()
+
+
+def draw_help():
+    win.blit(pygame.image.load('assets/help.png'), (0, 0))
+    text_quit = font.render('Retour', 1, (255, 0, 255))
+    text_survol = font.render(TEXT, 1, (255, 0, 255))
+
+    win.blit(bouton_back2, rect_back2)
+    win.blit(text_quit, (512 - text_quit.get_rect().centerx, 400 + bouton_back2.get_rect().centery - 15))
+    win.blit(text_survol, (512 - text_survol.get_rect().centerx, 500))
+
+    pygame.display.flip()
+
+
 def update_gameover():
     print("update gameover")
     pass
@@ -223,25 +321,6 @@ def draw_gameover():
     pass
 
 
-def update_cred():
-    print("update cred")
-    pass
-
-
-def draw_cred():
-    print("draw cred")
-    pass
-
-
-def update_help():
-    print("update help")
-    pass
-
-
-def draw_help():
-    print("draw help")
-    pass
-
 def update_win():
     print("update Win")
     pass
@@ -251,6 +330,9 @@ def draw_win():
     print("draw Win")
     pass
 
+
+game.get_audio("theme").set_volume(0.05)
+game.get_audio("theme").play(loops=-1)
 
 while game.views.get("run"):
 

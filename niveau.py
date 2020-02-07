@@ -29,12 +29,11 @@ class Niveau:
         self.portes_unlock = []  # Liste des portes deverouilles-----------
         self.portes_lock = []  # Liste des portes verouilles---------------
         self.chaussures = []  # Liste des chaussures à propulsion----------
-
-        self.walls = []  # Liste des murs
-        self.souffleurs = []  # Liste des souffleurs
-        self.dalles_electriques = []  # Liste des dalles electriques
-        self.dalles_innondes = []  # Liste des dalles innondes
-        self.all_saas = []  # liste des saas
+        self.walls = []  # Liste des murs----------------------------------
+        self.souffleurs = []  # Liste des souffleurs-----------------------
+        self.dalles_electriques = []  # Liste des dalles electriques-------
+        self.dalles_innondes = []  # Liste des dalles innondes-------------
+        self.all_saas = []  # liste des saas-------------------------------
 
         self.generer(path)
         self.afficher()

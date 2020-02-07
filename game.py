@@ -7,12 +7,22 @@ from score import Score
 
 
 class Game:
+
     WIDTH = 800
     HEIGHT = 600
 
     clock = pygame.time.Clock()
 
-    views = {"run": 1, "menu": 1, "game": 0, "pause": 0, "cred": 0, "help": 0, "gameover": 0, "win" : 0}
+    views = {
+        "run": 1,
+        "menu": 1,
+        "game": 0,
+        "pause": 0,
+        "cred": 0,
+        "help": 0,
+        "gameover": 0,
+        "win": 0
+    }
 
     niveau = None
 
@@ -30,63 +40,81 @@ class Game:
         self.MARGIN_X = (window.get_width() - self.WIDTH) / 2
         self.MARGIN_Y = (window.get_height() - self.HEIGHT) / 2
 
-        self.audios = {"coins": pygame.mixer.Sound( 'assets/audio/coins.wav' ),
-            "walk": pygame.mixer.Sound( 'assets/audio/walk.wav' ),
-            "oxygen_bottle": pygame.mixer.Sound( 'assets/audio/air_fill.wav' ),
-            "door": pygame.mixer.Sound( 'assets/audio/close_door_1.wav' ),
-            "button": pygame.mixer.Sound( 'assets/audio/button_press.wav' ),
-            "chaussure_propulsion": pygame.mixer.Sound( 'assets/audio/chaussure_propulsion.wav' ),
-            "chaussure": pygame.mixer.Sound( 'assets/audio/chaussure_lacet.wav' ),
-            "electric": pygame.mixer.Sound( 'assets/audio/electric.wav' ),
-            "moving_box": pygame.mixer.Sound( 'assets/audio/moving_box_s.wav' )}
+        self.audios = {
+            "coins": pygame.mixer.Sound('assets/audio/coins.wav'),
+            "walk": pygame.mixer.Sound('assets/audio/walk.wav'),
+            "oxygen_bottle": pygame.mixer.Sound('assets/audio/air_fill.wav'),
+            "door": pygame.mixer.Sound('assets/audio/close_door_1.wav'),
+            "button": pygame.mixer.Sound('assets/audio/button_press.wav'),
+            "chaussure_propulsion": pygame.mixer.Sound('assets/audio/chaussure_propulsion.wav'),
+            "chaussure": pygame.mixer.Sound('assets/audio/chaussure_lacet.wav'),
+            "electric": pygame.mixer.Sound('assets/audio/electric.wav'),
+            "water": pygame.mixer.Sound('assets/audio/water.wav'),
+            "moving_box": pygame.mixer.Sound('assets/audio/moving_box_s.wav'),
+            "theme": pygame.mixer.Sound('assets/audio/theme/main_theme.ogg')
+        }
 
-        self.images = {"wall": pygame.image.load( 'assets/wall.png' ),
-            "wind_jet": pygame.image.load( 'assets/wind_jet.png' ), "caisse": pygame.image.load( 'assets/caisse.png' ),
-            "coin": pygame.image.load( 'assets/coin.png' ), "floor": pygame.image.load( 'assets/floor.png' ),
-            "oxygen_bottle": pygame.image.load( 'assets/oxygen_bottle.png' ),
-            "red_button": pygame.image.load( 'assets/red_button.png' ),
-            "grey_button": pygame.image.load( 'assets/grey_button.png' ),
-            "porte_unlock": pygame.image.load( 'assets/porte_unlock.png' ),
-            "porte_lock": pygame.image.load( 'assets/porte_lock.png' ),
-            "electric": pygame.image.load( 'assets/electric.png' ),
-            "flashy_boots": pygame.image.load( 'assets/flashy_boots.png' ),
-            "floor_water": pygame.image.load( 'assets/floor_water.png' ),
-            "decor_etagere": pygame.image.load( 'assets/decor_etagere.png' ),
-            "decor_electric_pillar": pygame.image.load( 'assets/decor_electric_pillar.png' ),
-            "decor_poubelle": pygame.image.load( 'assets/decor_poubelle.png' ),
-            "decor_boite": pygame.image.load( 'assets/decor_boite.png' ),
-            "decor_four": pygame.image.load( 'assets/decor_four.png' ),
+        self.images = {
+            "wall": pygame.image.load( 'assets/wall.png'),
+            "wind_jet": pygame.image.load( 'assets/wind_jet.png'),
+            "caisse": pygame.image.load('assets/caisse.png'),
+            "coin": pygame.image.load( 'assets/coin.png'),
+            "floor": pygame.image.load('assets/floor.png'),
+            "oxygen_bottle": pygame.image.load('assets/oxygen_bottle.png'),
+            "red_button": pygame.image.load('assets/red_button.png'),
+            "grey_button": pygame.image.load('assets/grey_button.png'),
+            "porte_unlock": pygame.image.load('assets/porte_unlock.png'),
+            "porte_lock": pygame.image.load('assets/porte_lock.png'),
+            "electric": pygame.image.load('assets/electric.png'),
+            "flashy_boots": pygame.image.load('assets/flashy_boots.png'),
+            "floor_water": pygame.image.load('assets/floor_water.png'),
+            "decor_etagere": pygame.image.load('assets/decor_etagere.png'),
+            "decor_electric_pillar": pygame.image.load('assets/decor_electric_pillar.png'),
+            "decor_poubelle": pygame.image.load('assets/decor_poubelle.png'),
+            "decor_boite": pygame.image.load('assets/decor_boite.png'),
+            "decor_four": pygame.image.load('assets/decor_four.png'),
             "event_fin": pygame.image.load('assets/box.png'),
-            "saas": pygame.image.load( 'assets/saas.png' )}
+            "saas": pygame.image.load('assets/saas.png')
+        }
 
-        self.player_right_images = {0: pygame.image.load('assets/player_right_0.png'),
-                                    1: pygame.image.load('assets/player_right_1.png'),
-                                    2: pygame.image.load('assets/player_right_2.png'),
-                                    3: pygame.image.load('assets/player_right_3.png')}
+        self.player_right_images = {0: pygame.image.load('assets/player/right_0.png'),
+                                    1: pygame.image.load('assets/player/right_1.png'),
+                                    2: pygame.image.load('assets/player/right_2.png'),
+                                    3: pygame.image.load('assets/player/right_3.png')}
 
-        self.player_left_images = {0: pygame.image.load('assets/player_left_0.png'),
-                                   1: pygame.image.load('assets/player_left_1.png'),
-                                   2: pygame.image.load('assets/player_left_2.png'),
-                                   3: pygame.image.load('assets/player_left_3.png')}
+        self.player_left_images = {0: pygame.image.load('assets/player/left_0.png'),
+                                   1: pygame.image.load('assets/player/left_1.png'),
+                                   2: pygame.image.load('assets/player/left_2.png'),
+                                   3: pygame.image.load('assets/player/left_3.png')}
 
-        self.player_bottom_images = {0: pygame.image.load('assets/player_bottom_0.png'),
-                                     1: pygame.image.load('assets/player_bottom_1.png'),
-                                     2: pygame.image.load('assets/player_bottom_2.png'),
-                                     3: pygame.image.load('assets/player_bottom_3.png')}
+        self.player_bottom_images = {0: pygame.image.load('assets/player/bottom_0.png'),
+                                     1: pygame.image.load('assets/player/bottom_1.png'),
+                                     2: pygame.image.load('assets/player/bottom_2.png'),
+                                     3: pygame.image.load('assets/player/bottom_3.png')}
 
-        self.player_top_images = {0: pygame.image.load('assets/player_top_0.png'),
-                                  1: pygame.image.load('assets/player_top_1.png'),
-                                  2: pygame.image.load('assets/player_top_2.png'),
-                                  3: pygame.image.load('assets/player_top_3.png')}
+        self.player_top_images = {0: pygame.image.load('assets/player/top_0.png'),
+                                  1: pygame.image.load('assets/player/top_1.png'),
+                                  2: pygame.image.load('assets/player/top_2.png'),
+                                  3: pygame.image.load('assets/player/top_3.png')}
 
-        self.levels = {"room1": Niveau( self, "rooms/room1.txt" ), "room2": Niveau( self, "rooms/room2.txt" ),
-            "room3": Niveau( self, "rooms/room3.txt" ), "room4": Niveau( self, "rooms/room4.txt" ),
-            "room5": Niveau( self, "rooms/room5.txt" ), "room6": Niveau( self, "rooms/room6.txt" ),
-            "room7": Niveau( self, "rooms/room7.txt" ), "room8": Niveau( self, "rooms/room8.txt" ),
-            "room9": Niveau( self, "rooms/room9.txt" ), "room10": Niveau( self, "rooms/room10.txt" ),
-            "room11": Niveau( self, "rooms/room11.txt" ), "room12": Niveau( self, "rooms/room12.txt" ),
-            "room13": Niveau( self, "rooms/room13.txt" ), "room14": Niveau( self, "rooms/room14.txt" ),
-            "room15": Niveau( self, "rooms/room15.txt" ), "room16": Niveau( self, "rooms/room16.txt" )}
+        self.levels = {
+            "room1": Niveau(self, "rooms/room1.txt"),
+            "room2": Niveau(self, "rooms/room2.txt"),
+            "room3": Niveau(self, "rooms/room3.txt"),
+            "room4": Niveau(self, "rooms/room4.txt"),
+            "room5": Niveau(self, "rooms/room5.txt"),
+            "room6": Niveau(self, "rooms/room6.txt"),
+            "room7": Niveau(self, "rooms/room7.txt"),
+            "room8": Niveau(self, "rooms/room8.txt"),
+            "room9": Niveau(self, "rooms/room9.txt"),
+            "room10": Niveau(self, "rooms/room10.txt"),
+            "room11": Niveau(self, "rooms/room11.txt"),
+            "room12": Niveau(self, "rooms/room12.txt"),
+            "room13": Niveau(self, "rooms/room13.txt"),
+            "room14": Niveau(self, "rooms/room14.txt"),
+            "room15": Niveau(self, "rooms/room15.txt"),
+            "room16": Niveau(self, "rooms/room16.txt")
+        }
 
         self.niveau = self.levels.__getitem__( "room1" )
 
@@ -165,7 +193,7 @@ class Game:
 
         # Affichage des saas
         for saas in self.niveau.all_saas:
-            self.window.blit( self.get_image( "saas" ), (saas.rect.x, saas.rect.y) )
+            self.window.blit( self.get_image("saas"), (saas.rect.x, saas.rect.y) )
 
         self.player.draw()
 
@@ -174,7 +202,7 @@ class Game:
         pygame.display.flip()
 
     def set_lvl(self, name):
-        self.niveau = self.levels.__getitem__( name )
+        self.niveau = self.levels.__getitem__(name)
 
     def get_player_image(self, direction, num):
         image = None
