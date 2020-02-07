@@ -12,12 +12,13 @@ class Game:
 
     clock = pygame.time.Clock()
 
-    views = {"run": 1, "menu": 1, "game": 0, "pause": 0, "cred": 0, "help": 0, "gameover": 0}
+    views = {"run": 1, "menu": 1, "game": 0, "pause": 0, "cred": 0, "help": 0, "gameover": 0, "win" : 0}
 
     niveau = None
 
     spawn = []
     game_lost = False
+    game_win = False
 
     def __del__(self):
         pass
@@ -54,7 +55,9 @@ class Game:
             "decor_electric_pillar": pygame.image.load( 'assets/decor_electric_pillar.png' ),
             "decor_poubelle": pygame.image.load( 'assets/decor_poubelle.png' ),
             "decor_boite": pygame.image.load( 'assets/decor_boite.png' ),
-            "decor_four": pygame.image.load( 'assets/decor_four.png' ), "saas": pygame.image.load( 'assets/saas.png' )}
+            "decor_four": pygame.image.load( 'assets/decor_four.png' ),
+            "event_fin": pygame.image.load('assets/box.png'),
+            "saas": pygame.image.load( 'assets/saas.png' )}
 
         self.player_right_images = {0: pygame.image.load('assets/player_right_0.png'),
                                     1: pygame.image.load('assets/player_right_1.png'),
@@ -97,6 +100,9 @@ class Game:
         if self.game_lost:
             self.save_game()
             self.goto( "gameover" )
+
+        if self.game_win:
+            self.goto( "win" )
 
         self.player.update()
         self.score.update()
@@ -150,6 +156,9 @@ class Game:
                 image = self.get_image( "saas" )
             elif obj.type == "dalle_innonde":
                 image = self.get_image( "floor_water" )
+            elif obj.type == "event_fin":
+                image = self.get_image( "event_fin" )
+
 
             if image is not None:
                 self.window.blit( image, (obj.rect.x, obj.rect.y) )

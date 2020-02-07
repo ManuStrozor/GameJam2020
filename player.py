@@ -4,7 +4,7 @@ import pygame
 class Player:
 
     coins = 0
-    oxygen_bottle = 5000
+    oxygen_bottle = 500
 
     speed = 4
     chaussure = False
@@ -297,6 +297,12 @@ class Player:
                 for porte_lock in self.game.niveau.portes_lock:
                     self.game.niveau.portes_lock.remove(porte_lock)
                     porte_lock.type = "porte_unlock"
+
+        # Collision event_fin
+        if self.game.niveau.event_fin is not None:
+            if self.rect.colliderect(self.game.niveau.event_fin.rect):
+                self.game.game_win = True
+                print("Chévre")
 
     def way_right(self, list_of_items):
         for item in list_of_items:

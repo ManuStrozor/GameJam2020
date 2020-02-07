@@ -165,3 +165,9 @@ class DalleInnonde(Obj):
     def __init__(self, niv, pos):
         super().__init__(niv, pos)
         self.type = "dalle_innonde"
+
+class EventFin(Obj):
+
+    def __init__(self, niv, pos):
+        super().__init__(niv, pos)
+        self.type = "event_fin"

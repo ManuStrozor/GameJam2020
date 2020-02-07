@@ -242,6 +242,15 @@ def draw_help():
     print("draw help")
     pass
 
+def update_win():
+    print("update Win")
+    pass
+
+
+def draw_win():
+    print("draw Win")
+    pass
+
 
 while game.views.get("run"):
 
@@ -268,5 +277,9 @@ while game.views.get("run"):
     while game.views.get("gameover"):
         update_gameover()
         draw_gameover()
+
+    while game.views.get("win"):
+        update_win()
+        draw_win()
 
 pygame.quit()

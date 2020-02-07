@@ -17,6 +17,7 @@ class Niveau:
         self.sortieW = None
         self.sortieE = None
         self.sortieS = None
+        self.event_fin = None
 
         self.objs = []  # Liste de tous les blocs--------------------------
 
@@ -135,6 +136,9 @@ class Niveau:
                 elif ch == "Q":
                     item = DalleInnonde(self, (x, y))
                     self.dalles_innondes.append(item)
+                elif ch == "F":
+                    item = EventFin(self, (x, y))
+                    self.event_fin = item
                 self.objs.append(item)
                 num_case += 1
             num_ligne += 1
