@@ -8,6 +8,8 @@ class Player:
 
     speed = 4
     chaussure = False
+    direction = 0
+    num_sprite = 0
 
     def __init__(self, game, pos):
         self.game = game
@@ -16,15 +18,27 @@ class Player:
     def update(self):
         key = pygame.key.get_pressed()
         if key[pygame.K_LEFT]:
+            self.direction = 3
             self.move(-self.speed, 0)
         if key[pygame.K_RIGHT]:
+            self.direction = 1
             self.move(self.speed, 0)
         if key[pygame.K_UP]:
+            self.direction = 2
             self.move(0, -self.speed)
         if key[pygame.K_DOWN]:
+            self.direction = 0
             self.move(0, self.speed)
 
+    def draw(self):
+        self.game.window.blit(self.game.get_player_image(self.direction, int(self.num_sprite / 10)), (self.rect.x, self.rect.y))
+
     def move(self, dx, dy):
+        if self.num_sprite < 39:
+            self.num_sprite += 1
+        else:
+            self.num_sprite = 0
+
         self.game.get_audio("walk").set_volume(0.05)
         self.game.get_audio("walk").play()
         self.rect.x += dx
