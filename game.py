@@ -73,7 +73,7 @@ class Game:
             "decor_poubelle": pygame.image.load('assets/decor_poubelle.png'),
             "decor_boite": pygame.image.load('assets/decor_boite.png'),
             "decor_four": pygame.image.load('assets/decor_four.png'),
-            "event_fin": pygame.image.load('assets/box.png'),
+            "event_fin": pygame.image.load('assets/computer.png'),
             "saas": pygame.image.load('assets/saas.png')
         }
 
@@ -126,7 +126,6 @@ class Game:
         self.clock.tick( self.framerate )
 
         if self.game_lost:
-            self.save_game()
             self.goto( "gameover" )
 
         if self.game_win:

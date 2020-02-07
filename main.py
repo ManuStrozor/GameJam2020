@@ -27,9 +27,6 @@ TEXT = None
 GREY = (220, 220, 220)
 size = (512, 80)
 
-
-###################### Ecran Menu  ########################
-
 bouton_play = pygame.Surface(size)
 rect_play = bouton_play.get_rect()
 rect_play.x = 256
@@ -60,10 +57,6 @@ rect_quit = bouton_quit.get_rect()
 rect_quit.x = 256
 rect_quit.y = 550
 
-
-#################### Ecran Pause  ########################
-
-
 bouton_resume = pygame.Surface(size)
 rect_resume = bouton_resume.get_rect()
 rect_resume.x = 256
@@ -79,11 +72,6 @@ rect_return = bouton_return.get_rect()
 rect_return.x = 256
 rect_return.y = 550
 
-
-##################### Game Over ########################
-
-
-################## Winner Ending ########################
 
 def draw_menu():
     # Dessins
@@ -273,6 +261,18 @@ def update_cred():
             game.views.clear()
 
 
+def draw_help():
+    win.blit(pygame.image.load('assets/help.png'), (0, 0))
+    text_quit = font.render('Retour', 1, (255, 0, 255))
+    text_survol = font.render(TEXT, 1, (255, 0, 255))
+
+    win.blit(bouton_back2, rect_back2)
+    win.blit(text_quit, (512 - text_quit.get_rect().centerx, 400 + bouton_back2.get_rect().centery - 15))
+    win.blit(text_survol, (512 - text_survol.get_rect().centerx, 500))
+
+    pygame.display.flip()
+
+
 def update_help():
     global TEXT
 
@@ -299,8 +299,45 @@ def update_help():
             game.views.clear()
 
 
-def draw_help():
-    win.blit(pygame.image.load('assets/help.png'), (0, 0))
+def draw_gameover():
+    win.blit(pygame.image.load('assets/game_lost.png'), (0, 0))
+    text_quit = font.render('Retour', 1, (255, 0, 255))
+    text_survol = font.render(TEXT, 1, (255, 0, 255))
+
+    win.blit(bouton_back2, rect_back2)
+    win.blit(text_quit, (512 - text_quit.get_rect().centerx, 400 + bouton_back2.get_rect().centery - 15))
+    win.blit(text_survol, (512 - text_survol.get_rect().centerx, 500))
+
+    pygame.display.flip()
+
+def update_gameover():
+    global TEXT
+
+    over_back = None
+
+    # Si le focus est sur la fenêtre.
+    if pygame.mouse.get_focused():
+        # Trouve position de la souris
+        x, y = pygame.mouse.get_pos()
+        over_back = rect_back2.collidepoint(x, y)
+
+        if over_back:
+            TEXT = 'Retour au menu'
+        else:
+            TEXT = None
+
+    for e in pygame.event.get():
+        if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
+            if over_back:  # 0=gauche, 1=milieu, 2=droite
+                game.goto("menu")
+        if e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE:
+            game.goto("menu")
+        if e.type == pygame.QUIT:
+            game.views.clear()
+
+
+def draw_win():
+    win.blit(pygame.image.load('assets/game_win.png'), (0, 0))
     text_quit = font.render('Retour', 1, (255, 0, 255))
     text_survol = font.render(TEXT, 1, (255, 0, 255))
 
@@ -311,30 +348,41 @@ def draw_help():
     pygame.display.flip()
 
 
-def update_gameover():
-    print("update gameover")
-    pass
-
-
-def draw_gameover():
-    print("draw gameover")
-    pass
-
-
 def update_win():
-    print("update Win")
-    pass
+    global TEXT
 
+    over_back = None
 
-def draw_win():
-    print("draw Win")
-    pass
+    # Si le focus est sur la fenêtre.
+    if pygame.mouse.get_focused():
+        # Trouve position de la souris
+        x, y = pygame.mouse.get_pos()
+        over_back = rect_back2.collidepoint(x, y)
+
+        if over_back:
+            TEXT = 'Retour au menu'
+        else:
+            TEXT = None
+
+    for e in pygame.event.get():
+        if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
+            if over_back:  # 0=gauche, 1=milieu, 2=droite
+                game.goto("menu")
+        if e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE:
+            game.goto("menu")
+        if e.type == pygame.QUIT:
+            game.views.clear()
 
 
 game.get_audio("theme").set_volume(0.05)
 game.get_audio("theme").play(loops=-1)
 
+
 while game.views.get("run"):
+
+    if game.game_win or game.game_lost:
+        game.__del__()
+        game = Game(win, 120)
 
     while game.views.get("menu"):
         update_menu()

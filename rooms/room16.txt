@@ -1,6 +1,6 @@
 20 15
 ....................
-.                  .
+.        F         .
 .    PPPP     PPPP .
 .  PPPPPP   PPPPPP .
 . PPPP     PPPP    .
