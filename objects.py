@@ -5,54 +5,48 @@ class Saas(Obj):
 
     cardinal = None
 
-    def __init__(self, game, pos, cardinal):
-        super().__init__(game, pos)
+    def __init__(self, niv, pos, cardinal):
+        super().__init__(niv, pos)
         self.cardinal = cardinal
         self.type = "saas"
-        self.game.objs.append(self)
-        self.game.all_saas.append(self)
 
 
 class Wall(Obj):
 
-    def __init__(self, game, pos):
-        super().__init__(game, pos)
+    def __init__(self, niv, pos):
+        super().__init__(niv, pos)
         self.type = "wall"
-        self.game.objs.append(self)
-        self.game.walls.append(self)
 
 
 class Caisse(Obj):
 
-    def __init__(self, game, pos):
-        super().__init__(game, pos)
+    def __init__(self, niv, pos):
+        super().__init__(niv, pos)
         self.type = "box"
-        self.game.objs.append(self)
-        self.game.caisses.append(self)
 
-    def move(self, dx, dy):
+    def move(self, dx, dy, niv):
         self.rect.x += dx
         self.rect.y += dy
 
-        if self.rect.colliderect(self.game.player.rect):
+        if self.rect.colliderect(niv.game.player.rect):
             if dx > 0:  # deplacement right
-                if self.game.player.way_right(self.game.walls + self.game.souffleurs):
-                    self.game.player.rect.right += dx
+                if niv.game.player.way_right(niv.walls + niv.souffleurs):
+                    niv.game.player.rect.right += dx
                 else:
                     self.rect.x -= dx
             if dx < 0:  # deplacement left
-                if self.game.player.way_left(self.game.walls + self.game.souffleurs):
-                    self.game.player.rect.left += dx
+                if niv.game.player.way_left(niv.walls + niv.souffleurs):
+                    niv.game.player.rect.left += dx
                 else:
                     self.rect.x -= dx
             if dy > 0:  # deplacement bottom
-                if self.game.player.way_bottom(self.game.walls + self.game.souffleurs):
-                    self.game.player.rect.bottom += dy
+                if niv.game.player.way_bottom(niv.walls + niv.souffleurs):
+                    niv.game.player.rect.bottom += dy
                 else:
                     self.rect.y -= dy
             if dy < 0:  # deplacement top
-                if self.game.player.way_top(self.game.walls + self.game.souffleurs):
-                    self.game.player.rect.top += dy
+                if niv.game.player.way_top(niv.walls + niv.souffleurs):
+                    niv.game.player.rect.top += dy
                 else:
                     self.rect.y -= dy
 
@@ -105,89 +99,69 @@ class Souffleur(Obj):
 
     activated = True
 
-    def __init__(self, game, pos):
-        super().__init__(game, pos)
+    def __init__(self, niv, pos):
+        super().__init__(niv, pos)
         self.type = "wind_jet"
-        self.game.objs.append(self)
-        self.game.souffleurs.append(self)
 
 
 class Piece(Obj):
 
-    def __init__(self, game, pos):
-        super().__init__(game, pos)
+    def __init__(self, niv, pos):
+        super().__init__(niv, pos)
         self.type = "coin"
-        self.game.objs.append(self)
-        self.game.pieces.append(self)
 
 
 class Chaussure(Obj):
 
-    def __init__(self, game, pos):
-        super().__init__(game, pos)
+    def __init__(self, niv, pos):
+        super().__init__(niv, pos)
         self.type = "chaussure"
-        self.game.objs.append(self)
-        self.game.chaussures.append(self)
 
 
 class OxygenBottle(Obj):
 
-    def __init__(self, game, pos):
-        super().__init__(game, pos)
+    def __init__(self, niv, pos):
+        super().__init__(niv, pos)
         self.type = "oxygen"
-        self.game.objs.append(self)
-        self.game.oxygen_bottles.append(self)
 
 
 class Button(Obj):
 
-    def __init__(self, game, pos):
-        super().__init__(game, pos)
+    def __init__(self, niv, pos):
+        super().__init__(niv, pos)
         self.type = "button"
-        self.game.objs.append(self)
-        self.game.buttons.append(self)
 
 
 class ButtonPressed(Obj):
 
-    def __init__(self, game, pos):
-        super().__init__(game, pos)
+    def __init__(self, niv, pos):
+        super().__init__(niv, pos)
         self.type = "button_pressed"
-        self.game.objs.append(self)
-        self.game.buttons_pressed.append(self)
 
 
 class PorteUnlock(Obj):
 
-    def __init__(self, game, pos):
-        super().__init__(game, pos)
+    def __init__(self, niv, pos):
+        super().__init__(niv, pos)
         self.type = "porte_unlock"
-        self.game.objs.append(self)
-        self.game.portes_unlock.append(self)
 
 
 class PorteLock(Obj):
 
-    def __init__(self, game, pos):
-        super().__init__(game, pos)
+    def __init__(self, niv, pos):
+        super().__init__(niv, pos)
         self.type = "porte_lock"
-        self.game.objs.append(self)
-        self.game.portes_lock.append(self)
 
 
 class DalleElectrique(Obj):
 
-    def __init__(self, game, pos):
-        super().__init__(game, pos)
+    def __init__(self, niv, pos):
+        super().__init__(niv, pos)
         self.type = "dalle_electrique"
-        self.game.objs.append(self)
-        self.game.dalles_electriques.append(self)
 
 
 class DalleInnonde(Obj):
 
-    def __init__(self, game, pos):
-        super().__init__(game, pos)
+    def __init__(self, niv, pos):
+        super().__init__(niv, pos)
         self.type = "dalle_innonde"
-        self.game.objs.append(self)
-        self.game.dalles_innondes.append(self)

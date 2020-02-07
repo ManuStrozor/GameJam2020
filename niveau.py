@@ -1,28 +1,47 @@
 from objects import *
-from player import Player
 
 
 class Niveau:
 
-    width = None
-    height = None
-    size_x = None
-    size_y = None
-    num_level = None
-
-    sortieN = None
-    sortieW = None
-    sortieE = None
-    sortieS = None
-
-    def __init__(self, game):
+    def __init__(self, game, path):
         self.game = game
+
+        self.width = None
+        self.height = None
+        self.size_x = None
+        self.size_y = None
         self.structure = None
+        self.num_level = None
 
-    def generer(self, fichier):  # Méthode permettant de générer le niveau en fonction du fichier
-        self.num_level = fichier[10:-4]
+        self.sortieN = None
+        self.sortieW = None
+        self.sortieE = None
+        self.sortieS = None
 
-        f = open(fichier, "r")
+        self.objs = []  # Liste de tous les blocs--------------------------
+
+        self.caisses = []  # Liste des caisses-----------------------------
+        self.pieces = []  # Liste des pieces (coins)-----------------------
+        self.oxygen_bottles = []  # Liste des bouteilles d'oxygene---------
+        self.buttons = []  # Liste des boutons-----------------------------
+        self.buttons_pressed = []  # Liste des boutons activés-------------
+        self.portes_unlock = []  # Liste des portes deverouilles-----------
+        self.portes_lock = []  # Liste des portes verouilles---------------
+        self.chaussures = []  # Liste des chaussures à propulsion----------
+
+        self.walls = []  # Liste des murs
+        self.souffleurs = []  # Liste des souffleurs
+        self.dalles_electriques = []  # Liste des dalles electriques
+        self.dalles_innondes = []  # Liste des dalles innondes
+        self.all_saas = []  # liste des saas
+
+        self.generer(path)
+        self.afficher()
+
+    def generer(self, path):  # Méthode permettant de générer le niveau en fonction du fichier
+        self.num_level = path[10:-4]
+
+        f = open(path, "r")
 
         first_line = f.readline()
 
@@ -46,19 +65,18 @@ class Niveau:
 
         for line in f:
             if line[0] == 'N':
-                self.sortieN = 'rooms/' + line[2:-1] + '.txt'
+                self.sortieN = line[2:-1]
             elif line[0] == 'W':
-                self.sortieW = 'rooms/' + line[2:-1] + '.txt'
+                self.sortieW = line[2:-1]
             elif line[0] == 'E':
-                self.sortieE = 'rooms/' + line[2:-1] + '.txt'
+                self.sortieE = line[2:-1]
             elif line[0] == 'S':
-                self.sortieS = 'rooms/' + line[2:-1] + '.txt'
+                self.sortieS = line[2:-1]
 
         f.close()
 
     def afficher(self):
         # Méthode permettant d'afficher le niveau en fonction de la liste de structure renvoyé par la fonction generer
-        playerlol = None
         num_ligne = 0
         for ligne in self.structure:
             num_case = 0
@@ -66,44 +84,57 @@ class Niveau:
                 x = num_case * self.size_x + self.game.MARGIN_X
                 y = num_ligne * self.size_y + self.game.MARGIN_Y
 
+                item = Obj(self, (x, y))
                 if ch == ".":
-                    Wall(self.game, (x, y))
-                elif ch == "C":
-                    Caisse(self.game, (x, y))
-                elif ch == "N":
-                    Saas(self.game, (x, y), "North")
-                elif ch == "S":
-                    Saas(self.game, (x, y), "South")
-                elif ch == "E":
-                    Saas(self.game, (x, y), "East")
-                elif ch == "W":
-                    Saas(self.game, (x, y), "West")
-                elif ch == "Z" or ch == "z" or ch == 'Z' or ch == 'z':
-                    Souffleur(self.game, (x, y))
-                elif ch == "P":
-                    Piece(self.game, (x, y))
-                elif ch == "O":
-                    OxygenBottle(self.game, (x, y))
+                    item = Wall(self, (x, y))
+                    self.walls.append(item)
                 elif ch == "X":
-                    playerlol = Player(self.game, (x, y))  # Creation joueur ('X' sur la grille)
-                    self.game.objs.append(Obj(self.game, (x, y)))
+                    self.game.spawn = (x, y)
+                elif ch == "C":
+                    item = Caisse(self, (x, y))
+                    self.caisses.append(item)
+                elif ch == "N":
+                    item = Saas(self, (x, y), "North")
+                    self.all_saas.append(item)
+                elif ch == "S":
+                    item = Saas(self, (x, y), "South")
+                    self.all_saas.append(item)
+                elif ch == "E":
+                    item = Saas(self, (x, y), "East")
+                    self.all_saas.append(item)
+                elif ch == "W":
+                    item = Saas(self, (x, y), "West")
+                    self.all_saas.append(item)
+                elif ch == "Z":
+                    item = Souffleur(self, (x, y))
+                    self.souffleurs.append(item)
+                elif ch == "P":
+                    item = Piece(self, (x, y))
+                    self.pieces.append(item)
+                elif ch == "O":
+                    item = OxygenBottle(self, (x, y))
+                    self.oxygen_bottles.append(item)
                 elif ch == "Y":
-                    PorteLock(self.game, (x, y))
+                    item = PorteLock(self, (x, y))
+                    self.portes_lock.append(item)
                 elif ch == "U":
-                    PorteUnlock(self.game, (x, y))
+                    item = PorteUnlock(self, (x, y))
+                    self.portes_unlock.append(item)
                 elif ch == "M":
-                    Button(self.game, (x, y))
+                    item = Button(self, (x, y))
+                    self.buttons.append(item)
                 elif ch == "I":
-                    ButtonPressed(self.game, (x, y))
+                    item = ButtonPressed(self, (x, y))
+                    self.buttons_pressed.append(item)
                 elif ch == "G":
-                    DalleElectrique(self.game, (x, y))
+                    item = DalleElectrique(self, (x, y))
+                    self.dalles_electriques.append(item)
                 elif ch == "J":
-                    Chaussure(self.game, (x, y))
+                    item = Chaussure(self, (x, y))
+                    self.chaussures.append(item)
                 elif ch == "Q":
-                    DalleInnonde(self.game, (x, y))
-                else:
-                    self.game.objs.append(Obj(self.game, (x, y)))
+                    item = DalleInnonde(self, (x, y))
+                    self.dalles_innondes.append(item)
+                self.objs.append(item)
                 num_case += 1
             num_ligne += 1
-
-        return playerlol
