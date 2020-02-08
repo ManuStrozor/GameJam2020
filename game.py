@@ -4,6 +4,7 @@ from pygame.locals import *
 from niveau import Niveau
 from player import Player
 from score import Score
+from views.views import Menu, Pause, Cred, Help, Gameover, Win
 
 
 class Game:
@@ -13,16 +14,9 @@ class Game:
 
     clock = pygame.time.Clock()
 
-    views = {
-        "run": 1,
-        "menu": 1,
-        "game": 0,
-        "pause": 0,
-        "cred": 0,
-        "help": 0,
-        "gameover": 0,
-        "win": 0
-    }
+    running = True
+    gameloop = False
+    views = []
 
     niveau = None
 
@@ -39,6 +33,13 @@ class Game:
 
         self.MARGIN_X = (window.get_width() - self.WIDTH) / 2
         self.MARGIN_Y = (window.get_height() - self.HEIGHT) / 2
+
+        self.views.append(Menu(self))
+        self.views.append(Pause(self))
+        self.views.append(Cred(self))
+        self.views.append(Help(self))
+        self.views.append(Gameover(self))
+        self.views.append(Win(self))
 
         self.audios = {
             "coins": pygame.mixer.Sound('assets/audio/coins.wav'),
@@ -116,41 +117,40 @@ class Game:
             "room16": Niveau(self, "rooms/room16.txt")
         }
 
-        self.niveau = self.levels.__getitem__( "room1" )
+        self.niveau = self.levels.__getitem__("room1")
 
-        self.player = Player( self, self.spawn )  # position arbitraire Attention !
-        self.score = Score( self )
+        self.player = Player(self, self.spawn)
+        self.score = Score(self)
 
     def update(self):
 
-        self.clock.tick( self.framerate )
+        self.clock.tick(self.framerate)
 
         if self.game_lost:
-            self.goto( "gameover" )
+            self.goto("gameover")
 
         if self.game_win:
-            self.goto( "win" )
+            self.goto("win")
 
         self.player.update()
         self.score.update()
 
         for e in pygame.event.get():
             if e.type == KEYDOWN and e.key == K_ESCAPE:
-                self.goto( "pause" )
+                self.goto("pause")
             if e.type == QUIT:
-                self.save_game()
-                self.views.clear()
+                self.exit()
 
     def draw(self):
 
         # Affichage du sol
-        self.window.fill( (0, 0, 0) )
+        self.window.fill((0, 0, 0))
         y = 0
         while y < self.niveau.height:
             x = 0
             while x < self.niveau.width:
-                self.window.blit( self.get_image( "floor" ),
-                    (x * self.niveau.size_x + self.MARGIN_X, y * self.niveau.size_y + self.MARGIN_Y) )
+                self.window.blit(self.get_image("floor"),
+                    (x * self.niveau.size_x + self.MARGIN_X, y * self.niveau.size_y + self.MARGIN_Y))
                 x += 1
             y += 1
 
@@ -229,13 +229,15 @@ class Game:
     def get_obj(self, x, y):
         return self.niveau.objs.__getitem__( y * 20 + x )
 
-    def goto(self, screen):
-        self.views.clear()
-        self.views.__setitem__( "run", 1 )
-        self.views.__setitem__( screen, 1 )
+    def goto(self, name):
+        self.gameloop = (name == "game")
+        for view in self.views:
+            if view.name == name:
+                view.state = 1
+            else:
+                view.state = 0
 
-    def get_view(self, view):
-        return self.views.get( view )
-
-    def save_game(self):
-        print( "save isn't implemented yet !" )
+    def exit(self):
+        self.running = False
+        for view in self.views:
+            view.state = 0
