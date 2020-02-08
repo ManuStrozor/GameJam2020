@@ -20,9 +20,9 @@ class Pause(View):
         super().__init__(game, "pause")
         self.set_background("assets/background.png")
         self.set_title("Pause")
-        self.buttons.append(Button((512, 80), (256, 250), "Continuer de jouer", "game"))
+        self.buttons.append(Button((512, 80), (256, 250), "Continuer", "game"))
         self.buttons.append(Button((512, 80), (256, 350), "Sauvegarder le jeu", None))
-        self.buttons.append(Button((512, 80), (256, 550), "Retour au menu principal", "menu"))
+        self.buttons.append(Button((512, 80), (256, 550), "Menu principal", "menu"))
 
     def action(self):
         print("sauvegarder")

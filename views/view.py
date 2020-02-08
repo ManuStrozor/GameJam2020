@@ -39,7 +39,10 @@ class View:
             if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
                 if self.curr_btn.target is not None:
                     if self.curr_btn.target != "exit":
-                        self.game.goto(self.curr_btn.target)
+                        if self.curr_btn.target != "game":
+                            self.game.goto(self.curr_btn.target)
+                        else:
+                            self.game.run(self.name)
                     else:
                         self.game.exit()
                 else:

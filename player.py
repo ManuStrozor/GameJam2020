@@ -142,7 +142,8 @@ class Player:
             if self.rect.colliderect(dalle_innonde.rect) and self.oxygen_bottle > 0:
                 self.oxygen_bottle = self.oxygen_bottle - 0.1
                 if self.oxygen_bottle <= 0.5:
-                    self.game.game_lost = True
+                    self.game.state = 0
+                    self.game.goto("gameover")
                 #pygame.mixer.stop()
                 self.game.get_audio("water").set_volume(0.5)
                 self.game.get_audio("water").play()
@@ -296,8 +297,8 @@ class Player:
         # Collision event_fin
         if self.game.niveau.event_fin is not None:
             if self.rect.colliderect(self.game.niveau.event_fin.rect):
-                self.game.game_win = True
-                print("Chévre")
+                self.game.state = 0
+                self.game.goto("win")
 
     def way_right(self, list_of_items):
         for item in list_of_items:

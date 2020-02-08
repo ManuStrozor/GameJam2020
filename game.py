@@ -3,8 +3,8 @@ from pygame.locals import *
 
 from niveau import Niveau
 from player import Player
-from score import Score
 from views.views import Menu, Pause, Cred, Help, Gameover, Win
+from score import Score
 
 
 class Game:
@@ -14,15 +14,10 @@ class Game:
 
     clock = pygame.time.Clock()
 
-    running = True
-    gameloop = False
+    running = 1
+    state = 1
     views = []
-
-    niveau = None
-
     spawn = []
-    game_lost = False
-    game_win = False
 
     def __del__(self):
         pass
@@ -41,43 +36,9 @@ class Game:
         self.views.append(Gameover(self))
         self.views.append(Win(self))
 
-        self.audios = {
-            "coins": pygame.mixer.Sound('assets/audio/coins.wav'),
-            "walk": pygame.mixer.Sound('assets/audio/walk.wav'),
-            "oxygen_bottle": pygame.mixer.Sound('assets/audio/air_fill.wav'),
-            "door": pygame.mixer.Sound('assets/audio/close_door_1.wav'),
-            "button": pygame.mixer.Sound('assets/audio/button_press.wav'),
-            "chaussure_propulsion": pygame.mixer.Sound('assets/audio/chaussure_propulsion.wav'),
-            "chaussure": pygame.mixer.Sound('assets/audio/chaussure_lacet.wav'),
-            "electric": pygame.mixer.Sound('assets/audio/electric.wav'),
-            "water": pygame.mixer.Sound('assets/audio/water.wav'),
-            "moving_box": pygame.mixer.Sound('assets/audio/moving_box_s.wav'),
-            "theme": pygame.mixer.Sound('assets/audio/theme/main_theme.ogg')
-        }
+        self.load()
 
-        self.images = {
-            "wall": pygame.image.load( 'assets/wall.png'),
-            "wind_jet": pygame.image.load( 'assets/wind_jet.png'),
-            "caisse": pygame.image.load('assets/caisse.png'),
-            "coin": pygame.image.load( 'assets/coin.png'),
-            "floor": pygame.image.load('assets/floor.png'),
-            "oxygen_bottle": pygame.image.load('assets/oxygen_bottle.png'),
-            "red_button": pygame.image.load('assets/red_button.png'),
-            "grey_button": pygame.image.load('assets/grey_button.png'),
-            "porte_unlock": pygame.image.load('assets/porte_unlock.png'),
-            "porte_lock": pygame.image.load('assets/porte_lock.png'),
-            "electric": pygame.image.load('assets/electric.png'),
-            "flashy_boots": pygame.image.load('assets/flashy_boots.png'),
-            "floor_water": pygame.image.load('assets/floor_water.png'),
-            "decor_etagere": pygame.image.load('assets/decor_etagere.png'),
-            "decor_electric_pillar": pygame.image.load('assets/decor_electric_pillar.png'),
-            "decor_poubelle": pygame.image.load('assets/decor_poubelle.png'),
-            "decor_boite": pygame.image.load('assets/decor_boite.png'),
-            "decor_four": pygame.image.load('assets/decor_four.png'),
-            "event_fin": pygame.image.load('assets/computer.png'),
-            "saas": pygame.image.load('assets/saas.png')
-        }
-
+    def load(self):
         self.player_right_images = {0: pygame.image.load('assets/player/right_0.png'),
                                     1: pygame.image.load('assets/player/right_1.png'),
                                     2: pygame.image.load('assets/player/right_2.png'),
@@ -98,48 +59,69 @@ class Game:
                                   2: pygame.image.load('assets/player/top_2.png'),
                                   3: pygame.image.load('assets/player/top_3.png')}
 
-        self.levels = {
-            "room1": Niveau(self, "rooms/room1.txt"),
-            "room2": Niveau(self, "rooms/room2.txt"),
-            "room3": Niveau(self, "rooms/room3.txt"),
-            "room4": Niveau(self, "rooms/room4.txt"),
-            "room5": Niveau(self, "rooms/room5.txt"),
-            "room6": Niveau(self, "rooms/room6.txt"),
-            "room7": Niveau(self, "rooms/room7.txt"),
-            "room8": Niveau(self, "rooms/room8.txt"),
-            "room9": Niveau(self, "rooms/room9.txt"),
-            "room10": Niveau(self, "rooms/room10.txt"),
-            "room11": Niveau(self, "rooms/room11.txt"),
-            "room12": Niveau(self, "rooms/room12.txt"),
-            "room13": Niveau(self, "rooms/room13.txt"),
-            "room14": Niveau(self, "rooms/room14.txt"),
-            "room15": Niveau(self, "rooms/room15.txt"),
-            "room16": Niveau(self, "rooms/room16.txt")
-        }
+        self.audios = {"coins": pygame.mixer.Sound('assets/audio/coins.wav'),
+            "walk": pygame.mixer.Sound('assets/audio/walk.wav'),
+            "oxygen_bottle": pygame.mixer.Sound('assets/audio/air_fill.wav'),
+            "door": pygame.mixer.Sound('assets/audio/close_door_1.wav'),
+            "button": pygame.mixer.Sound('assets/audio/button_press.wav'),
+            "chaussure_propulsion": pygame.mixer.Sound('assets/audio/chaussure_propulsion.wav'),
+            "chaussure": pygame.mixer.Sound('assets/audio/chaussure_lacet.wav'),
+            "electric": pygame.mixer.Sound('assets/audio/electric.wav'),
+            "water": pygame.mixer.Sound('assets/audio/water.wav'),
+            "moving_box": pygame.mixer.Sound('assets/audio/moving_box_s.wav'),
+            "theme": pygame.mixer.Sound('assets/audio/theme/main_theme.ogg')}
 
-        self.niveau = self.levels.__getitem__("room1")
+        self.images = {"wall": pygame.image.load('assets/wall.png'),
+            "wind_jet": pygame.image.load('assets/wind_jet.png'), "caisse": pygame.image.load('assets/caisse.png'),
+            "coin": pygame.image.load('assets/coin.png'), "floor": pygame.image.load('assets/floor.png'),
+            "oxygen_bottle": pygame.image.load('assets/oxygen_bottle.png'),
+            "red_button": pygame.image.load('assets/red_button.png'),
+            "grey_button": pygame.image.load('assets/grey_button.png'),
+            "porte_unlock": pygame.image.load('assets/porte_unlock.png'),
+            "porte_lock": pygame.image.load('assets/porte_lock.png'),
+            "electric": pygame.image.load('assets/electric.png'),
+            "flashy_boots": pygame.image.load('assets/flashy_boots.png'),
+            "floor_water": pygame.image.load('assets/floor_water.png'),
+            "decor_etagere": pygame.image.load('assets/decor_etagere.png'),
+            "decor_electric_pillar": pygame.image.load('assets/decor_electric_pillar.png'),
+            "decor_poubelle": pygame.image.load('assets/decor_poubelle.png'),
+            "decor_boite": pygame.image.load('assets/decor_boite.png'),
+            "decor_four": pygame.image.load('assets/decor_four.png'),
+            "event_fin": pygame.image.load('assets/computer.png'), "saas": pygame.image.load('assets/saas.png')}
 
+        self.levels = {"room1": Niveau(self, "rooms/room1.txt"), "room2": Niveau(self, "rooms/room2.txt"),
+            "room3": Niveau(self, "rooms/room3.txt"), "room4": Niveau(self, "rooms/room4.txt"),
+            "room5": Niveau(self, "rooms/room5.txt"), "room6": Niveau(self, "rooms/room6.txt"),
+            "room7": Niveau(self, "rooms/room7.txt"), "room8": Niveau(self, "rooms/room8.txt"),
+            "room9": Niveau(self, "rooms/room9.txt"), "room10": Niveau(self, "rooms/room10.txt"),
+            "room11": Niveau(self, "rooms/room11.txt"), "room12": Niveau(self, "rooms/room12.txt"),
+            "room13": Niveau(self, "rooms/room13.txt"), "room14": Niveau(self, "rooms/room14.txt"),
+            "room15": Niveau(self, "rooms/room15.txt"), "room16": Niveau(self, "rooms/room16.txt")}
+
+        self.set_lvl("room1")
         self.player = Player(self, self.spawn)
         self.score = Score(self)
 
+    def run(self, last_view):
+        if last_view == "menu":
+            self.load()
+        self.state = 1
+        while self.state:
+            self.update()
+            self.draw()
+
     def update(self):
-
-        self.clock.tick(self.framerate)
-
-        if self.game_lost:
-            self.goto("gameover")
-
-        if self.game_win:
-            self.goto("win")
-
-        self.player.update()
-        self.score.update()
 
         for e in pygame.event.get():
             if e.type == KEYDOWN and e.key == K_ESCAPE:
                 self.goto("pause")
             if e.type == QUIT:
                 self.exit()
+
+        self.player.update()
+        self.score.update()
+
+        self.clock.tick(self.framerate)
 
     def draw(self):
 
@@ -186,7 +168,6 @@ class Game:
             elif obj.type == "event_fin":
                 image = self.get_image( "event_fin" )
 
-
             if image is not None:
                 self.window.blit( image, (obj.rect.x, obj.rect.y) )
 
@@ -226,11 +207,9 @@ class Game:
             if saas.cardinal == card:
                 return saas
 
-    def get_obj(self, x, y):
-        return self.niveau.objs.__getitem__( y * 20 + x )
-
     def goto(self, name):
-        self.gameloop = (name == "game")
+        if name != "game":
+            self.state = 0
         for view in self.views:
             if view.name == name:
                 view.state = 1
@@ -238,6 +217,7 @@ class Game:
                 view.state = 0
 
     def exit(self):
-        self.running = False
+        self.running = 0
+        self.state = 0
         for view in self.views:
             view.state = 0
