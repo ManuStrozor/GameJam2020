@@ -1,7 +1,7 @@
-from obj import Obj
+from objects.object import Object
 
 
-class Saas(Obj):
+class Saas(Object):
 
     cardinal = None
 
@@ -11,14 +11,14 @@ class Saas(Obj):
         self.type = "saas"
 
 
-class Wall(Obj):
+class Wall(Object):
 
     def __init__(self, niv, pos):
         super().__init__(niv, pos)
         self.type = "wall"
 
 
-class Caisse(Obj):
+class Caisse(Object):
 
     def __init__(self, niv, pos):
         super().__init__(niv, pos)
@@ -95,7 +95,7 @@ class Caisse(Obj):
         return True
 
 
-class Souffleur(Obj):
+class Souffleur(Object):
 
     activated = True
 
@@ -104,69 +104,69 @@ class Souffleur(Obj):
         self.type = "wind_jet"
 
 
-class Piece(Obj):
+class Piece(Object):
 
     def __init__(self, niv, pos):
         super().__init__(niv, pos)
         self.type = "coin"
 
 
-class Chaussure(Obj):
+class Chaussure(Object):
 
     def __init__(self, niv, pos):
         super().__init__(niv, pos)
         self.type = "chaussure"
 
 
-class OxygenBottle(Obj):
+class OxygenBottle(Object):
 
     def __init__(self, niv, pos):
         super().__init__(niv, pos)
         self.type = "oxygen"
 
 
-class Button(Obj):
+class Button(Object):
 
     def __init__(self, niv, pos):
         super().__init__(niv, pos)
         self.type = "button"
 
 
-class ButtonPressed(Obj):
+class ButtonPressed(Object):
 
     def __init__(self, niv, pos):
         super().__init__(niv, pos)
         self.type = "button_pressed"
 
 
-class PorteUnlock(Obj):
+class PorteUnlock(Object):
 
     def __init__(self, niv, pos):
         super().__init__(niv, pos)
         self.type = "porte_unlock"
 
 
-class PorteLock(Obj):
+class PorteLock(Object):
 
     def __init__(self, niv, pos):
         super().__init__(niv, pos)
         self.type = "porte_lock"
 
 
-class DalleElectrique(Obj):
+class DalleElectrique(Object):
 
     def __init__(self, niv, pos):
         super().__init__(niv, pos)
         self.type = "dalle_electrique"
 
 
-class DalleInnonde(Obj):
+class DalleInnonde(Object):
 
     def __init__(self, niv, pos):
         super().__init__(niv, pos)
         self.type = "dalle_innonde"
 
-class EventFin(Obj):
+class EventFin(Object):
 
     def __init__(self, niv, pos):
         super().__init__(niv, pos)

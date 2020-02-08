@@ -1,4 +1,4 @@
-from objects import *
+from objects.objects import *
 
 
 class Niveau:
@@ -84,7 +84,7 @@ class Niveau:
                 x = num_case * self.size_x + self.game.MARGIN_X
                 y = num_ligne * self.size_y + self.game.MARGIN_Y
 
-                item = Obj(self, (x, y))
+                item = Object(self, (x, y))
                 if ch == ".":
                     item = Wall(self, (x, y))
                     self.walls.append(item)

@@ -21,7 +21,7 @@ class View:
             self.draw()
 
     def action(self):
-        print(self.name + " : action spéciale !")
+        pass
 
     def update(self):
         if pygame.mouse.get_focused():
@@ -37,16 +37,17 @@ class View:
 
         for e in pygame.event.get():
             if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
-                if self.curr_btn.target is not None:
-                    if self.curr_btn.target != "exit":
-                        if self.curr_btn.target != "game":
-                            self.game.goto(self.curr_btn.target)
+                if self.curr_btn is not None:
+                    if self.curr_btn.target is not None:
+                        if self.curr_btn.target != "exit":
+                            if self.curr_btn.target != "game":
+                                self.game.goto(self.curr_btn.target)
+                            else:
+                                self.game.run(self.name)
                         else:
-                            self.game.run(self.name)
+                            self.game.exit()
                     else:
-                        self.game.exit()
-                else:
-                    self.action()
+                        self.action()
             if e.type == pygame.QUIT:
                 self.game.exit()
 
