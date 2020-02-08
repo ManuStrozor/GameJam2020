@@ -53,7 +53,8 @@ class View:
 
     def draw(self):
         if self.background is not None:
-            self.game.window.blit(self.background, (0, 0))
+            self.game.window.blit(pygame.transform.scale(self.background,
+                (self.game.window.get_width(), self.game.window.get_height())), (0, 0))
 
         if self.title is not None:
             text_menu = self.title_font.render(self.title, 1, self.color)

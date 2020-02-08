@@ -4,8 +4,8 @@ from tkinter import *
 
 from game import Game
 
-WIDTH = 1024
-HEIGHT = 768
+WIDTH = 1280
+HEIGHT = 720
 MAX_FPS = 120
 
 root = Tk()
