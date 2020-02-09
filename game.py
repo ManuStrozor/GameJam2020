@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
-from views.views import Menu, Pause, Cred, Help, Gameover, Win
+from views.views import Menu, Pause, Opts, Cred, Help, Gameover, Win
 from niveau import Niveau
 from player import Player
 
@@ -55,7 +55,9 @@ class Game:
         self.MARGIN_X = (window.get_width() - self.WIDTH) / 2
         self.MARGIN_Y = (window.get_height() - self.HEIGHT) / 2
 
-        self.views = [Menu(self), Pause(self), Cred(self), Help(self), Gameover(self), Win(self)]
+        self.views = [Menu(self), Pause(self), Opts(self), Cred(self), Help(self), Gameover(self), Win(self)]
+        self.last_view = None
+        self.curr_view = "menu"
 
         self.load_assets()
         self.load_levels()
@@ -129,13 +131,19 @@ class Game:
             self.update()
             self.draw()
 
+    def exit(self):
+        self.running = 0
+        self.state = 0
+        for view in self.views:
+            view.state = 0
+
     def update(self):
 
         for e in pygame.event.get():
             if e.type == KEYDOWN and e.key == K_ESCAPE:
                 self.goto("pause")
             if e.type == QUIT:
-                self.exit()
+                self.goto("exit")
 
         self.player.update()
         self.score.update()
@@ -191,17 +199,21 @@ class Game:
             if saas.cardinal == card:
                 return saas
 
-    def goto(self, name):
-        if name != "game":
-            self.state = 0
-        for view in self.views:
-            if view.name == name:
-                view.state = 1
+    def goto(self, next_view):
+        if next_view is not None:
+            if next_view != "menu":
+                self.last_view = self.curr_view
             else:
-                view.state = 0
-
-    def exit(self):
-        self.running = 0
-        self.state = 0
-        for view in self.views:
-            view.state = 0
+                self.last_view = None
+            self.curr_view = next_view
+            for view in self.views:
+                if view.name == next_view:
+                    view.state = 1
+                else:
+                    view.state = 0
+            if next_view != "game":
+                self.state = 0
+            else:
+                self.run(self.last_view)
+            if next_view == "exit":
+                self.exit()
