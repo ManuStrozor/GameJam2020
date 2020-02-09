@@ -38,8 +38,8 @@ class Score:
 
 class Game:
 
-    WIDTH = 800
-    HEIGHT = 600
+    WIDTH = 1280
+    HEIGHT = 720
 
     clock = pygame.time.Clock()
 
@@ -58,7 +58,7 @@ class Game:
         self.views = [Menu(self), Pause(self), Cred(self), Help(self), Gameover(self), Win(self)]
 
         self.load_assets()
-        self.reload_levels()
+        self.load_levels()
 
     def load_assets(self):
         self.audios = {"coins": pygame.mixer.Sound('assets/audio/coins.wav'),
@@ -100,7 +100,7 @@ class Game:
             "porte_lock": pygame.image.load('assets/porte_lock.png'),
             "dalle_electrique": pygame.image.load('assets/electric.png'),
             "chaussure": pygame.image.load('assets/flashy_boots.png'),
-            "floor_water": pygame.image.load('assets/floor_water.png'),
+            "dalle_innonde": pygame.image.load('assets/floor_water.png'),
             "decor_etagere": pygame.image.load('assets/decor_etagere.png'),
             "decor_electric_pillar": pygame.image.load('assets/decor_electric_pillar.png'),
             "decor_poubelle": pygame.image.load('assets/decor_poubelle.png'),
@@ -108,7 +108,7 @@ class Game:
             "decor_four": pygame.image.load('assets/decor_four.png'),
             "event_fin": pygame.image.load('assets/computer.png'), "saas": pygame.image.load('assets/saas.png')}
 
-    def reload_levels(self):
+    def load_levels(self):
         self.levels = {"room1": Niveau(self, "rooms/room1.txt"), "room2": Niveau(self, "rooms/room2.txt"),
                        "room3": Niveau(self, "rooms/room3.txt"), "room4": Niveau(self, "rooms/room4.txt"),
                        "room5": Niveau(self, "rooms/room5.txt"), "room6": Niveau(self, "rooms/room6.txt"),
@@ -123,7 +123,7 @@ class Game:
 
     def run(self, last_view):
         if last_view == "menu":
-            self.reload_levels()
+            self.load_levels()
         self.state = 1
         while self.state:
             self.update()

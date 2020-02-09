@@ -8,30 +8,83 @@ class Player(Movable):
     coins = 0
     oxygen_bottle = 0
 
-    speed = 2
+    speed = 4
     chaussure = False
     direction = "bottom"
+    moving = False
     num_sprite = 0
 
     def __init__(self, game, pos):
         super().__init__(game.niveau, pos)
         self.game = game
         self.type = "player"
+        self.tmp = self.rect
+        self.sav = 1
 
     def update(self):
         key = pygame.key.get_pressed()
-        if key[pygame.K_LEFT]:
+
+        if key[pygame.K_LEFT] and not self.moving:
+            self.moving = True
+            self.tmp = (self.rect.x - self.rect.width, self.rect.y)
             self.direction = "left"
-            self.move(-self.speed, 0)
-        if key[pygame.K_RIGHT]:
+        elif key[pygame.K_RIGHT] and not self.moving:
+            self.moving = True
+            self.tmp = (self.rect.x + self.rect.width, self.rect.y)
             self.direction = "right"
-            self.move(self.speed, 0)
-        if key[pygame.K_UP]:
+        elif key[pygame.K_UP] and not self.moving:
+            self.moving = True
+            self.tmp = (self.rect.x, self.rect.y - self.rect.height)
             self.direction = "top"
-            self.move(0, -self.speed)
-        if key[pygame.K_DOWN]:
+        elif key[pygame.K_DOWN] and not self.moving:
+            self.moving = True
+            self.tmp = (self.rect.x, self.rect.y + self.rect.height)
             self.direction = "bottom"
-            self.move(0, self.speed)
+
+        if self.direction == "left":
+            if self.rect.x > self.tmp[0]:
+                self.move(-self.speed, 0)
+                self.sav += 1
+                if self.sav >= self.rect.width / self.speed:
+                    if self.rect.x - self.tmp[0] > 0:
+                        self.moving = False
+                        self.tmp = self.rect
+                    self.sav = 0
+            else:
+                self.moving = False
+        elif self.direction == "right":
+            if self.rect.x < self.tmp[0]:
+                self.move(self.speed, 0)
+                self.sav += 1
+                if self.sav >= self.rect.width / self.speed:
+                    if self.tmp[0] - self.rect.x > 0:
+                        self.moving = False
+                        self.tmp = self.rect
+                    self.sav = 0
+            else:
+                self.moving = False
+        elif self.direction == "top":
+            if self.rect.y > self.tmp[1]:
+                self.move(0, -self.speed)
+                self.sav += 1
+                if self.sav >= self.rect.height / self.speed:
+                    if self.rect.y - self.tmp[1] > 0:
+                        self.moving = False
+                        self.tmp = self.rect
+                    self.sav = 0
+            else:
+                self.moving = False
+        elif self.direction == "bottom":
+            if self.rect.y < self.tmp[1]:
+                self.move(0, self.speed)
+                self.sav += 1
+                if self.sav >= self.rect.height / self.speed:
+                    if self.tmp[1] - self.rect.y > 0:
+                        self.moving = False
+                        self.tmp = self.rect
+                    self.sav = 0
+            else:
+                self.moving = False
 
     def move(self, dx, dy):
         super().move(dx, dy)
