@@ -95,8 +95,8 @@ class Opts(View):
         elif self.curr_btn.target == "volume_up":
             VOLUME = pygame.mixer.music.get_volume() + 0.1
             pygame.mixer.music.set_volume(VOLUME)
-        for key in self.game.audios:
-            self.game.audios.__getitem__(key).set_volume(VOLUME)
+        for key, value in self.game.audios.items():
+            value.set_volume(VOLUME)
 
     def draw(self):
         super().draw()
