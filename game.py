@@ -72,8 +72,7 @@ class Game:
             "chaussure": pygame.mixer.Sound('assets/audio/chaussure_lacet.wav'),
             "electric": pygame.mixer.Sound('assets/audio/electric.wav'),
             "water": pygame.mixer.Sound('assets/audio/water.wav'),
-            "moving_box": pygame.mixer.Sound('assets/audio/moving_box_s.wav'),
-            "theme": pygame.mixer.Sound('assets/audio/theme/main_theme.ogg')}
+            "moving_box": pygame.mixer.Sound('assets/audio/moving_box_s.wav')}
 
         self.player_images = {"right_0": pygame.image.load('assets/player/right_0.png'),
             "right_1": pygame.image.load('assets/player/right_1.png'),

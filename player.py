@@ -94,7 +94,6 @@ class Player(Movable):
         else:
             self.num_sprite = 0
 
-        self.game.get_audio("walk").set_volume(0.01)
         self.game.get_audio("walk").play()
 
         bloks = self.game.niveau.walls + self.game.niveau.caisses + self.game.niveau.souffleurs\
@@ -161,7 +160,6 @@ class Player(Movable):
         # Collision dalle electrique SANS chaussures à propulsion
         for dalle_electrique in self.game.niveau.dalles_electriques:
             if self.rect.colliderect(dalle_electrique.rect) and self.chaussure is not True:
-                self.game.get_audio("electric").set_volume(0.5)
                 self.game.get_audio("electric").play()
                 if dx > 0:  # deplacement right
                     self.rect.right = dalle_electrique.rect.left
@@ -174,7 +172,6 @@ class Player(Movable):
 
             # Collision dalle electrique AVEC chaussures à propulsion
             if self.rect.colliderect(dalle_electrique.rect) and self.chaussure is True:
-                self.game.get_audio("chaussure_propulsion").set_volume(0.5)
                 self.game.get_audio("chaussure_propulsion").play()
 
         # Collision dalle innonde SANS oxygene
@@ -195,13 +192,11 @@ class Player(Movable):
                 if self.oxygen_bottle <= 0.5:
                     self.game.state = 0
                     self.game.goto("gameover")
-                self.game.get_audio("water").set_volume(0.5)
                 self.game.get_audio("water").play()
 
         # Collision porte déverrouillée
         for porte_unlock in self.game.niveau.portes_unlock:
             if self.rect.colliderect(porte_unlock.rect):
-                self.game.get_audio("door").set_volume(0.5)
                 self.game.get_audio("door").play()
 
         # Collision caisse (Pousser et Tirer)
@@ -210,28 +205,24 @@ class Player(Movable):
                 if dx > 0:  # deplacement right
                     if caisse.way_right(bloks):
                         caisse.rect.right += dx
-                        self.game.get_audio("moving_box").set_volume(0.1)
                         self.game.get_audio("moving_box").play()
                     else:
                         self.rect.x -= dx
                 if dx < 0:  # deplacement left
                     if caisse.way_left(bloks):
                         caisse.rect.left += dx
-                        self.game.get_audio("moving_box").set_volume(0.1)
                         self.game.get_audio("moving_box").play()
                     else:
                         self.rect.x -= dx
                 if dy > 0:  # deplacement bottom
                     if caisse.way_bottom(bloks):
                         caisse.rect.bottom += dy
-                        self.game.get_audio("moving_box").set_volume(0.1)
                         self.game.get_audio("moving_box").play()
                     else:
                         self.rect.y -= dy
                 if dy < 0:  # deplacement top
                     if caisse.way_top(bloks):
                         caisse.rect.top += dy
-                        self.game.get_audio("moving_box").set_volume(0.1)
                         self.game.get_audio("moving_box").play()
                     else:
                         self.rect.y -= dy
@@ -241,25 +232,21 @@ class Player(Movable):
                     if caisse.way_right(bloks) and self.rect.collidepoint(tmp.x + dx + self.rect.width + self.speed, tmp.y + int(tmp.height/2))\
                             or self.rect.collidepoint(tmp.x + dx + self.speed - 1, tmp.y + int(tmp.height/2)):
                         caisse.rect.right = self.rect.left
-                        self.game.get_audio("moving_box").set_volume(0.1)
                         self.game.get_audio("moving_box").play()
                 if dx < 0:  # deplacement left
                     if caisse.way_left(bloks) and self.rect.collidepoint(tmp.x + dx - self.speed, tmp.y + int(tmp.height/2))\
                             or self.rect.collidepoint(tmp.x + dx + self.rect.width + self.speed - 1, tmp.y + int(tmp.height/2)):
                         caisse.rect.left = self.rect.right
-                        self.game.get_audio("moving_box").set_volume(0.1)
                         self.game.get_audio("moving_box").play()
                 if dy > 0:  # deplacement bottom
                     if caisse.way_bottom(bloks) and self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy + self.rect.height + self.speed)\
                             or self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy + self.speed - 1):
                         caisse.rect.bottom = self.rect.top
-                        self.game.get_audio("moving_box").set_volume(0.1)
                         self.game.get_audio("moving_box").play()
                 if dy < 0:  # deplacement top
                     if caisse.way_top(bloks) and self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy - self.speed)\
                             or self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy + self.rect.height + self.speed - 1):
                         caisse.rect.top = self.rect.bottom
-                        self.game.get_audio("moving_box").set_volume(0.1)
                         self.game.get_audio("moving_box").play()
 
         # Interaction souffleur
@@ -297,7 +284,6 @@ class Player(Movable):
                 self.coins += 1
                 self.game.niveau.pieces.remove(piece)
                 piece.type = None
-                self.game.get_audio("coins").set_volume(3)
                 self.game.get_audio("coins").play()
 
         # Collision oxygen_bottle
@@ -306,7 +292,6 @@ class Player(Movable):
                 self.oxygen_bottle += 500
                 self.game.niveau.oxygen_bottles.remove(oxygen_bottle)
                 oxygen_bottle.type = None
-                self.game.get_audio("oxygen_bottle").set_volume(3)
                 self.game.get_audio("oxygen_bottle").play()
 
         # Collision chaussure
@@ -315,7 +300,6 @@ class Player(Movable):
                 self.chaussure = True
                 self.game.niveau.chaussures.remove(chaussure)
                 chaussure.type = None
-                self.game.get_audio("chaussure").set_volume(1)
                 self.game.get_audio("chaussure").play()
 
         # Collision button
@@ -323,7 +307,6 @@ class Player(Movable):
             if self.rect.colliderect(button.rect):
                 self.game.niveau.buttons.remove(button)
                 button.type = "button_pressed"
-                self.game.get_audio("button").set_volume(3)
                 self.game.get_audio("button").play()
 
                 # changer l'etat de la porte verouillé en deverouillé

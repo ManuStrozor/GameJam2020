@@ -61,6 +61,8 @@ class Opts(View):
         super().__init__(game, "opts")
         self.set_background("assets/background.png")
         self.set_title("Options")
+        self.buttons.append(Button((HEIGHT, HEIGHT), (game.window.get_width() / 2 - HEIGHT*2, 200), "-", "volume_down"))
+        self.buttons.append(Button((HEIGHT, HEIGHT), (game.window.get_width() / 2 + HEIGHT, 200), "+", "volume_up"))
         self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width() / 2 - WIDTH / 2, 500), "Retour", None))
 
     def update(self):
@@ -68,17 +70,38 @@ class Opts(View):
         for e in pygame.event.get():
             if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1\
                     and self.curr_btn.rect.collidepoint(pygame.mouse.get_pos()):
-                self.game.goto(self.game.last_view)
+                if self.curr_btn.target is not None:
+                    self.control_volume()
+                else:
+                    self.game.goto(self.game.last_view)
             if e.type == pygame.KEYDOWN:
                 if e.key == pygame.K_DOWN or e.key == pygame.K_RIGHT or e.key == pygame.K_UP or e.key == pygame.K_LEFT:
                     self.keyboard_navigation(e.key)
                 elif e.key == pygame.K_RETURN or e.key == pygame.K_KP_ENTER:
                     if self.curr_btn is not None:
-                        self.game.goto(self.game.last_view)
+                        if self.curr_btn.target is not None:
+                            self.control_volume()
+                        else:
+                            self.game.goto(self.game.last_view)
                 elif e.key == pygame.K_ESCAPE:
                     self.game.goto(self.game.last_view)
             if e.type == pygame.QUIT:
                 self.game.exit()
+
+    def control_volume(self):
+        if self.curr_btn.target == "volume_down":
+            VOLUME = pygame.mixer.music.get_volume() - 0.1
+            pygame.mixer.music.set_volume(VOLUME)
+        elif self.curr_btn.target == "volume_up":
+            VOLUME = pygame.mixer.music.get_volume() + 0.1
+            pygame.mixer.music.set_volume(VOLUME)
+        for key in self.game.audios:
+            self.game.audios.__getitem__(key).set_volume(VOLUME)
+
+    def draw(self):
+        super().draw()
+        text_volume = self.normal_font.render(str(float("{0:.2f}".format(pygame.mixer.music.get_volume()*100))) + " %", 1, self.color)
+        self.game.window.blit(text_volume, (self.game.window.get_width() / 2 - text_volume.get_rect().centerx, 230))
 
 
 class Cred(View):
