@@ -8,7 +8,7 @@ class Player(Movable):
     coins = 0
     oxygen_bottle = 0
 
-    speed = 4
+    speed = 5
     step = 1
     chaussure = False
     direction = "bottom"

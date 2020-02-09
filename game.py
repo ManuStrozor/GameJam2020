@@ -38,8 +38,8 @@ class Score:
 
 class Game:
 
-    WIDTH = 1024
-    HEIGHT = 768
+    WIDTH = 1280
+    HEIGHT = 720
 
     clock = pygame.time.Clock()
 
@@ -94,8 +94,8 @@ class Game:
             "wind_jet": pygame.image.load('assets/wind_jet.png'), "box": pygame.image.load('assets/caisse.png'),
             "coin": pygame.image.load('assets/coin.png'), "floor": pygame.image.load('assets/floor.png'),
             "oxygen": pygame.image.load('assets/oxygen_bottle.png'),
-            "red_button": pygame.image.load('assets/red_button.png'),
-            "grey_button": pygame.image.load('assets/grey_button.png'),
+            "button": pygame.image.load('assets/red_button.png'),
+            "button_pressed": pygame.image.load('assets/grey_button.png'),
             "porte_unlock": pygame.image.load('assets/porte_unlock.png'),
             "porte_lock": pygame.image.load('assets/porte_lock.png'),
             "dalle_electrique": pygame.image.load('assets/electric.png'),
