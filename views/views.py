@@ -61,8 +61,8 @@ class Opts(View):
         super().__init__(game, "opts")
         self.set_background("assets/background.png")
         self.set_title("Options")
-        self.buttons.append(Button((HEIGHT, HEIGHT), (game.window.get_width() / 2 - HEIGHT*2, 200), "-", "volume_down"))
-        self.buttons.append(Button((HEIGHT, HEIGHT), (game.window.get_width() / 2 + HEIGHT, 200), "+", "volume_up"))
+        self.buttons.append(Button((HEIGHT, HEIGHT), (game.window.get_width() / 2 - HEIGHT*3, 200), "-", "volume_down"))
+        self.buttons.append(Button((HEIGHT, HEIGHT), (game.window.get_width() / 2 + HEIGHT*2, 200), "+", "volume_up"))
         self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width() / 2 - WIDTH / 2, 500), "Retour", None))
 
     def update(self):
@@ -99,7 +99,7 @@ class Opts(View):
 
     def draw(self):
         super().draw()
-        text_volume = self.normal_font.render(str(float("{0:.2f}".format(pygame.mixer.music.get_volume()*100))) + " %", 1, self.color)
+        text_volume = self.normal_font.render("Volume : " + str(float("{0:.2f}".format(pygame.mixer.music.get_volume()*100))) + "%", 1, self.color)
         self.game.window.blit(text_volume, (self.game.window.get_width() / 2 - text_volume.get_rect().centerx, 230))
 
 

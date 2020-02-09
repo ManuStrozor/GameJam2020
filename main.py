@@ -4,8 +4,10 @@ from tkinter import *
 
 from game import Game
 
-WIDTH = 1280
-HEIGHT = 720
+WIDTH = 1024
+HEIGHT = 768
+
+VOLUME = 0
 
 root = Tk()
 x = root.winfo_screenwidth() / 2 - WIDTH / 2
@@ -22,8 +24,11 @@ window = pygame.display.set_mode((WIDTH, HEIGHT))
 game = Game(window, 120)
 
 THEME = pygame.mixer.music.load("assets/audio/theme/main_theme.ogg")
-pygame.mixer.music.set_volume(0.2)
-pygame.mixer.music.play(loops=-1)
+pygame.mixer.music.set_volume(VOLUME)
+if VOLUME != 0:
+    pygame.mixer.music.play(loops=-1)
+for key, value in game.audios.items():
+    value.set_volume(VOLUME)
 
 while game.running:
 

@@ -9,82 +9,103 @@ class Player(Movable):
     oxygen_bottle = 0
 
     speed = 4
+    step = 1
     chaussure = False
     direction = "bottom"
     moving = False
+    collide_saas = False
     num_sprite = 0
 
     def __init__(self, game, pos):
         super().__init__(game.niveau, pos)
         self.game = game
         self.type = "player"
-        self.tmp = self.rect
-        self.sav = 1
+        self.dest = self.rect
 
     def update(self):
         key = pygame.key.get_pressed()
-
-        if key[pygame.K_LEFT] and not self.moving:
+        if (key[pygame.K_LEFT] or key[pygame.K_RIGHT] or key[pygame.K_UP] or key[pygame.K_DOWN]) and not self.moving:
             self.moving = True
-            self.tmp = (self.rect.x - self.rect.width, self.rect.y)
-            self.direction = "left"
-        elif key[pygame.K_RIGHT] and not self.moving:
-            self.moving = True
-            self.tmp = (self.rect.x + self.rect.width, self.rect.y)
-            self.direction = "right"
-        elif key[pygame.K_UP] and not self.moving:
-            self.moving = True
-            self.tmp = (self.rect.x, self.rect.y - self.rect.height)
-            self.direction = "top"
-        elif key[pygame.K_DOWN] and not self.moving:
-            self.moving = True
-            self.tmp = (self.rect.x, self.rect.y + self.rect.height)
-            self.direction = "bottom"
+            if key[pygame.K_LEFT]:
+                self.direction = "left"
+                self.dest = (self.rect.x - self.rect.width, self.rect.y)
+            elif key[pygame.K_RIGHT]:
+                self.direction = "right"
+                self.dest = (self.rect.x + self.rect.width, self.rect.y)
+            elif key[pygame.K_UP]:
+                self.direction = "top"
+                self.dest = (self.rect.x, self.rect.y - self.rect.height)
+            else:
+                self.direction = "bottom"
+                self.dest = (self.rect.x, self.rect.y + self.rect.height)
 
         if self.direction == "left":
-            if self.rect.x > self.tmp[0]:
-                self.move(-self.speed, 0)
-                self.sav += 1
-                if self.sav >= self.rect.width / self.speed:
-                    if self.rect.x - self.tmp[0] > 0:
-                        self.moving = False
-                        self.tmp = self.rect
-                    self.sav = 0
-            else:
+            if self.rect.x <= self.dest[0]:
                 self.moving = False
+            else:
+                if self.rect.x - self.speed >= self.dest[0]:
+                    if not self.collide_saas:
+                        self.move(-self.speed, 0)
+                    self.step += 1
+                    if self.step > self.rect.width / self.speed:
+                        if self.rect.x - self.dest[0] > 0:
+                            if self.rect.x - self.dest[0] < self.speed:
+                                self.move(-(self.rect.x - self.dest[0]), 0)
+                            self.moving = False
+                            self.dest = self.rect
+                        self.collide_saas = False
+                        self.step = 1
+
         elif self.direction == "right":
-            if self.rect.x < self.tmp[0]:
-                self.move(self.speed, 0)
-                self.sav += 1
-                if self.sav >= self.rect.width / self.speed:
-                    if self.tmp[0] - self.rect.x > 0:
-                        self.moving = False
-                        self.tmp = self.rect
-                    self.sav = 0
-            else:
+            if self.rect.x >= self.dest[0]:
                 self.moving = False
+            else:
+                if self.rect.x + self.speed <= self.dest[0]:
+                    if not self.collide_saas:
+                        self.move(self.speed, 0)
+                    self.step += 1
+                    if self.step > self.rect.width / self.speed:
+                        if self.dest[0] - self.rect.x > 0:
+                            if self.dest[0] - self.rect.x < self.speed:
+                                self.move(self.dest[0] - self.rect.x, 0)
+                            self.moving = False
+                            self.dest = self.rect
+                        self.collide_saas = False
+                        self.step = 1
+
         elif self.direction == "top":
-            if self.rect.y > self.tmp[1]:
-                self.move(0, -self.speed)
-                self.sav += 1
-                if self.sav >= self.rect.height / self.speed:
-                    if self.rect.y - self.tmp[1] > 0:
-                        self.moving = False
-                        self.tmp = self.rect
-                    self.sav = 0
-            else:
+            if self.rect.y <= self.dest[1]:
                 self.moving = False
+            else:
+                if self.rect.y - self.speed >= self.dest[1]:
+                    if not self.collide_saas:
+                        self.move(0, -self.speed)
+                    self.step += 1
+                    if self.step > self.rect.height / self.speed:
+                        if self.rect.y - self.dest[1] > 0:
+                            if self.rect.y - self.dest[1] < self.speed:
+                                self.move(0, -(self.rect.y - self.dest[1]))
+                            self.moving = False
+                            self.dest = self.rect
+                        self.collide_saas = False
+                        self.step = 1
+
         elif self.direction == "bottom":
-            if self.rect.y < self.tmp[1]:
-                self.move(0, self.speed)
-                self.sav += 1
-                if self.sav >= self.rect.height / self.speed:
-                    if self.tmp[1] - self.rect.y > 0:
-                        self.moving = False
-                        self.tmp = self.rect
-                    self.sav = 0
-            else:
+            if self.rect.y >= self.dest[1]:
                 self.moving = False
+            else:
+                if self.rect.y + self.speed <= self.dest[1]:
+                    if not self.collide_saas:
+                        self.move(0, self.speed)
+                    self.step += 1
+                    if self.step > self.rect.height / self.speed:
+                        if self.dest[1] - self.rect.y > 0:
+                            if self.dest[1] - self.rect.y < self.speed:
+                                self.move(0, self.dest[1] - self.rect.y)
+                            self.moving = False
+                            self.dest = self.rect
+                        self.collide_saas = False
+                        self.step = 1
 
     def move(self, dx, dy):
         super().move(dx, dy)
@@ -114,35 +135,24 @@ class Player(Movable):
 
         # Collision Saas
         for saas in self.game.niveau.all_saas:
-            if saas.cardinal == "North"\
-                    and saas.rect.collidepoint(self.rect.x + self.rect.width/2, self.rect.y - 1)\
-                    or saas.cardinal == "East"\
-                    and saas.rect.collidepoint(self.rect.x + self.rect.width + 1, self.rect.y + self.rect.height/2)\
-                    or saas.cardinal == "West"\
-                    and saas.rect.collidepoint(self.rect.x - 1, self.rect.y + self.rect.height/2)\
-                    or saas.cardinal == "South"\
-                    and saas.rect.collidepoint(self.rect.x + self.rect.width/2, self.rect.y + self.rect.height + 1):
-
+            if saas.rect.colliderect(self.rect):
+                self.collide_saas = True
+                self.moving = False
                 if saas.cardinal == "East":
                     self.game.set_lvl(self.game.niveau.sortieE)
-                elif saas.cardinal == "South":
-                    self.game.niveau = self.game.levels.__getitem__(self.game.niveau.sortieS)
-                elif saas.cardinal == "North":
-                    self.game.niveau = self.game.levels.__getitem__(self.game.niveau.sortieN)
-                elif saas.cardinal == "West":
-                    self.game.niveau = self.game.levels.__getitem__(self.game.niveau.sortieW)
-
-                if saas.cardinal == "East":
-                    self.rect.x = self.game.get_saas("West").rect.x + self.game.niveau.size_x + 2
+                    self.rect.x = self.game.get_saas("West").rect.x + self.rect.width
                     self.rect.y = self.game.get_saas("West").rect.y
                 elif saas.cardinal == "South":
+                    self.game.set_lvl(self.game.niveau.sortieS)
                     self.rect.x = self.game.get_saas("North").rect.x
-                    self.rect.y = self.game.get_saas("North").rect.y + self.game.niveau.size_y + 2
+                    self.rect.y = self.game.get_saas("North").rect.y + self.rect.height
                 elif saas.cardinal == "North":
+                    self.game.set_lvl(self.game.niveau.sortieN)
                     self.rect.x = self.game.get_saas("South").rect.x
-                    self.rect.y = self.game.get_saas("South").rect.y - self.game.niveau.size_y - 2
-                elif saas.cardinal == "West":
-                    self.rect.x = self.game.get_saas("East").rect.x - self.game.niveau.size_x - 2
+                    self.rect.y = self.game.get_saas("South").rect.y - self.rect.height
+                else:
+                    self.game.set_lvl(self.game.niveau.sortieW)
+                    self.rect.x = self.game.get_saas("East").rect.x - self.rect.width
                     self.rect.y = self.game.get_saas("East").rect.y
 
         # Collision porte verrouillée
@@ -252,31 +262,32 @@ class Player(Movable):
         # Interaction souffleur
         for souffleur in self.game.niveau.souffleurs:
             for caisse in self.game.niveau.caisses:
+
                 tmp = souffleur.rect
-
-                souf_right = pygame.Rect(tmp.x + tmp.width, tmp.y, tmp.width, tmp.height)
-                if souf_right.colliderect(caisse.rect):
-                    caisse.move(self.speed, 0)
-                if souf_right.colliderect(self.rect):
-                    self.rect.x += self.speed
-
                 souf_left = pygame.Rect(tmp.x - tmp.width, tmp.y, tmp.width, tmp.height)
+                souf_right = pygame.Rect(tmp.x + tmp.width, tmp.y, tmp.width, tmp.height)
+                souf_top = pygame.Rect(tmp.x, tmp.y - tmp.height, tmp.width, tmp.height)
+                souf_bottom = pygame.Rect(tmp.x, tmp.y + tmp.height, tmp.width, tmp.height)
+
                 if souf_left.colliderect(caisse.rect):
                     caisse.move(-self.speed, 0)
                 if souf_left.colliderect(self.rect):
                     self.rect.x -= self.speed
 
-                souf_bottom = pygame.Rect(tmp.x, tmp.y + tmp.height, tmp.width, tmp.height)
-                if souf_bottom.colliderect(caisse.rect):
-                    caisse.move(0, self.speed)
-                if souf_bottom.colliderect(self.rect):
-                    self.rect.y += self.speed
+                if souf_right.colliderect(caisse.rect):
+                    caisse.move(self.speed, 0)
+                if souf_right.colliderect(self.rect):
+                    self.rect.x += self.speed
 
-                souf_top = pygame.Rect(tmp.x, tmp.y - tmp.height, tmp.width, tmp.height)
                 if souf_top.colliderect(caisse.rect):
                     caisse.move(0, -self.speed)
                 if souf_top.colliderect(self.rect):
                     self.rect.y -= self.speed
+
+                if souf_bottom.colliderect(caisse.rect):
+                    caisse.move(0, self.speed)
+                if souf_bottom.colliderect(self.rect):
+                    self.rect.y += self.speed
 
         # Collision piece (coins)
         for piece in self.game.niveau.pieces:

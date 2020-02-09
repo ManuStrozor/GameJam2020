@@ -38,8 +38,8 @@ class Score:
 
 class Game:
 
-    WIDTH = 1280
-    HEIGHT = 720
+    WIDTH = 1024
+    HEIGHT = 768
 
     clock = pygame.time.Clock()
 
@@ -60,7 +60,6 @@ class Game:
         self.curr_view = "menu"
 
         self.load_assets()
-        self.load_levels()
 
     def load_assets(self):
         self.audios = {"coins": pygame.mixer.Sound('assets/audio/coins.wav'),

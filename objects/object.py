@@ -15,10 +15,16 @@ class Object:
 
         if self.type == "player":
             pygame.draw.rect(self.niveau.game.window, (255, 0, 0), self.rect, 1)
-        elif self.type == "box":
-            pygame.draw.rect(self.niveau.game.window, (0, 255, 0), self.rect, 1)
-        else:
+        elif self.type == "wind_jet":
             pygame.draw.rect(self.niveau.game.window, (0, 0, 255), self.rect, 1)
+            left = pygame.Rect(self.rect.x - self.rect.width, self.rect.y, self.rect.width, self.rect.height)
+            right = pygame.Rect(self.rect.x + self.rect.width, self.rect.y, self.rect.width, self.rect.height)
+            top = pygame.Rect(self.rect.x, self.rect.y - self.rect.height, self.rect.width, self.rect.height)
+            bottom = pygame.Rect(self.rect.x, self.rect.y + self.rect.height, self.rect.width, self.rect.height)
+            pygame.draw.rect(self.niveau.game.window, (0, 255, 0), left, 0)
+            pygame.draw.rect(self.niveau.game.window, (0, 255, 0), right, 0)
+            pygame.draw.rect(self.niveau.game.window, (0, 255, 0), top, 0)
+            pygame.draw.rect(self.niveau.game.window, (0, 255, 0), bottom, 0)
 
 
 class Movable(Object):
