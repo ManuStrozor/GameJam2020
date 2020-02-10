@@ -1,10 +1,36 @@
 from objects.object import Object, Movable
 
 
-class Caisse(Movable):
+# Non interactifs
+
+
+#       Solides
+
+
+class Wall(Object):
 
     def __init__(self, niv, pos):
         super().__init__(niv, pos)
+        self.type = "wall"
+
+
+class EventFin(Object):
+
+    def __init__(self, niv, pos):
+        super().__init__(niv, pos)
+        self.type = "event_fin"
+
+
+# Interactifs
+
+
+#       Solides
+
+
+class Caisse(Movable):
+
+    def __init__(self, niveau, pos):
+        super().__init__(niveau, pos)
         self.type = "box"
 
     def move(self, dx, dy):
@@ -33,23 +59,6 @@ class Caisse(Movable):
                     self.rect.y -= dy
 
 
-class Saas(Object):
-
-    cardinal = None
-
-    def __init__(self, niv, pos, cardinal):
-        super().__init__(niv, pos)
-        self.cardinal = cardinal
-        self.type = "saas"
-
-
-class Wall(Object):
-
-    def __init__(self, niv, pos):
-        super().__init__(niv, pos)
-        self.type = "wall"
-
-
 class Souffleur(Object):
 
     activated = True
@@ -57,6 +66,26 @@ class Souffleur(Object):
     def __init__(self, niv, pos):
         super().__init__(niv, pos)
         self.type = "wind_jet"
+
+
+#       Sols
+
+
+class DalleElectrique(Object):
+
+    def __init__(self, niv, pos):
+        super().__init__(niv, pos)
+        self.type = "dalle_electrique"
+
+
+class DalleInnonde(Object):
+
+    def __init__(self, niv, pos):
+        super().__init__(niv, pos)
+        self.type = "dalle_innonde"
+
+
+#       Objets
 
 
 class Piece(Object):
@@ -78,6 +107,19 @@ class OxygenBottle(Object):
     def __init__(self, niv, pos):
         super().__init__(niv, pos)
         self.type = "oxygen"
+
+
+#       Divers
+
+
+class Saas(Object):
+
+    cardinal = None
+
+    def __init__(self, niv, pos, cardinal):
+        super().__init__(niv, pos)
+        self.cardinal = cardinal
+        self.type = "saas"
 
 
 class Button(Object):
@@ -106,24 +148,3 @@ class PorteLock(Object):
     def __init__(self, niv, pos):
         super().__init__(niv, pos)
         self.type = "porte_lock"
-
-
-class DalleElectrique(Object):
-
-    def __init__(self, niv, pos):
-        super().__init__(niv, pos)
-        self.type = "dalle_electrique"
-
-
-class DalleInnonde(Object):
-
-    def __init__(self, niv, pos):
-        super().__init__(niv, pos)
-        self.type = "dalle_innonde"
-
-
-class EventFin(Object):
-
-    def __init__(self, niv, pos):
-        super().__init__(niv, pos)
-        self.type = "event_fin"

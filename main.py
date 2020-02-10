@@ -4,8 +4,8 @@ from tkinter import *
 
 from game import Game
 
-WIDTH = 1920
-HEIGHT = 1080
+WIDTH = 1280
+HEIGHT = 720
 
 VOLUME = 0
 

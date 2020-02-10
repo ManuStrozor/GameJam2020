@@ -13,6 +13,8 @@ class Player(Movable):
     chaussure = False
     direction = "bottom"
     moving = False
+    grab = False
+    grabbing = False
     collide_saas = False
     num_sprite = 0
 
@@ -26,6 +28,8 @@ class Player(Movable):
         key = pygame.key.get_pressed()
         if (key[pygame.K_LEFT] or key[pygame.K_RIGHT] or key[pygame.K_UP] or key[pygame.K_DOWN]) and not self.moving:
             self.moving = True
+            if key[pygame.K_LCTRL] or key[pygame.K_RCTRL]:
+                self.grab = True
             if key[pygame.K_LEFT]:
                 self.direction = "left"
                 self.dest = (self.rect.x - self.rect.width, self.rect.y)
@@ -42,6 +46,7 @@ class Player(Movable):
         if self.direction == "left":
             if self.rect.x <= self.dest[0]:
                 self.moving = False
+                self.grab = False
             else:
                 if self.rect.x - self.speed >= self.dest[0]:
                     if not self.collide_saas:
@@ -54,11 +59,13 @@ class Player(Movable):
                             self.moving = False
                             self.dest = self.rect
                         self.collide_saas = False
+                        self.grab = False
                         self.step = 1
 
         elif self.direction == "right":
             if self.rect.x >= self.dest[0]:
                 self.moving = False
+                self.grab = False
             else:
                 if self.rect.x + self.speed <= self.dest[0]:
                     if not self.collide_saas:
@@ -71,11 +78,13 @@ class Player(Movable):
                             self.moving = False
                             self.dest = self.rect
                         self.collide_saas = False
+                        self.grab = False
                         self.step = 1
 
         elif self.direction == "top":
             if self.rect.y <= self.dest[1]:
                 self.moving = False
+                self.grab = False
             else:
                 if self.rect.y - self.speed >= self.dest[1]:
                     if not self.collide_saas:
@@ -88,11 +97,13 @@ class Player(Movable):
                             self.moving = False
                             self.dest = self.rect
                         self.collide_saas = False
+                        self.grab = False
                         self.step = 1
 
         elif self.direction == "bottom":
             if self.rect.y >= self.dest[1]:
                 self.moving = False
+                self.grab = False
             else:
                 if self.rect.y + self.speed <= self.dest[1]:
                     if not self.collide_saas:
@@ -105,6 +116,7 @@ class Player(Movable):
                             self.moving = False
                             self.dest = self.rect
                         self.collide_saas = False
+                        self.grab = False
                         self.step = 1
 
     def move(self, dx, dy):
@@ -115,13 +127,11 @@ class Player(Movable):
         else:
             self.num_sprite = 0
 
-        self.game.get_audio("walk").play()
-
         bloks = self.game.niveau.walls + self.game.niveau.caisses + self.game.niveau.souffleurs\
                 + self.game.niveau.pieces + self.game.niveau.portes_lock + self.game.niveau.portes_unlock\
                 + self.game.niveau.buttons
 
-        # Collision mur (petit bug d'1 pixel)
+        # Collision mur
         for wall in self.game.niveau.walls:
             if self.rect.colliderect(wall.rect):
                 if dx > 0:  # deplacement right
@@ -154,6 +164,11 @@ class Player(Movable):
                     self.game.set_lvl(self.game.niveau.sortieW)
                     self.rect.x = self.game.get_saas("East").rect.x - self.rect.width
                     self.rect.y = self.game.get_saas("East").rect.y
+
+        # Collision porte
+        for porte_unlock in self.game.niveau.portes_unlock:
+            if self.rect.colliderect(porte_unlock.rect):
+                self.game.get_audio("door").play()
 
         # Collision porte verrouillée
         for porte_lock in self.game.niveau.portes_lock:
@@ -204,60 +219,48 @@ class Player(Movable):
                     self.game.goto("gameover")
                 self.game.get_audio("water").play()
 
-        # Collision porte déverrouillée
-        for porte_unlock in self.game.niveau.portes_unlock:
-            if self.rect.colliderect(porte_unlock.rect):
-                self.game.get_audio("door").play()
-
         # Collision caisse (Pousser et Tirer)
         for caisse in self.game.niveau.caisses:
-            if self.rect.colliderect(caisse.rect):  # Pousser la caisse quand on se dirige vers elle
+
+            if self.rect.colliderect(caisse.rect):  # Pousser la caisse
                 if dx > 0:  # deplacement right
                     if caisse.way_right(bloks):
-                        caisse.rect.right += dx
-                        self.game.get_audio("moving_box").play()
+                        caisse.rect.left = self.rect.right
                     else:
-                        self.rect.x -= dx
+                        self.rect.right = caisse.rect.left
                 if dx < 0:  # deplacement left
                     if caisse.way_left(bloks):
-                        caisse.rect.left += dx
-                        self.game.get_audio("moving_box").play()
+                        caisse.rect.right = self.rect.left
                     else:
-                        self.rect.x -= dx
+                        self.rect.left = caisse.rect.right
                 if dy > 0:  # deplacement bottom
                     if caisse.way_bottom(bloks):
-                        caisse.rect.bottom += dy
-                        self.game.get_audio("moving_box").play()
+                        caisse.rect.top = self.rect.bottom
                     else:
-                        self.rect.y -= dy
+                        self.rect.bottom = caisse.rect.top
                 if dy < 0:  # deplacement top
                     if caisse.way_top(bloks):
-                        caisse.rect.top += dy
-                        self.game.get_audio("moving_box").play()
+                        caisse.rect.bottom = self.rect.top
                     else:
-                        self.rect.y -= dy
-            if pygame.key.get_pressed()[pygame.K_LCTRL]:  # Tirer la caisse quand la touche (Ctrl gauche) est appuyé
+                        self.rect.top = caisse.rect.bottom
+
+            if self.grab:  # Tirer la caisse
+                self.grabbing = True
                 tmp = caisse.rect
                 if dx > 0:  # deplacement right
-                    if caisse.way_right(bloks) and self.rect.collidepoint(tmp.x + dx + self.rect.width + self.speed, tmp.y + int(tmp.height/2))\
-                            or self.rect.collidepoint(tmp.x + dx + self.speed - 1, tmp.y + int(tmp.height/2)):
+                    if self.rect.collidepoint(tmp.midright[0] + dx + 1, tmp.midright[1]):
                         caisse.rect.right = self.rect.left
-                        self.game.get_audio("moving_box").play()
                 if dx < 0:  # deplacement left
-                    if caisse.way_left(bloks) and self.rect.collidepoint(tmp.x + dx - self.speed, tmp.y + int(tmp.height/2))\
-                            or self.rect.collidepoint(tmp.x + dx + self.rect.width + self.speed - 1, tmp.y + int(tmp.height/2)):
+                    if self.rect.collidepoint(tmp.midleft[0] + dx - 1, tmp.midleft[1]):
                         caisse.rect.left = self.rect.right
-                        self.game.get_audio("moving_box").play()
                 if dy > 0:  # deplacement bottom
-                    if caisse.way_bottom(bloks) and self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy + self.rect.height + self.speed)\
-                            or self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy + self.speed - 1):
+                    if self.rect.collidepoint(tmp.midbottom[0], tmp.midbottom[1] + dy + 1):
                         caisse.rect.bottom = self.rect.top
-                        self.game.get_audio("moving_box").play()
                 if dy < 0:  # deplacement top
-                    if caisse.way_top(bloks) and self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy - self.speed)\
-                            or self.rect.collidepoint(tmp.x + int(tmp.width / 2), tmp.y + dy + self.rect.height + self.speed - 1):
+                    if self.rect.collidepoint(tmp.midtop[0], tmp.midtop[1] + dy - 1):
                         caisse.rect.top = self.rect.bottom
-                        self.game.get_audio("moving_box").play()
+            else:
+                self.grabbing = False
 
         # Interaction souffleur
         for souffleur in self.game.niveau.souffleurs:

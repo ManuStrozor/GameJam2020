@@ -1,16 +1,16 @@
 from objects.objects import *
 
 
-class Niveau:
+class Level:
 
-    def __init__(self, game, path):
+    def __init__(self, game):
         self.game = game
 
-        self.width = None
-        self.height = None
-        self.size_x = None
-        self.size_y = None
-        self.structure = None
+        self.width = 0
+        self.height = 0
+        self.size_x = 0
+        self.size_y = 0
+        self.structure = []
         self.num_level = None
 
         self.sortieN = None
@@ -35,64 +35,23 @@ class Niveau:
         self.dalles_innondes = []  # Liste des dalles innondes-------------
         self.all_saas = []  # liste des saas-------------------------------
 
-        self.generer(path)
-        self.afficher()
-
-    def generer(self, path):  # Méthode permettant de générer le niveau en fonction du fichier
-        self.num_level = path[10:-4]
-
-        f = open(path, "r")
-
-        first_line = f.readline()
-
-        self.width = int(first_line[:2])
-        self.height = int(first_line[3:])
-
-        self.size_x = int(self.game.WIDTH / self.width)
-        self.size_y = int(self.game.HEIGHT / self.height)
-
-        structure_niveau = []
-        for line in f:
-            if line != "\n":
-                ligne_niveau = []
-                for car in line:
-                    if car != '\n':
-                        ligne_niveau.append(car)
-                structure_niveau.append(ligne_niveau)
-            else:
-                break
-        self.structure = structure_niveau
-
-        for line in f:
-            if line[0] == 'N':
-                self.sortieN = line[2:-1]
-            elif line[0] == 'W':
-                self.sortieW = line[2:-1]
-            elif line[0] == 'E':
-                self.sortieE = line[2:-1]
-            elif line[0] == 'S':
-                self.sortieS = line[2:-1]
-
-        f.close()
-
-    def afficher(self):
+    def init_structure(self):
         # Méthode permettant d'afficher le niveau en fonction de la liste de structure renvoyé par la fonction generer
         num_ligne = 0
         for ligne in self.structure:
+
             num_case = 0
             for ch in ligne:
+
                 x = num_case * self.size_x + self.game.MARGIN_X
                 y = num_ligne * self.size_y + self.game.MARGIN_Y
 
                 item = Object(self, (x, y))
-                if ch == ".":
+                if ch == "X":
+                    self.game.spawn = (x, y)
+                elif ch == "#":
                     item = Wall(self, (x, y))
                     self.walls.append(item)
-                elif ch == "X":
-                    self.game.spawn = (x, y)
-                elif ch == "C":
-                    item = Caisse(self, (x, y))
-                    self.caisses.append(item)
                 elif ch == "N":
                     item = Saas(self, (x, y), "North")
                     self.all_saas.append(item)
@@ -108,6 +67,9 @@ class Niveau:
                 elif ch == "Z":
                     item = Souffleur(self, (x, y))
                     self.souffleurs.append(item)
+                elif ch == "C":
+                    item = Caisse(self, (x, y))
+                    self.caisses.append(item)
                 elif ch == "P":
                     item = Piece(self, (x, y))
                     self.pieces.append(item)
@@ -132,12 +94,61 @@ class Niveau:
                 elif ch == "J":
                     item = Chaussure(self, (x, y))
                     self.chaussures.append(item)
-                elif ch == "Q":
+                elif ch == "_":
                     item = DalleInnonde(self, (x, y))
                     self.dalles_innondes.append(item)
                 elif ch == "F":
                     item = EventFin(self, (x, y))
                     self.event_fin = item
+
                 self.objs.append(item)
+
                 num_case += 1
+
             num_ligne += 1
+
+
+def gen_levels(game, path):
+    f = open(path, "r")
+    lines = f.readlines()
+    f.close()
+
+    levels = []
+
+    i = 0
+    while lines[i] != "END\n":
+
+        lvl = Level(game)
+        lvl.num_level = int(lines[i])
+
+        i += 1
+        while lines[i] != "\n":
+
+            lvl.width = len(lines[i])-1
+            lvl.structure.append(lines[i])
+            lvl.height += 1
+
+            i += 1
+
+        lvl.size_x = int(game.WIDTH / lvl.width)
+        lvl.size_y = int(game.HEIGHT / lvl.height)
+
+        i += 1
+        while lines[i] != "\n":
+
+            if lines[i][0] == 'N':
+                lvl.sortieN = int(lines[i][1:-1])
+            elif lines[i][0] == 'W':
+                lvl.sortieW = int(lines[i][1:-1])
+            elif lines[i][0] == 'E':
+                lvl.sortieE = int(lines[i][1:-1])
+            elif lines[i][0] == 'S':
+                lvl.sortieS = int(lines[i][1:-1])
+
+            i += 1
+
+        levels.append(lvl)
+
+        i += 1
+
+    return levels

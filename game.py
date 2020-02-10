@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 from views.views import Menu, Pause, Opts, Cred, Help, Gameover, Win
-from niveau import Niveau
+from level import Level, gen_levels
 from player import Player
 
 
@@ -18,10 +18,16 @@ class Score:
     def update(self):
         self.player_coins = self.score_font.render(str(self.game.player.coins),
             True, pygame.Color("yellow"), pygame.Color("black"))
-        self.player_oxygen_bottle = self.score_font.render(str(float("{0:.2f}".format(self.game.player.oxygen_bottle))),
+        self.player_oxygen_bottle = self.score_font.render(self.print_float(self.game.player.oxygen_bottle, "2"),
             True, pygame.Color("lightblue"), pygame.Color("black"))
-        self.player_room = self.score_font.render("Salle : " + self.game.niveau.num_level,
+        self.player_room = self.score_font.render("Salle : " + str(self.game.niveau.num_level),
             True, pygame.Color("darkorange"), pygame.Color("black"))
+        self.fps_info = self.score_font.render("FPS : " + self.print_float(self.game.clock.get_fps(), "0"),
+            True, pygame.Color("red"), pygame.Color("black"))
+
+    def print_float(self, float_number, decimals):
+        myformat = "{0:."+decimals+"f}"
+        return str(float(myformat.format(float_number)))
 
     def draw(self):
         self.game.window.blit(pygame.transform.scale(self.game.get_image("coin"), (30, 30)), (0, 0))
@@ -33,19 +39,22 @@ class Score:
         if self.game.player.chaussure:
             self.game.window.blit(pygame.transform.scale(self.game.get_image("chaussure"), (30, 30)), (0, 60))
 
-        self.game.window.blit(self.player_room, (self.game.window.get_width()/1.2, self.game.window.get_height()/20))
+        self.game.window.blit(self.fps_info, (self.game.window.get_width() - 120, 10))
+        self.game.window.blit(self.player_room, (self.game.window.get_width() - 120, 40))
 
 
 class Game:
 
-    WIDTH = 1280
+    WIDTH = 1024
     HEIGHT = 720
 
     clock = pygame.time.Clock()
 
     running = 1
     state = 1
+    player = None
     spawn = []
+    levels = []
     niveau = None
 
     def __init__(self, window, framerate):
@@ -109,15 +118,10 @@ class Game:
             "event_fin": pygame.image.load('assets/computer.png'), "saas": pygame.image.load('assets/saas.png')}
 
     def load_levels(self):
-        self.levels = {"room1": Niveau(self, "rooms/room1.txt"), "room2": Niveau(self, "rooms/room2.txt"),
-                       "room3": Niveau(self, "rooms/room3.txt"), "room4": Niveau(self, "rooms/room4.txt"),
-                       "room5": Niveau(self, "rooms/room5.txt"), "room6": Niveau(self, "rooms/room6.txt"),
-                       "room7": Niveau(self, "rooms/room7.txt"), "room8": Niveau(self, "rooms/room8.txt"),
-                       "room9": Niveau(self, "rooms/room9.txt"), "room10": Niveau(self, "rooms/room10.txt"),
-                       "room11": Niveau(self, "rooms/room11.txt"), "room12": Niveau(self, "rooms/room12.txt"),
-                       "room13": Niveau(self, "rooms/room13.txt"), "room14": Niveau(self, "rooms/room14.txt"),
-                       "room15": Niveau(self, "rooms/room15.txt"), "room16": Niveau(self, "rooms/room16.txt")}
-        self.set_lvl("room1")
+        self.levels = gen_levels(self, "levels.txt")
+        for level in self.levels:
+            level.init_structure()
+        self.set_lvl(1)
         self.player = Player(self, self.spawn)
         self.score = Score(self)
 
@@ -176,8 +180,11 @@ class Game:
 
         pygame.display.flip()
 
-    def set_lvl(self, name):
-        self.niveau = self.levels.__getitem__(name)
+    def set_lvl(self, num):
+        self.niveau = self.levels[num-1]
+        if self.player is not None:
+            self.player.rect.width = self.niveau.size_x
+            self.player.rect.height = self.niveau.size_y
 
     def get_player_image(self, direction, num):
         return self.player_images.get(direction + "_" + str(num))

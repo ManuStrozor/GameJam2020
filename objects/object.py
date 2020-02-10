@@ -14,17 +14,21 @@ class Object:
         self.niveau.game.window.blit(self.niveau.game.get_image(self.type), self.rect)
 
         if self.type == "player":
-            pygame.draw.rect(self.niveau.game.window, (255, 0, 0), self.rect, 1)
+            if self.grabbing:
+                pygame.draw.rect(self.niveau.game.window, (255, 0, 0), self.rect, 1)
+            else:
+                pygame.draw.rect(self.niveau.game.window, (255, 150, 150), self.rect, 1)
+        elif self.type == "box":
+            pygame.draw.rect(self.niveau.game.window, (255, 255, 0), self.rect, 1)
         elif self.type == "wind_jet":
-            pygame.draw.rect(self.niveau.game.window, (0, 0, 255), self.rect, 1)
             left = pygame.Rect(self.rect.x - self.rect.width, self.rect.y, self.rect.width, self.rect.height)
             right = pygame.Rect(self.rect.x + self.rect.width, self.rect.y, self.rect.width, self.rect.height)
             top = pygame.Rect(self.rect.x, self.rect.y - self.rect.height, self.rect.width, self.rect.height)
             bottom = pygame.Rect(self.rect.x, self.rect.y + self.rect.height, self.rect.width, self.rect.height)
-            pygame.draw.rect(self.niveau.game.window, (0, 255, 0), left, 0)
-            pygame.draw.rect(self.niveau.game.window, (0, 255, 0), right, 0)
-            pygame.draw.rect(self.niveau.game.window, (0, 255, 0), top, 0)
-            pygame.draw.rect(self.niveau.game.window, (0, 255, 0), bottom, 0)
+            pygame.draw.rect(self.niveau.game.window, (0, 255, 0), left, 1)
+            pygame.draw.rect(self.niveau.game.window, (0, 255, 0), right, 1)
+            pygame.draw.rect(self.niveau.game.window, (0, 255, 0), top, 1)
+            pygame.draw.rect(self.niveau.game.window, (0, 255, 0), bottom, 1)
 
 
 class Movable(Object):
@@ -41,20 +45,12 @@ class Movable(Object):
             if self.rect.collidepoint(item.rect.midleft[0]-1, item.rect.midleft[1]):
                 self.rect.right = item.rect.left
                 return False
-            if self.rect.collidepoint(item.rect.topleft[0]-1, item.rect.topleft[1]):
-                return False
-            if self.rect.collidepoint(item.rect.bottomleft[0]-1, item.rect.bottomleft[1]-1):
-                return False
         return True
 
     def way_left(self, list_of_items):
         for item in list_of_items:
             if self.rect.collidepoint(item.rect.midright[0]+1, item.rect.midright[1]):
                 self.rect.left = item.rect.right
-                return False
-            if self.rect.collidepoint(item.rect.topright[0]+1, item.rect.topright[1]):
-                return False
-            if self.rect.collidepoint(item.rect.bottomright[0]+1, item.rect.bottomright[1]-1):
                 return False
         return True
 
@@ -63,19 +59,11 @@ class Movable(Object):
             if self.rect.collidepoint(item.rect.midbottom[0], item.rect.midbottom[1]+1):
                 self.rect.top = item.rect.bottom
                 return False
-            if self.rect.collidepoint(item.rect.bottomleft[0], item.rect.bottomleft[1]+1):
-                return False
-            if self.rect.collidepoint(item.rect.bottomright[0]-1, item.rect.bottomright[1]):
-                return False
         return True
 
     def way_bottom(self, list_of_items):
         for item in list_of_items:
             if self.rect.collidepoint(item.rect.midtop[0], item.rect.midtop[1]-1):
                 self.rect.bottom = item.rect.top
-                return False
-            if self.rect.collidepoint(item.rect.topleft[0], item.rect.topleft[1]-1):
-                return False
-            if self.rect.collidepoint(item.rect.topright[0]-1, item.rect.topright[1]-1):
                 return False
         return True
