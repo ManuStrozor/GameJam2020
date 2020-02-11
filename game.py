@@ -6,9 +6,9 @@ from player import Player
 from views.views import Menu, Pause, Opts, Cred, Help, Gameover, Win
 
 
-def print_float(n, d):
-    f = "{0:."+d+"f}"
-    return str(float(f.format(n)))
+def float_to_str(n, d=0):
+    f = "{0:."+str(d)+"f}"
+    return f.format(n)
 
 
 class Score:
@@ -21,11 +21,18 @@ class Score:
         self.score_font = pygame.font.SysFont('Consolas', 20)
 
     def update(self):
-        self.player_coins = self.score_font.render(str(self.game.player.coins), True, pygame.Color("yellow"), pygame.Color("black"))
-        self.player_oxygen_bottle = self.score_font.render(print_float(self.game.player.oxygen_bottle, "2"), True, pygame.Color("lightblue"), pygame.Color("black"))
-        self.fps_info = self.score_font.render("FPS : " + print_float(self.game.clock.get_fps(), "0"), True, pygame.Color("red"), pygame.Color("black"))
+        self.fps_info = self.score_font.render("FPS : " + float_to_str(self.game.clock.get_fps()), True,
+            pygame.Color("red"), pygame.Color("black"))
+
+        self.player_coins = self.score_font.render(str(self.game.player.coins), True,
+            pygame.Color("yellow"), pygame.Color("black"))
+
+        self.player_oxygen_bottle = self.score_font.render(float_to_str(self.game.player.oxygen_bottle), True,
+            pygame.Color("lightblue"), pygame.Color("black"))
 
     def draw(self):
+        self.game.window.blit(self.fps_info, (self.game.window.get_width() - 120, 10))
+
         self.game.window.blit(pygame.transform.scale(self.game.get_image("coin"), (30, 30)), (0, 0))
         self.game.window.blit(self.player_coins, (30, 10))
 
@@ -34,8 +41,6 @@ class Score:
 
         if self.game.player.chaussure:
             self.game.window.blit(pygame.transform.scale(self.game.get_image("chaussure"), (30, 30)), (0, 60))
-
-        self.game.window.blit(self.fps_info, (self.game.window.get_width() - 125, 10))
 
 
 class Game:
