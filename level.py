@@ -82,6 +82,11 @@ class Level:
                 num_case += 1
             num_ligne += 1
 
+    def get_saas(self, card):
+        for saas in self.d_objs["saas"]:
+            if saas.cardinal == card:
+                return saas
+
     def remove(self, item):
         self.objs.remove(item)
         self.d_objs[item.type].remove(item)

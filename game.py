@@ -1,33 +1,29 @@
 import pygame
 from pygame.locals import *
-from views.views import Menu, Pause, Opts, Cred, Help, Gameover, Win
-from level import Level, gen_levels
+
+from level import gen_levels
 from player import Player
+from views.views import Menu, Pause, Opts, Cred, Help, Gameover, Win
+
+
+def print_float(n, d):
+    f = "{0:."+d+"f}"
+    return str(float(f.format(n)))
 
 
 class Score:
 
     player_coins = None
     player_oxygen_bottle = None
-    player_room = None
 
     def __init__(self, game):
         self.game = game
         self.score_font = pygame.font.SysFont('Consolas', 20)
 
     def update(self):
-        self.player_coins = self.score_font.render(str(self.game.player.coins),
-            True, pygame.Color("yellow"), pygame.Color("black"))
-        self.player_oxygen_bottle = self.score_font.render(self.print_float(self.game.player.oxygen_bottle, "2"),
-            True, pygame.Color("lightblue"), pygame.Color("black"))
-        self.player_room = self.score_font.render("Salle : " + str(self.game.niveau.num_level),
-            True, pygame.Color("darkorange"), pygame.Color("black"))
-        self.fps_info = self.score_font.render("FPS : " + self.print_float(self.game.clock.get_fps(), "0"),
-            True, pygame.Color("red"), pygame.Color("black"))
-
-    def print_float(self, float_number, decimals):
-        myformat = "{0:."+decimals+"f}"
-        return str(float(myformat.format(float_number)))
+        self.player_coins = self.score_font.render(str(self.game.player.coins), True, pygame.Color("yellow"), pygame.Color("black"))
+        self.player_oxygen_bottle = self.score_font.render(print_float(self.game.player.oxygen_bottle, "2"), True, pygame.Color("lightblue"), pygame.Color("black"))
+        self.fps_info = self.score_font.render("FPS : " + print_float(self.game.clock.get_fps(), "0"), True, pygame.Color("red"), pygame.Color("black"))
 
     def draw(self):
         self.game.window.blit(pygame.transform.scale(self.game.get_image("coin"), (30, 30)), (0, 0))
@@ -39,8 +35,7 @@ class Score:
         if self.game.player.chaussure:
             self.game.window.blit(pygame.transform.scale(self.game.get_image("chaussure"), (30, 30)), (0, 60))
 
-        self.game.window.blit(self.fps_info, (self.game.window.get_width() - 120, 10))
-        self.game.window.blit(self.player_room, (self.game.window.get_width() - 120, 40))
+        self.game.window.blit(self.fps_info, (self.game.window.get_width() - 125, 10))
 
 
 class Game:
@@ -48,18 +43,19 @@ class Game:
     WIDTH = 1024
     HEIGHT = 720
 
-    clock = pygame.time.Clock()
-
     running = 1
     state = 1
-    player = None
-    spawn = (-1, -1)
+
     levels = []
     niveau = None
+
+    player = None
+    spawn = (-1, -1)
 
     def __init__(self, window, framerate):
         self.window = window
         self.framerate = framerate
+        self.clock = pygame.time.Clock()
 
         self.MARGIN_X = (window.get_width() - self.WIDTH) / 2
         self.MARGIN_Y = (window.get_height() - self.HEIGHT) / 2
@@ -187,11 +183,6 @@ class Game:
 
     def get_audio(self, name):
         return self.audios.__getitem__(name)
-
-    def get_saas(self, card):
-        for saas in self.niveau.d_objs["saas"]:
-            if saas.cardinal == card:
-                return saas
 
     def goto(self, next_view):
         if next_view is not None:

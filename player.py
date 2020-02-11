@@ -160,20 +160,20 @@ class Player(Movable):
                 self.moving = False
                 if saas.cardinal == "East":
                     self.game.set_lvl(self.game.niveau.sortieE)
-                    self.rect.x = self.game.get_saas("West").rect.x + self.rect.width
-                    self.rect.y = self.game.get_saas("West").rect.y
+                    self.rect.x = self.game.niveau.get_saas("West").rect.x + self.rect.width
+                    self.rect.y = self.game.niveau.get_saas("West").rect.y
                 elif saas.cardinal == "South":
                     self.game.set_lvl(self.game.niveau.sortieS)
-                    self.rect.x = self.game.get_saas("North").rect.x
-                    self.rect.y = self.game.get_saas("North").rect.y + self.rect.height
+                    self.rect.x = self.game.niveau.get_saas("North").rect.x
+                    self.rect.y = self.game.niveau.get_saas("North").rect.y + self.rect.height
                 elif saas.cardinal == "North":
                     self.game.set_lvl(self.game.niveau.sortieN)
-                    self.rect.x = self.game.get_saas("South").rect.x
-                    self.rect.y = self.game.get_saas("South").rect.y - self.rect.height
+                    self.rect.x = self.game.niveau.get_saas("South").rect.x
+                    self.rect.y = self.game.niveau.get_saas("South").rect.y - self.rect.height
                 else:
                     self.game.set_lvl(self.game.niveau.sortieW)
-                    self.rect.x = self.game.get_saas("East").rect.x - self.rect.width
-                    self.rect.y = self.game.get_saas("East").rect.y
+                    self.rect.x = self.game.niveau.get_saas("East").rect.x - self.rect.width
+                    self.rect.y = self.game.niveau.get_saas("East").rect.y
 
         # Collision porte
         for porte in self.game.niveau.d_objs["porte"]:
