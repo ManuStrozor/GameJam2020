@@ -11,7 +11,7 @@ class Player(Movable):
     speed = 5
     step = 1
     chaussure = False
-    direction = "bottom"
+    direction = 0
     moving = False
     grab = False
     grabbing = False
@@ -31,19 +31,19 @@ class Player(Movable):
             if key[pygame.K_LCTRL] or key[pygame.K_RCTRL]:
                 self.grab = True
             if key[pygame.K_LEFT]:
-                self.direction = "left"
+                self.direction = 1
                 self.dest = (self.rect.x - self.rect.width, self.rect.y)
             elif key[pygame.K_RIGHT]:
-                self.direction = "right"
+                self.direction = 2
                 self.dest = (self.rect.x + self.rect.width, self.rect.y)
             elif key[pygame.K_UP]:
-                self.direction = "top"
+                self.direction = 3
                 self.dest = (self.rect.x, self.rect.y - self.rect.height)
             else:
-                self.direction = "bottom"
+                self.direction = 0
                 self.dest = (self.rect.x, self.rect.y + self.rect.height)
 
-        if self.direction == "left":
+        if self.direction == 1:
             if self.rect.x <= self.dest[0]:
                 self.moving = False
                 self.grab = False
@@ -62,7 +62,7 @@ class Player(Movable):
                         self.grab = False
                         self.step = 1
 
-        elif self.direction == "right":
+        elif self.direction == 2:
             if self.rect.x >= self.dest[0]:
                 self.moving = False
                 self.grab = False
@@ -81,7 +81,7 @@ class Player(Movable):
                         self.grab = False
                         self.step = 1
 
-        elif self.direction == "top":
+        elif self.direction == 3:
             if self.rect.y <= self.dest[1]:
                 self.moving = False
                 self.grab = False
@@ -100,7 +100,7 @@ class Player(Movable):
                         self.grab = False
                         self.step = 1
 
-        elif self.direction == "bottom":
+        elif self.direction == 0:
             if self.rect.y >= self.dest[1]:
                 self.moving = False
                 self.grab = False
@@ -122,14 +122,17 @@ class Player(Movable):
     def move(self, dx, dy):
         super().move(dx, dy)
 
-        if self.num_sprite < 39:
+        # Calcul du numéro de sprite
+        if dy == 0:  # deplacement right
+            cap = self.rect.width / self.speed
+        if dx == 0:  # deplacement bottom
+            cap = self.rect.height / self.speed
+        if self.step % cap-1 == 0:
             self.num_sprite += 1
-        else:
+        if self.num_sprite == 4:
             self.num_sprite = 0
 
-        bloks = self.game.niveau.walls + self.game.niveau.caisses + self.game.niveau.souffleurs\
-                + self.game.niveau.pieces + self.game.niveau.portes_lock + self.game.niveau.portes_unlock\
-                + self.game.niveau.buttons
+        bloks = self.game.niveau.walls + self.game.niveau.caisses + self.game.niveau.souffleurs + self.game.niveau.pieces + self.game.niveau.portes_lock + self.game.niveau.portes_unlock + self.game.niveau.buttons
 
         # Collision mur
         for wall in self.game.niveau.walls:

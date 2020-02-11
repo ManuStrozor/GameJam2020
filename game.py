@@ -82,26 +82,13 @@ class Game:
             "water": pygame.mixer.Sound('assets/audio/water.wav'),
             "moving_box": pygame.mixer.Sound('assets/audio/moving_box_s.wav')}
 
-        self.player_images = {"right_0": pygame.image.load('assets/player/right_0.png'),
-            "right_1": pygame.image.load('assets/player/right_1.png'),
-            "right_2": pygame.image.load('assets/player/right_2.png'),
-            "right_3": pygame.image.load('assets/player/right_3.png'),
-            "left_0": pygame.image.load('assets/player/left_0.png'),
-            "left_1": pygame.image.load('assets/player/left_1.png'),
-            "left_2": pygame.image.load('assets/player/left_2.png'),
-            "left_3": pygame.image.load('assets/player/left_3.png'),
-            "bottom_0": pygame.image.load('assets/player/bottom_0.png'),
-            "bottom_1": pygame.image.load('assets/player/bottom_1.png'),
-            "bottom_2": pygame.image.load('assets/player/bottom_2.png'),
-            "bottom_3": pygame.image.load('assets/player/bottom_3.png'),
-            "top_0": pygame.image.load('assets/player/top_0.png'),
-            "top_1": pygame.image.load('assets/player/top_1.png'),
-            "top_2": pygame.image.load('assets/player/top_2.png'),
-            "top_3": pygame.image.load('assets/player/top_3.png')}
-
-        self.images = {"wall": pygame.image.load('assets/wall.png'),
-            "wind_jet": pygame.image.load('assets/wind_jet.png'), "box": pygame.image.load('assets/caisse.png'),
-            "coin": pygame.image.load('assets/coin.png'), "floor": pygame.image.load('assets/floor.png'),
+        self.images = {
+            "player": pygame.image.load('assets/player.png'),
+            "wall": pygame.image.load('assets/wall.png'),
+            "wind_jet": pygame.image.load('assets/wind_jet.png'),
+            "box": pygame.image.load('assets/caisse.png'),
+            "coin": pygame.image.load('assets/coin.png'),
+            "floor": pygame.image.load('assets/floor.png'),
             "oxygen": pygame.image.load('assets/oxygen_bottle.png'),
             "button": pygame.image.load('assets/red_button.png'),
             "button_pressed": pygame.image.load('assets/grey_button.png'),
@@ -115,7 +102,9 @@ class Game:
             "decor_poubelle": pygame.image.load('assets/decor_poubelle.png'),
             "decor_boite": pygame.image.load('assets/decor_boite.png'),
             "decor_four": pygame.image.load('assets/decor_four.png'),
-            "event_fin": pygame.image.load('assets/computer.png'), "saas": pygame.image.load('assets/saas.png')}
+            "event_fin": pygame.image.load('assets/computer.png'),
+            "saas": pygame.image.load('assets/saas.png')
+        }
 
     def load_levels(self):
         self.levels = gen_levels(self, "levels.txt")
@@ -186,15 +175,11 @@ class Game:
             self.player.rect.width = self.niveau.size_x
             self.player.rect.height = self.niveau.size_y
 
-    def get_player_image(self, direction, num):
-        return self.player_images.get(direction + "_" + str(num))
-
     def get_image(self, name):
         if name == "player":
-            image = self.get_player_image(self.player.direction, int(self.player.num_sprite / 10))
+            return pygame.transform.scale(self.images.__getitem__(name), (self.niveau.size_x*4, self.niveau.size_y*4))
         else:
-            image = self.images.__getitem__(name)
-        return pygame.transform.scale(image, (self.niveau.size_x, self.niveau.size_y))
+            return pygame.transform.scale(self.images.__getitem__(name), (self.niveau.size_x, self.niveau.size_y))
 
     def get_audio(self, name):
         return self.audios.__getitem__( name )

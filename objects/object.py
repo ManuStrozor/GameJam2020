@@ -11,8 +11,13 @@ class Object:
         self.rect = pygame.Rect(pos[0], pos[1], self.niveau.size_x, self.niveau.size_y)
 
     def draw(self):
-        self.niveau.game.window.blit(self.niveau.game.get_image(self.type), self.rect)
+        if self.type == "player":
+            self.niveau.game.window.blit(self.niveau.game.get_image("player"), self.rect,
+                (self.rect.width*self.num_sprite, self.rect.height*self.direction, self.rect.width, self.rect.height))
+        else:
+            self.niveau.game.window.blit(self.niveau.game.get_image(self.type), self.rect)
 
+        # Affichage de test
         if self.type == "player":
             if self.grabbing:
                 pygame.draw.rect(self.niveau.game.window, (255, 0, 0), self.rect, 1)
