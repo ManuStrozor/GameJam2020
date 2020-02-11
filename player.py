@@ -8,7 +8,7 @@ class Player(Movable):
     coins = 0
     oxygen_bottle = 0
 
-    max_speed = 5
+    max_speed = 3
     speed = max_speed
     step = 1
     chaussure = False

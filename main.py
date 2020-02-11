@@ -21,7 +21,7 @@ pygame.display.set_caption("Lonely Space v1.0")
 pygame.display.set_icon(pygame.image.load("assets/lonely_space_32.png"))
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 
-game = Game(window, 120)
+game = Game(window, 240)
 
 THEME = pygame.mixer.music.load("assets/audio/theme/main_theme.ogg")
 pygame.mixer.music.set_volume(VOLUME)
