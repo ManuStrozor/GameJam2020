@@ -61,8 +61,6 @@ class Caisse(Movable):
 
 class Souffleur(Object):
 
-    activated = True
-
     def __init__(self, niv, pos):
         super().__init__(niv, pos)
         self.type = "wind_jet"
@@ -128,23 +126,24 @@ class Button(Object):
         super().__init__(niv, pos)
         self.type = "button"
 
-
-class ButtonPressed(Object):
-
-    def __init__(self, niv, pos):
-        super().__init__(niv, pos)
+    def press(self):
         self.type = "button_pressed"
+        self.niveau.d_objs["button"].remove(self)
+        self.niveau.d_objs["button_pressed"].append(self)
 
 
-class PorteUnlock(Object):
-
-    def __init__(self, niv, pos):
-        super().__init__(niv, pos)
-        self.type = "porte_unlock"
-
-
-class PorteLock(Object):
+class Porte(Object):
 
     def __init__(self, niv, pos):
         super().__init__(niv, pos)
+        self.type = "porte"
+
+    def lock(self):
         self.type = "porte_lock"
+        self.niveau.d_objs["porte"].remove(self)
+        self.niveau.d_objs["porte_lock"].append(self)
+
+    def unlock(self):
+        self.type = "porte"
+        self.niveau.d_objs["porte_lock"].remove(self)
+        self.niveau.d_objs["porte"].append(self)

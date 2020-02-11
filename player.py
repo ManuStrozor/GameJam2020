@@ -133,10 +133,16 @@ class Player(Movable):
         if self.num_sprite == 4:
             self.num_sprite = 0
 
-        bloks = self.game.niveau.walls + self.game.niveau.caisses + self.game.niveau.souffleurs + self.game.niveau.pieces + self.game.niveau.portes_lock + self.game.niveau.portes_unlock + self.game.niveau.buttons
+        bloks = self.game.niveau.d_objs["wall"]\
+                + self.game.niveau.d_objs["box"]\
+                + self.game.niveau.d_objs["wind_jet"]\
+                + self.game.niveau.d_objs["coin"]\
+                + self.game.niveau.d_objs["porte"]\
+                + self.game.niveau.d_objs["porte_lock"]\
+                + self.game.niveau.d_objs["button"]
 
         # Collision mur
-        for wall in self.game.niveau.walls:
+        for wall in self.game.niveau.d_objs["wall"]:
             if self.rect.colliderect(wall.rect):
                 if dx > 0:  # deplacement right
                     self.rect.right = wall.rect.left
@@ -148,7 +154,7 @@ class Player(Movable):
                     self.rect.top = wall.rect.bottom
 
         # Collision Saas
-        for saas in self.game.niveau.all_saas:
+        for saas in self.game.niveau.d_objs["saas"]:
             if saas.rect.colliderect(self.rect):
                 self.collide_saas = True
                 self.moving = False
@@ -170,24 +176,24 @@ class Player(Movable):
                     self.rect.y = self.game.get_saas("East").rect.y
 
         # Collision porte
-        for porte_unlock in self.game.niveau.portes_unlock:
-            if self.rect.colliderect(porte_unlock.rect):
+        for porte in self.game.niveau.d_objs["porte"]:
+            if self.rect.colliderect(porte.rect):
                 self.game.get_audio("door").play()
 
         # Collision porte verrouillée
-        for porte_lock in self.game.niveau.portes_lock:
-            if self.rect.colliderect(porte_lock.rect):
+        for porte in self.game.niveau.d_objs["porte_lock"]:
+            if self.rect.colliderect(porte.rect):
                 if dx > 0:  # deplacement right
-                    self.rect.right = porte_lock.rect.left
+                    self.rect.right = porte.rect.left
                 if dx < 0:  # deplacement left
-                    self.rect.left = porte_lock.rect.right
+                    self.rect.left = porte.rect.right
                 if dy > 0:  # deplacement bottom
-                    self.rect.bottom = porte_lock.rect.top
+                    self.rect.bottom = porte.rect.top
                 if dy < 0:  # deplacement top
-                    self.rect.top = porte_lock.rect.bottom
+                    self.rect.top = porte.rect.bottom
 
         # Collision dalle electrique SANS chaussures à propulsion
-        for dalle_electrique in self.game.niveau.dalles_electriques:
+        for dalle_electrique in self.game.niveau.d_objs["dalle_electrique"]:
             if self.rect.colliderect(dalle_electrique.rect) and self.chaussure is not True:
                 self.game.get_audio("electric").play()
                 if dx > 0:  # deplacement right
@@ -204,7 +210,7 @@ class Player(Movable):
                 self.game.get_audio("chaussure_propulsion").play()
 
         # Collision dalle innonde SANS oxygene
-        for dalle_innonde in self.game.niveau.dalles_innondes:
+        for dalle_innonde in self.game.niveau.d_objs["dalle_innonde"]:
             if self.rect.colliderect(dalle_innonde.rect) and self.oxygen_bottle <= 0:
                 if dx > 0:  # deplacement right
                     self.rect.right = dalle_innonde.rect.left
@@ -224,7 +230,7 @@ class Player(Movable):
                 self.game.get_audio("water").play()
 
         # Collision caisse (Pousser et Tirer)
-        for caisse in self.game.niveau.caisses:
+        for caisse in self.game.niveau.d_objs["box"]:
 
             if self.rect.colliderect(caisse.rect):  # Pousser la caisse
                 if dx > 0:  # deplacement right
@@ -267,8 +273,8 @@ class Player(Movable):
                 self.grabbing = False
 
         # Interaction souffleur
-        for souffleur in self.game.niveau.souffleurs:
-            for caisse in self.game.niveau.caisses:
+        for souffleur in self.game.niveau.d_objs["wind_jet"]:
+            for caisse in self.game.niveau.d_objs["box"]:
 
                 tmp = souffleur.rect
                 souf_left = pygame.Rect(tmp.x - tmp.width, tmp.y, tmp.width, tmp.height)
@@ -297,43 +303,39 @@ class Player(Movable):
                     self.rect.y += self.speed
 
         # Collision piece (coins)
-        for piece in self.game.niveau.pieces:
+        for piece in self.game.niveau.d_objs["coin"]:
             if self.rect.colliderect(piece.rect):
                 self.coins += 1
-                self.game.niveau.pieces.remove(piece)
-                piece.type = None
+                self.game.niveau.remove(piece)
                 self.game.get_audio("coins").play()
 
         # Collision oxygen_bottle
-        for oxygen_bottle in self.game.niveau.oxygen_bottles:
+        for oxygen_bottle in self.game.niveau.d_objs["oxygen"]:
             if self.rect.colliderect(oxygen_bottle.rect):
                 self.oxygen_bottle += 500
-                self.game.niveau.oxygen_bottles.remove(oxygen_bottle)
-                oxygen_bottle.type = None
+                self.game.niveau.remove(oxygen_bottle)
                 self.game.get_audio("oxygen_bottle").play()
 
         # Collision chaussure
-        for chaussure in self.game.niveau.chaussures:
+        for chaussure in self.game.niveau.d_objs["chaussure"]:
             if self.rect.colliderect(chaussure.rect):
                 self.chaussure = True
-                self.game.niveau.chaussures.remove(chaussure)
+                self.game.niveau.remove(chaussure)
                 chaussure.type = None
                 self.game.get_audio("chaussure").play()
 
         # Collision button
-        for button in self.game.niveau.buttons:
+        for button in self.game.niveau.d_objs["button"]:
             if self.rect.colliderect(button.rect):
-                self.game.niveau.buttons.remove(button)
-                button.type = "button_pressed"
+                button.press()
                 self.game.get_audio("button").play()
 
                 # changer l'etat de la porte verouillé en deverouillé
-                for porte_lock in self.game.niveau.portes_lock:
-                    self.game.niveau.portes_lock.remove(porte_lock)
-                    porte_lock.type = "porte_unlock"
+                for porte in self.game.niveau.d_objs["porte_lock"]:
+                    porte.unlock()
 
         # Collision event_fin
-        if self.game.niveau.event_fin is not None:
-            if self.rect.colliderect(self.game.niveau.event_fin.rect):
+        for fin in self.game.niveau.d_objs["event_fin"]:
+            if self.rect.colliderect(fin.rect):
                 self.game.state = 0
                 self.game.goto("win")

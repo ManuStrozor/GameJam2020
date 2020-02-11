@@ -53,7 +53,7 @@ class Game:
     running = 1
     state = 1
     player = None
-    spawn = []
+    spawn = (-1, -1)
     levels = []
     niveau = None
 
@@ -71,7 +71,8 @@ class Game:
         self.load_assets()
 
     def load_assets(self):
-        self.audios = {"coins": pygame.mixer.Sound('assets/audio/coins.wav'),
+        self.audios = {
+            "coins": pygame.mixer.Sound('assets/audio/coins.wav'),
             "walk": pygame.mixer.Sound('assets/audio/walk.wav'),
             "oxygen_bottle": pygame.mixer.Sound('assets/audio/air_fill.wav'),
             "door": pygame.mixer.Sound('assets/audio/close_door_1.wav'),
@@ -80,7 +81,8 @@ class Game:
             "chaussure": pygame.mixer.Sound('assets/audio/chaussure_lacet.wav'),
             "electric": pygame.mixer.Sound('assets/audio/electric.wav'),
             "water": pygame.mixer.Sound('assets/audio/water.wav'),
-            "moving_box": pygame.mixer.Sound('assets/audio/moving_box_s.wav')}
+            "moving_box": pygame.mixer.Sound('assets/audio/moving_box_s.wav')
+        }
 
         self.images = {
             "player": pygame.image.load('assets/player.png'),
@@ -92,7 +94,7 @@ class Game:
             "oxygen": pygame.image.load('assets/oxygen_bottle.png'),
             "button": pygame.image.load('assets/red_button.png'),
             "button_pressed": pygame.image.load('assets/grey_button.png'),
-            "porte_unlock": pygame.image.load('assets/porte_unlock.png'),
+            "porte": pygame.image.load('assets/porte_unlock.png'),
             "porte_lock": pygame.image.load('assets/porte_lock.png'),
             "dalle_electrique": pygame.image.load('assets/electric.png'),
             "chaussure": pygame.image.load('assets/flashy_boots.png'),
@@ -110,13 +112,15 @@ class Game:
         self.levels = gen_levels(self, "levels.txt")
         for level in self.levels:
             level.init_structure()
-        self.set_lvl(1)
-        self.player = Player(self, self.spawn)
-        self.score = Score(self)
+        if self.spawn == (-1, -1):
+            print("[ERROR] Il n'y a pas de point de spawn défini pour le joueur !")
+            exit()
 
     def run(self, last_view):
         if last_view == "menu":
             self.load_levels()
+            self.player = Player(self, self.spawn)
+            self.score = Score(self)
         self.state = 1
         while self.state:
             self.update()
@@ -160,8 +164,8 @@ class Game:
                 obj.draw()
 
         # Affichage des saas
-        for saas in self.niveau.all_saas:
-            self.window.blit( self.get_image("saas"), (saas.rect.x, saas.rect.y) )
+        for saas in self.niveau.d_objs["saas"]:
+            self.window.blit(self.get_image("saas"), (saas.rect.x, saas.rect.y))
 
         self.player.draw()
 
@@ -182,10 +186,10 @@ class Game:
             return pygame.transform.scale(self.images.__getitem__(name), (self.niveau.size_x, self.niveau.size_y))
 
     def get_audio(self, name):
-        return self.audios.__getitem__( name )
+        return self.audios.__getitem__(name)
 
     def get_saas(self, card):
-        for saas in self.niveau.all_saas:
+        for saas in self.niveau.d_objs["saas"]:
             if saas.cardinal == card:
                 return saas
 
