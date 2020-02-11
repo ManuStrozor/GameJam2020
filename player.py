@@ -225,31 +225,29 @@ class Player(Movable):
             if self.rect.colliderect(dalle_innonde.rect) and self.oxygen_bottle > 0:
                 self.oxygen_bottle = self.oxygen_bottle - 0.1
                 if self.oxygen_bottle <= 0.5:
-                    self.game.state = 0
                     self.game.goto("gameover")
                 self.game.get_audio("water").play()
 
         # Collision caisse (Pousser et Tirer)
         for caisse in self.game.niveau.d_objs["box"]:
-
             if self.rect.colliderect(caisse.rect):  # Pousser la caisse
                 if dx > 0:  # deplacement right
-                    if caisse.way_right(bloks):
+                    if caisse.has_way(dx, dy, bloks):
                         caisse.rect.left = self.rect.right
                     else:
                         self.rect.right = caisse.rect.left
                 if dx < 0:  # deplacement left
-                    if caisse.way_left(bloks):
+                    if caisse.has_way(dx, dy, bloks):
                         caisse.rect.right = self.rect.left
                     else:
                         self.rect.left = caisse.rect.right
                 if dy > 0:  # deplacement bottom
-                    if caisse.way_bottom(bloks):
+                    if caisse.has_way(dx, dy, bloks):
                         caisse.rect.top = self.rect.bottom
                     else:
                         self.rect.bottom = caisse.rect.top
                 if dy < 0:  # deplacement top
-                    if caisse.way_top(bloks):
+                    if caisse.has_way(dx, dy, bloks):
                         caisse.rect.bottom = self.rect.top
                     else:
                         self.rect.top = caisse.rect.bottom
@@ -258,49 +256,32 @@ class Player(Movable):
                 self.grabbing = True
                 tmp = caisse.rect
                 if dx > 0:  # deplacement right
-                    if self.rect.collidepoint(tmp.midright[0] + dx + 1, tmp.midright[1]):
+                    if self.rect.collidepoint(tmp.midright[0] + dx + 1, tmp.midright[1]) and self.has_no_jet(dx, dy):
                         caisse.rect.right = self.rect.left
                 if dx < 0:  # deplacement left
-                    if self.rect.collidepoint(tmp.midleft[0] + dx - 1, tmp.midleft[1]):
+                    if self.rect.collidepoint(tmp.midleft[0] + dx - 1, tmp.midleft[1]) and self.has_no_jet(dx, dy):
                         caisse.rect.left = self.rect.right
                 if dy > 0:  # deplacement bottom
-                    if self.rect.collidepoint(tmp.midbottom[0], tmp.midbottom[1] + dy + 1):
+                    if self.rect.collidepoint(tmp.midbottom[0], tmp.midbottom[1] + dy + 1) and self.has_no_jet(dx, dy):
                         caisse.rect.bottom = self.rect.top
                 if dy < 0:  # deplacement top
-                    if self.rect.collidepoint(tmp.midtop[0], tmp.midtop[1] + dy - 1):
+                    if self.rect.collidepoint(tmp.midtop[0], tmp.midtop[1] + dy - 1) and self.has_no_jet(dx, dy):
                         caisse.rect.top = self.rect.bottom
             else:
                 self.grabbing = False
 
         # Interaction souffleur
         for souffleur in self.game.niveau.d_objs["wind_jet"]:
-            for caisse in self.game.niveau.d_objs["box"]:
-
-                tmp = souffleur.rect
-                souf_left = pygame.Rect(tmp.x - tmp.width, tmp.y, tmp.width, tmp.height)
-                souf_right = pygame.Rect(tmp.x + tmp.width, tmp.y, tmp.width, tmp.height)
-                souf_top = pygame.Rect(tmp.x, tmp.y - tmp.height, tmp.width, tmp.height)
-                souf_bottom = pygame.Rect(tmp.x, tmp.y + tmp.height, tmp.width, tmp.height)
-
-                if souf_left.colliderect(caisse.rect):
-                    caisse.move(-self.speed, 0)
-                if souf_left.colliderect(self.rect):
-                    self.rect.x -= self.speed
-
-                if souf_right.colliderect(caisse.rect):
-                    caisse.move(self.speed, 0)
-                if souf_right.colliderect(self.rect):
-                    self.rect.x += self.speed
-
-                if souf_top.colliderect(caisse.rect):
-                    caisse.move(0, -self.speed)
-                if souf_top.colliderect(self.rect):
-                    self.rect.y -= self.speed
-
-                if souf_bottom.colliderect(caisse.rect):
-                    caisse.move(0, self.speed)
-                if souf_bottom.colliderect(self.rect):
-                    self.rect.y += self.speed
+            for jet_rect in souffleur.jets:
+                if self.rect.colliderect(jet_rect):
+                    if dx > 0:  # deplacement right
+                        self.rect.right = jet_rect.left
+                    if dx < 0:  # deplacement left
+                        self.rect.left = jet_rect.right
+                    if dy > 0:  # deplacement bottom
+                        self.rect.bottom = jet_rect.top
+                    if dy < 0:  # deplacement top
+                        self.rect.top = jet_rect.bottom
 
         # Collision piece (coins)
         for piece in self.game.niveau.d_objs["coin"]:
@@ -337,5 +318,4 @@ class Player(Movable):
         # Collision event_fin
         for fin in self.game.niveau.d_objs["event_fin"]:
             if self.rect.colliderect(fin.rect):
-                self.game.state = 0
                 self.game.goto("win")

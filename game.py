@@ -191,19 +191,23 @@ class Game:
 
     def goto(self, next_view):
         if next_view is not None:
+
             if next_view != "menu":
                 self.last_view = self.curr_view
             else:
                 self.last_view = None
             self.curr_view = next_view
+
             for view in self.views:
                 if view.name == next_view:
                     view.state = 1
                 else:
                     view.state = 0
+
             if next_view != "game":
                 self.state = 0
             else:
                 self.run(self.last_view)
+
             if next_view == "exit":
                 self.exit()

@@ -17,23 +17,14 @@ class Object:
         else:
             self.niveau.game.window.blit(self.niveau.game.get_image(self.type), self.rect)
 
-        # Affichage de test
+        # Affichage des hitboxes
         if self.type == "player":
-            if self.grabbing:
-                pygame.draw.rect(self.niveau.game.window, (255, 0, 0), self.rect, 1)
-            else:
-                pygame.draw.rect(self.niveau.game.window, (255, 150, 150), self.rect, 1)
+            pygame.draw.rect(self.niveau.game.window, (255, 0, 0), self.rect, 1)
         elif self.type == "box":
             pygame.draw.rect(self.niveau.game.window, (255, 255, 0), self.rect, 1)
         elif self.type == "wind_jet":
-            left = pygame.Rect(self.rect.x - self.rect.width, self.rect.y, self.rect.width, self.rect.height)
-            right = pygame.Rect(self.rect.x + self.rect.width, self.rect.y, self.rect.width, self.rect.height)
-            top = pygame.Rect(self.rect.x, self.rect.y - self.rect.height, self.rect.width, self.rect.height)
-            bottom = pygame.Rect(self.rect.x, self.rect.y + self.rect.height, self.rect.width, self.rect.height)
-            pygame.draw.rect(self.niveau.game.window, (0, 255, 0), left, 1)
-            pygame.draw.rect(self.niveau.game.window, (0, 255, 0), right, 1)
-            pygame.draw.rect(self.niveau.game.window, (0, 255, 0), top, 1)
-            pygame.draw.rect(self.niveau.game.window, (0, 255, 0), bottom, 1)
+            for jet_rect in self.jets:
+                pygame.draw.rect(self.niveau.game.window, (0, 255, 0), jet_rect, 1)
 
 
 class Movable(Object):
@@ -45,30 +36,47 @@ class Movable(Object):
         self.rect.x += dx
         self.rect.y += dy
 
-    def way_right(self, list_of_items):
-        for item in list_of_items:
-            if self.rect.collidepoint(item.rect.midleft[0]-1, item.rect.midleft[1]):
-                self.rect.right = item.rect.left
-                return False
+    def has_no_jet(self, dx, dy):
+        for souffleur in self.game.niveau.d_objs["wind_jet"]:  # self.game.niveau car self.niveau ne change pas pour le player !!!
+            for jet_rect in souffleur.jets:
+                if self.rect.colliderect(jet_rect):
+                    if dx > 0:  # Deplacement right
+                        self.rect.right = jet_rect.left
+                        return False
+                    elif dx < 0:  # Deplacement left
+                        self.rect.left = jet_rect.right
+                        return False
+                    elif dy > 0:  # Deplacement bottom
+                        self.rect.bottom = jet_rect.top
+                        return False
+                    elif dy < 0:  # Deplacement top
+                        self.rect.top = jet_rect.bottom
+                        return False
         return True
 
-    def way_left(self, list_of_items):
-        for item in list_of_items:
-            if self.rect.collidepoint(item.rect.midright[0]+1, item.rect.midright[1]):
-                self.rect.left = item.rect.right
-                return False
-        return True
-
-    def way_top(self, list_of_items):
-        for item in list_of_items:
-            if self.rect.collidepoint(item.rect.midbottom[0], item.rect.midbottom[1]+1):
-                self.rect.top = item.rect.bottom
-                return False
-        return True
-
-    def way_bottom(self, list_of_items):
-        for item in list_of_items:
-            if self.rect.collidepoint(item.rect.midtop[0], item.rect.midtop[1]-1):
-                self.rect.bottom = item.rect.top
-                return False
+    def has_way(self, dx, dy, list_of_items):
+        for souffleur in self.niveau.d_objs["wind_jet"]:
+            for jet_rect in souffleur.jets:
+                if self.rect == jet_rect:
+                    return False
+        if dx > 0:  # Deplacement right
+            for item in list_of_items:
+                if self.rect.collidepoint(item.rect.midleft[0] - 1, item.rect.midleft[1]):
+                    self.rect.right = item.rect.left
+                    return False
+        elif dx < 0:  # Deplacement left
+            for item in list_of_items:
+                if self.rect.collidepoint(item.rect.midright[0] + 1, item.rect.midright[1]):
+                    self.rect.left = item.rect.right
+                    return False
+        elif dy > 0:  # Deplacement bottom
+            for item in list_of_items:
+                if self.rect.collidepoint(item.rect.midtop[0], item.rect.midtop[1] - 1):
+                    self.rect.bottom = item.rect.top
+                    return False
+        elif dy < 0:  # Deplacement top
+            for item in list_of_items:
+                if self.rect.collidepoint(item.rect.midbottom[0], item.rect.midbottom[1] + 1):
+                    self.rect.top = item.rect.bottom
+                    return False
         return True

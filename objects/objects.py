@@ -1,3 +1,4 @@
+import pygame
 from objects.object import Object, Movable
 
 
@@ -38,22 +39,22 @@ class Caisse(Movable):
 
         if self.rect.colliderect(self.niveau.game.player.rect):
             if dx > 0:  # deplacement right
-                if self.niveau.game.player.way_right(self.niveau.walls + self.niveau.souffleurs):
+                if self.niveau.game.player.has_way(dx, dy, self.niveau.walls + self.niveau.souffleurs):
                     self.niveau.game.player.rect.right += dx
                 else:
                     self.rect.x -= dx
             if dx < 0:  # deplacement left
-                if self.niveau.game.player.way_left(self.niveau.walls + self.niveau.souffleurs):
+                if self.niveau.game.player.has_way(dx, dy, self.niveau.walls + self.niveau.souffleurs):
                     self.niveau.game.player.rect.left += dx
                 else:
                     self.rect.x -= dx
             if dy > 0:  # deplacement bottom
-                if self.niveau.game.player.way_bottom(self.niveau.walls + self.niveau.souffleurs):
+                if self.niveau.game.player.has_way(dx, dy, self.niveau.walls + self.niveau.souffleurs):
                     self.niveau.game.player.rect.bottom += dy
                 else:
                     self.rect.y -= dy
             if dy < 0:  # deplacement top
-                if self.niveau.game.player.way_top(self.niveau.walls + self.niveau.souffleurs):
+                if self.niveau.game.player.has_way(dx, dy, self.niveau.walls + self.niveau.souffleurs):
                     self.niveau.game.player.rect.top += dy
                 else:
                     self.rect.y -= dy
@@ -64,6 +65,13 @@ class Souffleur(Object):
     def __init__(self, niv, pos):
         super().__init__(niv, pos)
         self.type = "wind_jet"
+
+        self.jets = [
+            pygame.Rect(self.rect.x - self.rect.width, self.rect.y, self.rect.width, self.rect.height),
+            pygame.Rect(self.rect.x + self.rect.width, self.rect.y, self.rect.width, self.rect.height),
+            pygame.Rect(self.rect.x, self.rect.y - self.rect.height, self.rect.width, self.rect.height),
+            pygame.Rect(self.rect.x, self.rect.y + self.rect.height, self.rect.width, self.rect.height)
+        ]
 
 
 #       Sols
