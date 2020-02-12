@@ -18,13 +18,13 @@ class Object:
             self.niveau.game.window.blit(self.niveau.game.get_image(self.type), self.rect)
 
         # Affichage des hitboxes
-        if self.type == "player":
-            pygame.draw.rect(self.niveau.game.window, (255, 0, 0), self.rect, 1)
-        elif self.type == "box":
-            pygame.draw.rect(self.niveau.game.window, (255, 255, 0), self.rect, 1)
-        elif self.type == "wind_jet":
-            for jet_rect in self.jets:
-                pygame.draw.rect(self.niveau.game.window, (0, 255, 0), jet_rect, 1)
+        # if self.type == "player":
+        #     pygame.draw.rect(self.niveau.game.window, (255, 0, 0), self.rect, 1)
+        # elif self.type == "box":
+        #     pygame.draw.rect(self.niveau.game.window, (255, 255, 0), self.rect, 1)
+        # elif self.type == "wind_jet":
+        #     for jet_rect in self.jets:
+        #         pygame.draw.rect(self.niveau.game.window, (0, 255, 0), jet_rect, 1)
 
 
 class Movable(Object):
@@ -36,8 +36,8 @@ class Movable(Object):
         self.rect.x += dx
         self.rect.y += dy
 
-    def has_no_jet(self, dx, dy):
-        for souffleur in self.game.niveau.d_objs["wind_jet"]:  # self.game.niveau car self.niveau ne change pas pour le player !!!
+    def has_no_obstacles(self, dx, dy):
+        for souffleur in self.game.niveau.d_objs["wind_jet"]:  # self.niveau.num_level reste à 1 pour le player !!!
             for jet_rect in souffleur.jets:
                 if self.rect.colliderect(jet_rect):
                     if dx > 0:  # Deplacement right
@@ -52,6 +52,27 @@ class Movable(Object):
                     elif dy < 0:  # Deplacement top
                         self.rect.top = jet_rect.bottom
                         return False
+
+        # Ca marche pas tout les temps !!! A corriger !!!
+        # idée : utiliser la position relative a la map pour repérer les caisses autour du player ???
+        for caisse in self.game.niveau.d_objs["box"]:
+            if self.rect.colliderect(caisse.rect):
+                if dx > 0:  # Deplacement right
+                    self.rect.right = caisse.rect.left
+                    print("obst caisse right!")
+                    return False
+                elif dx < 0:  # Deplacement left
+                    self.rect.left = caisse.rect.right
+                    print("obst caisse left!")
+                    return False
+                elif dy > 0:  # Deplacement bottom
+                    self.rect.bottom = caisse.rect.top
+                    print("obst caisse bottom!")
+                    return False
+                elif dy < 0:  # Deplacement top
+                    self.rect.top = caisse.rect.bottom
+                    print("obst caisse top!")
+                    return False
         return True
 
     def has_way(self, dx, dy, list_of_items):
@@ -59,23 +80,20 @@ class Movable(Object):
             for jet_rect in souffleur.jets:
                 if self.rect == jet_rect:
                     return False
-        if dx > 0:  # Deplacement right
-            for item in list_of_items:
+        for item in list_of_items:
+            if dx > 0:  # Deplacement right
                 if self.rect.collidepoint(item.rect.midleft[0] - 1, item.rect.midleft[1]):
                     self.rect.right = item.rect.left
                     return False
-        elif dx < 0:  # Deplacement left
-            for item in list_of_items:
+            elif dx < 0:  # Deplacement left
                 if self.rect.collidepoint(item.rect.midright[0] + 1, item.rect.midright[1]):
                     self.rect.left = item.rect.right
                     return False
-        elif dy > 0:  # Deplacement bottom
-            for item in list_of_items:
+            elif dy > 0:  # Deplacement bottom
                 if self.rect.collidepoint(item.rect.midtop[0], item.rect.midtop[1] - 1):
                     self.rect.bottom = item.rect.top
                     return False
-        elif dy < 0:  # Deplacement top
-            for item in list_of_items:
+            elif dy < 0:  # Deplacement top
                 if self.rect.collidepoint(item.rect.midbottom[0], item.rect.midbottom[1] + 1):
                     self.rect.top = item.rect.bottom
                     return False

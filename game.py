@@ -1,4 +1,5 @@
 import pygame
+import datetime
 from pygame.locals import *
 
 from level import gen_levels
@@ -13,34 +14,41 @@ def float_to_str(n, d=0):
 
 class Score:
 
-    player_coins = None
-    player_oxygen_bottle = None
-
     def __init__(self, game):
         self.game = game
-        self.score_font = pygame.font.SysFont('Consolas', 20)
+        self.font = pygame.font.SysFont('Consolas', 20)
 
     def update(self):
-        self.fps_info = self.score_font.render("FPS : " + float_to_str(self.game.clock.get_fps()), True,
+        if self.game.pause_time > 0:
+            self.game.start_time += pygame.time.get_ticks() - self.game.pause_time
+            self.game.pause_time = 0
+
+        self.time = (pygame.time.get_ticks() - self.game.start_time) / 1000
+
+        self.chrono = self.font.render(self.game.time_to_str(self.time), True, pygame.Color("white"), pygame.Color("black"))
+
+        self.fps_info = self.font.render("FPS : " + float_to_str(self.game.clock.get_fps()), True,
             pygame.Color("red"), pygame.Color("black"))
 
-        self.player_coins = self.score_font.render(str(self.game.player.coins), True,
+        self.player_coins = self.font.render(str(self.game.player.coins), True,
             pygame.Color("yellow"), pygame.Color("black"))
 
-        self.player_oxygen_bottle = self.score_font.render(float_to_str(self.game.player.oxygen_bottle), True,
+        self.player_oxygen_bottle = self.font.render(float_to_str(self.game.player.oxygen_bottle), True,
             pygame.Color("lightblue"), pygame.Color("black"))
 
     def draw(self):
         self.game.window.blit(self.fps_info, (self.game.window.get_width() - 120, 10))
 
-        self.game.window.blit(pygame.transform.scale(self.game.get_image("coin"), (30, 30)), (0, 0))
-        self.game.window.blit(self.player_coins, (30, 10))
+        self.game.window.blit(self.chrono, (self.game.window.get_width()/2 - self.chrono.get_rect().width/2, 10))
 
-        self.game.window.blit(pygame.transform.scale(self.game.get_image("oxygen"), (30, 30)), (0, 30))
-        self.game.window.blit(self.player_oxygen_bottle, (30, 40))
+        self.game.window.blit(pygame.transform.scale(self.game.get_image("coin"), (30, 30)), (0, 10))
+        self.game.window.blit(self.player_coins, (30, 20))
+
+        self.game.window.blit(pygame.transform.scale(self.game.get_image("oxygen"), (30, 30)), (0, 50))
+        self.game.window.blit(self.player_oxygen_bottle, (30, 60))
 
         if self.game.player.chaussure:
-            self.game.window.blit(pygame.transform.scale(self.game.get_image("chaussure"), (30, 30)), (0, 60))
+            self.game.window.blit(pygame.transform.scale(self.game.get_image("chaussure"), (30, 30)), (0, 90))
 
 
 class Game:
@@ -50,6 +58,9 @@ class Game:
 
     running = 1
     state = 1
+
+    start_time = 0
+    pause_time = 0
 
     levels = []
     niveau = None
@@ -118,10 +129,12 @@ class Game:
             exit()
 
     def run(self, last_view):
+        pygame.mouse.set_visible(False)
         if last_view == "menu":
             self.load_levels()
             self.player = Player(self, self.spawn)
             self.score = Score(self)
+            self.start_time = pygame.time.get_ticks()
         self.state = 1
         while self.state:
             self.update()
@@ -137,7 +150,7 @@ class Game:
 
         for e in pygame.event.get():
             if e.type == KEYDOWN and e.key == K_ESCAPE:
-                self.goto("pause")
+                self.pause_game()
             if e.type == QUIT:
                 self.goto("exit")
 
@@ -174,6 +187,16 @@ class Game:
 
         pygame.display.flip()
 
+    def pause_game(self):
+        self.pause_time = pygame.time.get_ticks()
+        self.goto("pause")
+
+    def time_to_str(self, time):
+        td = datetime.timedelta(seconds=time)
+        minutes, seconds = divmod(td.seconds, 60)
+        hours, minutes = divmod(minutes, 60)
+        return '{:02d}:{:02d}:{:02d}'.format(hours, minutes, seconds)
+
     def set_lvl(self, num):
         self.niveau = self.levels[num-1]
         if self.player is not None:
@@ -190,6 +213,7 @@ class Game:
         return self.audios.__getitem__(name)
 
     def goto(self, next_view):
+        pygame.mouse.set_visible(True)
         if next_view is not None:
 
             if next_view != "menu":

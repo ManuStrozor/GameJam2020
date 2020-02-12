@@ -256,16 +256,16 @@ class Player(Movable):
                 self.grabbing = True
                 tmp = caisse.rect
                 if dx > 0:  # deplacement right
-                    if self.rect.collidepoint(tmp.midright[0] + dx + 1, tmp.midright[1]) and self.has_no_jet(dx, dy):
+                    if self.rect.collidepoint(tmp.midright[0] + dx + 1, tmp.midright[1]) and self.has_no_obstacles(dx, dy):
                         caisse.rect.right = self.rect.left
                 if dx < 0:  # deplacement left
-                    if self.rect.collidepoint(tmp.midleft[0] + dx - 1, tmp.midleft[1]) and self.has_no_jet(dx, dy):
+                    if self.rect.collidepoint(tmp.midleft[0] + dx - 1, tmp.midleft[1]) and self.has_no_obstacles(dx, dy):
                         caisse.rect.left = self.rect.right
                 if dy > 0:  # deplacement bottom
-                    if self.rect.collidepoint(tmp.midbottom[0], tmp.midbottom[1] + dy + 1) and self.has_no_jet(dx, dy):
+                    if self.rect.collidepoint(tmp.midbottom[0], tmp.midbottom[1] + dy + 1) and self.has_no_obstacles(dx, dy):
                         caisse.rect.bottom = self.rect.top
                 if dy < 0:  # deplacement top
-                    if self.rect.collidepoint(tmp.midtop[0], tmp.midtop[1] + dy - 1) and self.has_no_jet(dx, dy):
+                    if self.rect.collidepoint(tmp.midtop[0], tmp.midtop[1] + dy - 1) and self.has_no_obstacles(dx, dy):
                         caisse.rect.top = self.rect.bottom
             else:
                 self.grabbing = False

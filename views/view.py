@@ -7,14 +7,16 @@ class View:
         self.game = game
         self.name = name
         self.state = 0
-        self.title_font = pygame.font.SysFont('comicsans', 85, True)
-        self.normal_font = pygame.font.SysFont('comicsans', 40, True)
+        self.title_font = pygame.font.Font("assets/font/spacebar.ttf", 40)
+        self.normal_font = pygame.font.Font("assets/font/spacebar.ttf", 20)
         self.color = (255, 255, 255)
         self.background = None
         self.title = None
+        self.title_offset_x = 0
         self.curr_btn = None
         self.curr_btn_index = -1
         self.buttons = []
+        self.cursor = 0
 
     def loop(self):
         while self.state:
@@ -46,14 +48,14 @@ class View:
 
         if self.title is not None:
             text_menu = self.title_font.render(self.title, 1, self.color)
-            self.game.window.blit(text_menu, (self.game.window.get_width()/2 - text_menu.get_rect().centerx, 100))
+            self.game.window.blit(text_menu,
+                (self.game.window.get_width()/2 - text_menu.get_rect().centerx, self.title_offset_x))
 
-        for button in self.buttons:
-            button.surface.fill(button.background)
-            self.game.window.blit(button.surface, button.rect)
-            text = self.normal_font.render(button.text, 1, button.color)
-            self.game.window.blit(text, (button.rect.x + button.surface.get_width()/2 - text.get_rect().centerx,
-                                         button.rect.y + text.get_rect().centery + 15))
+        for btn in self.buttons:
+            btn.surface.fill(btn.background)
+            self.game.window.blit(btn.surface, btn.rect)
+            self.game.window.blit(btn.content, (btn.rect.x + btn.rect.width/2 - btn.content.get_rect().centerx,
+                                         btn.rect.y + btn.rect.height/2 - btn.content.get_rect().centery))
 
     def keyboard_navigation(self, key):
         if key == pygame.K_DOWN or key == pygame.K_RIGHT:
@@ -75,32 +77,59 @@ class View:
                 self.set_curr_btn(i)
             else:
                 if self.curr_btn != button:
-                    button.color = (255, 255, 255)
-                    button.background = (0, 0, 0)
+                    button.update_colors((255, 255, 255), (0, 0, 0))
             i += 1
 
+        # Si la souris ne survol aucun bouton, alors mettre à jour le cursor
+        i = 0
+        for b in self.buttons:
+            if not b.rect.collidepoint(pygame.mouse.get_pos()):
+                i += 1
+        if i == len(self.buttons):
+            pygame.mouse.set_cursor(*pygame.cursors.arrow)
+            self.cursor = 0
+
     def set_curr_btn(self, index):
+        if self.cursor == 0:
+            pygame.mouse.set_cursor(*pygame.cursors.diamond)
+            self.cursor = 1
         self.curr_btn = self.buttons.__getitem__(index)
         self.curr_btn_index = index
-        self.curr_btn.color = (0, 0, 0)
-        self.curr_btn.background = (255, 255, 255)
+        self.curr_btn.update_colors((0, 0, 0), (255, 255, 255))
 
     def set_background(self, filename):
         self.background = pygame.image.load(filename)
 
-    def set_title(self, title):
+    def set_title(self, title, offset=100):
         self.title = title
+        self.title_offset_x = offset
 
 
 class Button:
 
     def __init__(self, size, pos, text, target):
+        self.font = pygame.font.Font("assets/font/spacebar.ttf", 20)
+
+        self.init_surface(size, pos)
+
+        self.color = (255, 255, 255)
+        self.background = (0, 0, 0)
+
+        self.text = text
+        self.content = self.font.render(self.text, 1, self.color)
+        if self.content.get_rect().width > size[0]:
+            self.init_surface((self.content.get_rect().width + 20, size[1]), pos)
+
+        self.target = target
+
+    def update_colors(self, color, background):
+        self.color = color
+        self.background = background
+        self.content = self.font.render(self.text, 1, self.color)
+
+    def init_surface(self, size, pos):
         self.surface = pygame.Surface(size)
         self.surface.set_alpha(128)
         self.rect = self.surface.get_rect()
         self.rect.x = pos[0]
         self.rect.y = pos[1]
-        self.color = (255, 255, 255)
-        self.background = (0, 0, 0)
-        self.text = text
-        self.target = target
