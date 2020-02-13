@@ -90,7 +90,10 @@ class Opts(View):
 
     def control_volume(self):
         if self.curr_btn.target == "volume_down":
-            VOLUME = pygame.mixer.music.get_volume() - 0.1
+            if pygame.mixer.music.get_volume() <= 0.1:
+                VOLUME = 0
+            else:
+                VOLUME = pygame.mixer.music.get_volume() - 0.1
         elif self.curr_btn.target == "volume_up":
             VOLUME = pygame.mixer.music.get_volume() + 0.1
         pygame.mixer.music.set_volume(VOLUME)
