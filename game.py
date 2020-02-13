@@ -12,6 +12,13 @@ def float_to_str(n, d=0):
     return f.format(n)
 
 
+def time_to_str(time):
+    td = datetime.timedelta(seconds=time)
+    minutes, seconds = divmod(td.seconds, 60)
+    hours, minutes = divmod(minutes, 60)
+    return '{:02d}:{:02d}:{:02d}'.format(hours, minutes, seconds)
+
+
 class Score:
 
     def __init__(self, game):
@@ -25,7 +32,7 @@ class Score:
 
         self.time = (pygame.time.get_ticks() - self.game.start_time) / 1000
 
-        self.chrono = self.font.render(self.game.time_to_str(self.time), True, pygame.Color("white"), pygame.Color("black"))
+        self.chrono = self.font.render(time_to_str(self.time), True, pygame.Color("white"), pygame.Color("black"))
 
         self.fps_info = self.font.render("FPS : " + float_to_str(self.game.clock.get_fps()), True,
             pygame.Color("red"), pygame.Color("black"))
@@ -84,6 +91,8 @@ class Game:
 
     def load_assets(self):
         self.audios = {
+            "button_hover": pygame.mixer.Sound('assets/audio/button_hover.ogg'),
+            "button_click": pygame.mixer.Sound('assets/audio/button_click.ogg'),
             "coins": pygame.mixer.Sound('assets/audio/coins.wav'),
             "walk": pygame.mixer.Sound('assets/audio/walk.wav'),
             "oxygen_bottle": pygame.mixer.Sound('assets/audio/air_fill.wav'),
@@ -98,8 +107,8 @@ class Game:
 
         self.images = {
             "player": pygame.image.load('assets/player.png'),
+            "wind_jet": pygame.image.load('assets/blower.png'),
             "wall": pygame.image.load('assets/wall.png'),
-            "wind_jet": pygame.image.load('assets/wind_jet.png'),
             "box": pygame.image.load('assets/caisse.png'),
             "coin": pygame.image.load('assets/coin.png'),
             "floor": pygame.image.load('assets/floor.png'),
@@ -154,6 +163,9 @@ class Game:
             if e.type == QUIT:
                 self.goto("exit")
 
+        for wind_jet in self.niveau.d_objs["wind_jet"]:
+            wind_jet.update()
+
         self.player.update()
         self.score.update()
 
@@ -187,15 +199,17 @@ class Game:
 
         pygame.display.flip()
 
+    def blit_tile(self, item):
+        if item.type == "player":
+            image = pygame.transform.scale(self.images.__getitem__(item.type), (self.niveau.size_x*4, self.niveau.size_y*4))
+        else:
+            image = pygame.transform.scale(self.images.__getitem__(item.type), (self.niveau.size_x * 2, self.niveau.size_y))
+        self.niveau.game.window.blit(image, item.rect,
+            (item.rect.width * item.num_sprite, item.rect.height * item.direction, item.rect.width, item.rect.height))
+
     def pause_game(self):
         self.pause_time = pygame.time.get_ticks()
         self.goto("pause")
-
-    def time_to_str(self, time):
-        td = datetime.timedelta(seconds=time)
-        minutes, seconds = divmod(td.seconds, 60)
-        hours, minutes = divmod(minutes, 60)
-        return '{:02d}:{:02d}:{:02d}'.format(hours, minutes, seconds)
 
     def set_lvl(self, num):
         self.niveau = self.levels[num-1]
@@ -204,15 +218,13 @@ class Game:
             self.player.rect.height = self.niveau.size_y
 
     def get_image(self, name):
-        if name == "player":
-            return pygame.transform.scale(self.images.__getitem__(name), (self.niveau.size_x*4, self.niveau.size_y*4))
-        else:
-            return pygame.transform.scale(self.images.__getitem__(name), (self.niveau.size_x, self.niveau.size_y))
+        return pygame.transform.scale(self.images.__getitem__(name), (self.niveau.size_x, self.niveau.size_y))
 
     def get_audio(self, name):
         return self.audios.__getitem__(name)
 
     def goto(self, next_view):
+        self.get_audio("button_click").play()
         pygame.mouse.set_visible(True)
         if next_view is not None:
 

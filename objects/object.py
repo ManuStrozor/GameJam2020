@@ -11,9 +11,8 @@ class Object:
         self.rect = pygame.Rect(pos[0], pos[1], self.niveau.size_x, self.niveau.size_y)
 
     def draw(self):
-        if self.type == "player":
-            self.niveau.game.window.blit(self.niveau.game.get_image("player"), self.rect,
-                (self.rect.width*self.num_sprite, self.rect.height*self.direction, self.rect.width, self.rect.height))
+        if self.type == "player" or self.type == "wind_jet":
+            self.niveau.game.blit_tile(self)
         else:
             self.niveau.game.window.blit(self.niveau.game.get_image(self.type), self.rect)
 
@@ -59,19 +58,15 @@ class Movable(Object):
             if self.rect.colliderect(caisse.rect):
                 if dx > 0:  # Deplacement right
                     self.rect.right = caisse.rect.left
-                    print("obst caisse right!")
                     return False
                 elif dx < 0:  # Deplacement left
                     self.rect.left = caisse.rect.right
-                    print("obst caisse left!")
                     return False
                 elif dy > 0:  # Deplacement bottom
                     self.rect.bottom = caisse.rect.top
-                    print("obst caisse bottom!")
                     return False
                 elif dy < 0:  # Deplacement top
                     self.rect.top = caisse.rect.bottom
-                    print("obst caisse top!")
                     return False
         return True
 

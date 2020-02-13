@@ -62,6 +62,9 @@ class Caisse(Movable):
 
 class Souffleur(Object):
 
+    direction = 0
+    num_sprite = 0
+
     def __init__(self, niv, pos):
         super().__init__(niv, pos)
         self.type = "wind_jet"
@@ -72,6 +75,12 @@ class Souffleur(Object):
             pygame.Rect(self.rect.x, self.rect.y - self.rect.height, self.rect.width, self.rect.height),
             pygame.Rect(self.rect.x, self.rect.y + self.rect.height, self.rect.width, self.rect.height)
         ]
+
+    def update(self):
+        # Calcul du numéro de sprite
+        self.num_sprite += 1
+        if self.num_sprite == 2:
+            self.num_sprite = 0
 
 
 #       Sols

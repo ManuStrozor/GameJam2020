@@ -2,8 +2,8 @@ import pygame
 
 from views.view import View, Button
 
-WIDTH = 350
-HEIGHT = 80
+WIDTH = 300
+HEIGHT = 50
 
 
 class Menu(View):
@@ -11,26 +11,25 @@ class Menu(View):
     def __init__(self, game):
         super().__init__(game, "menu")
         self.state = 1
-        self.set_background("assets/background.png")
-        self.set_title("Lonely Space", 200)
-        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, game.window.get_height()/2 - HEIGHT/2), "Commencer", "game"))
+        self.set_title("Lonely Space")
 
-        self.buttons.append(Button((WIDTH, HEIGHT), (20, game.window.get_height() - HEIGHT - 120), "Credits", "cred"))
-        self.buttons.append(Button((WIDTH, HEIGHT), (20, game.window.get_height() - HEIGHT - 20), "Aide", "help"))
-        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width() / 2 - WIDTH / 2, game.window.get_height() - HEIGHT - 20), "Options du jeu", "opts"))
-        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width() - WIDTH - 20, game.window.get_height() - HEIGHT - 20), "Quitter le jeu", "exit"))
+        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250), "Commencer", "game"))
+        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90), "Options du jeu","opts"))
+        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+90), "Aide", "help"))
+        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+90+70), "Credits", "cred"))
+        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+90+70+90), "Quitter le jeu", "exit"))
 
 
 class Pause(View):
 
     def __init__(self, game):
         super().__init__(game, "pause")
-        self.set_background("assets/background.png")
         self.set_title("Pause")
-        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 200), "Continuer", "game"))
-        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 300), "Sauvegarder le jeu", "save"))
-        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 450), "Options du jeu", "opts"))
-        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 550), "Menu principal", "menu"))
+
+        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250), "Continuer", "game"))
+        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90), "Options du jeu", "opts"))
+        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+70), "Sauvegarder", "save"))
+        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+70+90), "Menu principal", "menu"))
 
     def update(self):
         self.update_focus()
@@ -60,11 +59,11 @@ class Opts(View):
 
     def __init__(self, game):
         super().__init__(game, "opts")
-        self.set_background("assets/background.png")
         self.set_title("Options")
-        self.buttons.append(Button((HEIGHT, HEIGHT), (game.window.get_width() / 2 - HEIGHT*3, 200), "-", "volume_down"))
-        self.buttons.append(Button((HEIGHT, HEIGHT), (game.window.get_width() / 2 + HEIGHT*2, 200), "+", "volume_up"))
-        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width() - WIDTH - 20, game.window.get_height() - HEIGHT - 20), "Retour", None))
+
+        self.buttons.append(Button((HEIGHT, HEIGHT), (game.window.get_width() / 2 - HEIGHT*4, 200), "-", "volume_down"))
+        self.buttons.append(Button((HEIGHT, HEIGHT), (game.window.get_width() / 2 + HEIGHT*3, 200), "+", "volume_up"))
+        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+90+70+90), "Retour", None))
 
     def update(self):
         self.update_focus()
@@ -101,37 +100,36 @@ class Opts(View):
     def draw(self):
         super().draw()
         text_volume = self.normal_font.render("Volume : " + "{0:.2f}".format(pygame.mixer.music.get_volume()*100) + "%", 1, self.color)
-        self.game.window.blit(text_volume, (self.game.window.get_width() / 2 - text_volume.get_rect().centerx, 230))
+        self.game.window.blit(text_volume, (self.game.window.get_width() / 2 - text_volume.get_rect().centerx, 215))
 
 
 class Cred(View):
 
     def __init__(self, game):
         super().__init__(game, "cred")
-        self.set_background("assets/background.png")
         self.set_title("Credits")
-        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width() - WIDTH - 20, game.window.get_height() - HEIGHT - 20), "Retour", "menu"))
+        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+90+70+90), "Retour", "menu"))
 
 
 class Help(View):
 
     def __init__(self, game):
         super().__init__(game, "help")
-        self.set_background("assets/help.png")
-        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width() - WIDTH - 20, game.window.get_height() - HEIGHT - 20), "Retour", "menu"))
+        self.set_title("Aide")
+        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+90+70+90), "Retour", "menu"))
 
 
 class Gameover(View):
 
     def __init__(self, game):
         super().__init__(game, "gameover")
-        self.set_background("assets/game_lost.png")
-        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, game.window.get_height()/2 - HEIGHT/2), "Menu", "menu"))
+        self.set_title("Gameover")
+        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+90+70+90), "Menu", "menu"))
 
 
 class Win(View):
 
     def __init__(self, game):
         super().__init__(game, "win")
-        self.set_background("assets/game_win.png")
-        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, game.window.get_height()/2 - HEIGHT/2), "Menu", "menu"))
+        self.set_title("You win !")
+        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+90+70+90), "Menu", "menu"))

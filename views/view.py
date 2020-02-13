@@ -45,17 +45,24 @@ class View:
         if self.background is not None:
             self.game.window.blit(pygame.transform.scale(self.background,
                 (self.game.window.get_width(), self.game.window.get_height())), (0, 0))
+        else:
+            self.game.window.fill((21, 21, 21))
+            step = 40
+            i = step/2
+            while i < self.game.window.get_width():
+                j = step/2
+                while j < self.game.window.get_height():
+                    pygame.draw.rect(self.game.window, (80, 80, 80), (i, j, 1, 1), 0)
+                    j += step
+                i += step
 
         if self.title is not None:
-            text_menu = self.title_font.render(self.title, 1, self.color)
+            text_menu = self.title_font.render(self.title, 1, (0, 136, 123))
             self.game.window.blit(text_menu,
                 (self.game.window.get_width()/2 - text_menu.get_rect().centerx, self.title_offset_x))
 
         for btn in self.buttons:
-            btn.surface.fill(btn.background)
-            self.game.window.blit(btn.surface, btn.rect)
-            self.game.window.blit(btn.content, (btn.rect.x + btn.rect.width/2 - btn.content.get_rect().centerx,
-                                         btn.rect.y + btn.rect.height/2 - btn.content.get_rect().centery))
+            btn.draw(self.game.window)
 
     def keyboard_navigation(self, key):
         if key == pygame.K_DOWN or key == pygame.K_RIGHT:
@@ -75,9 +82,13 @@ class View:
             if pygame.mouse.get_focused()\
                     and button.rect.collidepoint(pygame.mouse.get_pos()):  # La souris survol un bouton
                 self.set_curr_btn(i)
+                if not button.hover_sounded:
+                    self.game.get_audio("button_hover").play()
+                    button.hover_sounded = True
             else:
                 if self.curr_btn != button:
-                    button.update_colors((255, 255, 255), (0, 0, 0))
+                    button.update_colors(button.BLUE)
+                    button.hover_sounded = False
             i += 1
 
         # Si la souris ne survol aucun bouton, alors mettre à jour le cursor
@@ -95,7 +106,7 @@ class View:
             self.cursor = 1
         self.curr_btn = self.buttons.__getitem__(index)
         self.curr_btn_index = index
-        self.curr_btn.update_colors((0, 0, 0), (255, 255, 255))
+        self.curr_btn.update_colors(self.curr_btn.HL_BLUE)
 
     def set_background(self, filename):
         self.background = pygame.image.load(filename)
@@ -107,13 +118,19 @@ class View:
 
 class Button:
 
+    BLUE = (0, 136, 123)
+    HL_BLUE = (42, 255, 238)
+    BLACK = (21, 21, 21)
+
+    hover_sounded = False
+
     def __init__(self, size, pos, text, target):
         self.font = pygame.font.Font("assets/font/spacebar.ttf", 20)
 
         self.init_surface(size, pos)
 
-        self.color = (255, 255, 255)
-        self.background = (0, 0, 0)
+        self.color = self.BLUE
+        self.background = self.BLACK
 
         self.text = text
         self.content = self.font.render(self.text, 1, self.color)
@@ -122,14 +139,28 @@ class Button:
 
         self.target = target
 
-    def update_colors(self, color, background):
+    def draw(self, window):
+        # fond noir
+        self.surface.fill(self.background)
+        window.blit(self.surface, self.rect)
+
+        # contour du bouton
+        thickness = 3
+        pygame.draw.rect(window, self.HL_BLUE, (self.rect.x - thickness, self.rect.y, thickness, self.rect.height), 0)  # left
+        pygame.draw.rect(window, self.HL_BLUE, (self.rect.x + self.rect.width, self.rect.y, thickness, self.rect.height), 0)  # right
+        pygame.draw.rect(window, self.HL_BLUE, (self.rect.x, self.rect.y - thickness, self.rect.width, thickness), 0)  # top
+        pygame.draw.rect(window, self.HL_BLUE, (self.rect.x, self.rect.y + self.rect.height, self.rect.width, thickness), 0)  # bottom
+
+        # contenu
+        window.blit(self.content, (self.rect.x + self.rect.width / 2 - self.content.get_rect().centerx, self.rect.y + self.rect.height / 2 - self.content.get_rect().centery))
+
+    def update_colors(self, color):
         self.color = color
-        self.background = background
         self.content = self.font.render(self.text, 1, self.color)
 
     def init_surface(self, size, pos):
         self.surface = pygame.Surface(size)
-        self.surface.set_alpha(128)
+        self.surface.set_alpha(230)
         self.rect = self.surface.get_rect()
         self.rect.x = pos[0]
         self.rect.y = pos[1]
