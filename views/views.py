@@ -110,7 +110,7 @@ class Cred(View):
 
     def __init__(self, game):
         super().__init__(game, "cred")
-        self.set_title("Credits")
+        self.set_title("Realise par")
         self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+90+70+90), "Retour", "menu"))
 
     def draw(self):
