@@ -26,10 +26,6 @@ class Score:
         self.font = pygame.font.SysFont('Consolas', 20)
 
     def update(self):
-        if self.game.pause_time > 0:
-            self.game.start_time += pygame.time.get_ticks() - self.game.pause_time
-            self.game.pause_time = 0
-
         self.time = (pygame.time.get_ticks() - self.game.start_time) / 1000
 
         self.chrono = self.font.render(time_to_str(self.time), True, pygame.Color("white"), pygame.Color("black"))
@@ -139,6 +135,7 @@ class Game:
 
     def run(self, last_view):
         pygame.mouse.set_visible(False)
+        self.start_time += pygame.time.get_ticks() - self.pause_time
         if last_view == "menu":
             self.load_levels()
             self.player = Player(self, self.spawn)
@@ -208,6 +205,8 @@ class Game:
             (item.rect.width * item.num_sprite, item.rect.height * item.direction, item.rect.width, item.rect.height))
 
     def pause_game(self):
+        if self.pause_time > 0:
+            self.pause_time = 0
         self.pause_time = pygame.time.get_ticks()
         self.goto("pause")
 
