@@ -17,6 +17,7 @@ class View:
         self.state = 0
         self.title_font = pygame.font.Font("assets/font/spacebar.ttf", 40)
         self.normal_font = pygame.font.Font("assets/font/spacebar.ttf", 20)
+        self.default_font = pygame.font.SysFont("ComicSans", 32)
         self.color = CLOUD
         self.background = None
         self.title = None
@@ -36,7 +37,7 @@ class View:
         self.update_focus()
         for e in pygame.event.get():
             if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1\
-                    and self.curr_btn.rect.collidepoint(pygame.mouse.get_pos()):
+                    and self.curr_btn is not None and self.curr_btn.rect.collidepoint(pygame.mouse.get_pos()):
                 self.game.goto(self.curr_btn.target)
             if e.type == pygame.KEYDOWN:
                 if e.key == pygame.K_DOWN or e.key == pygame.K_RIGHT or e.key == pygame.K_UP or e.key == pygame.K_LEFT:
