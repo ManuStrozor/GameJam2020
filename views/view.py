@@ -129,7 +129,7 @@ class Button:
     hover_sounded = False
 
     def __init__(self, size, pos, text, target):
-        self.font = pygame.font.Font("assets/font/space_light.otf", 20)
+        self.font = pygame.font.Font("assets/font/space_regular.otf", 20)
 
         self.init_surface(size, pos)
 

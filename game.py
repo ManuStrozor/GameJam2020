@@ -223,9 +223,10 @@ class Game:
         return self.audios.__getitem__(name)
 
     def goto(self, next_view):
-        self.get_audio("button_click").play()
-        pygame.mouse.set_visible(True)
         if next_view is not None:
+
+            self.get_audio("button_click").play()
+            pygame.mouse.set_visible(True)
 
             if next_view != "menu":
                 self.last_view = self.curr_view
