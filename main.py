@@ -7,7 +7,7 @@ from game import Game
 WIDTH = 1280
 HEIGHT = 720
 
-VOLUME = 0.2
+VOLUME = 0.5
 
 root = Tk()
 x = root.winfo_screenwidth() / 2 - WIDTH / 2

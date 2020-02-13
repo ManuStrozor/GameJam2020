@@ -115,7 +115,16 @@ class Cred(View):
 
     def draw(self):
         super().draw()
-
+        dev1 = self.normal_font.render("Chef de projet - Yassine El Mimouni", 1, self.color)
+        dev2 = self.normal_font.render("Game Level designer - Yann Galan", 1, self.color)
+        dev3 = self.normal_font.render("Lead programmeur - Emmanuel Turbet-Delof", 1, self.color)
+        dev4 = self.normal_font.render("Programmeur - Loic Allemand", 1, self.color)
+        dev5 = self.normal_font.render("Responsable assets - Loic Chareron", 1, self.color)
+        self.game.window.blit(dev1, (self.game.window.get_width() / 2 - dev1.get_rect().centerx, 250))
+        self.game.window.blit(dev2, (self.game.window.get_width() / 2 - dev2.get_rect().centerx, 300))
+        self.game.window.blit(dev3, (self.game.window.get_width() / 2 - dev3.get_rect().centerx, 350))
+        self.game.window.blit(dev4, (self.game.window.get_width() / 2 - dev4.get_rect().centerx, 400))
+        self.game.window.blit(dev5, (self.game.window.get_width() / 2 - dev5.get_rect().centerx, 450))
 
 
 class Help(View):
