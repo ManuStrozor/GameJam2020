@@ -1,5 +1,6 @@
 import pygame
 
+from utils import time_to_str
 from views.view import View, Button
 
 WIDTH = 300
@@ -151,3 +152,9 @@ class Win(View):
         super().__init__(game, "win")
         self.set_title("Vous avez gagné !")
         self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+90+70+90), "Menu", "menu"))
+
+    def draw(self):
+        super().draw()
+
+        time = self.normal_font.render("Votre temps était : " + time_to_str(self.game.score.time), 1, self.color)
+        self.game.window.blit(time, (self.game.window.get_width() / 2 - time.get_rect().centerx, 250))

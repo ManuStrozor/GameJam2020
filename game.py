@@ -1,22 +1,10 @@
 import pygame
-import datetime
 from pygame.locals import *
 
 from level import gen_levels
 from player import Player
+from utils import time_to_str, float_to_str
 from views.views import Menu, Pause, Opts, Cred, Help, Gameover, Win
-
-
-def float_to_str(n, d=0):
-    f = "{0:."+str(d)+"f}"
-    return f.format(n)
-
-
-def time_to_str(time):
-    td = datetime.timedelta(seconds=time)
-    minutes, seconds = divmod(td.seconds, 60)
-    hours, minutes = divmod(minutes, 60)
-    return '{:02d}:{:02d}:{:02d}'.format(hours, minutes, seconds)
 
 
 class Score:
