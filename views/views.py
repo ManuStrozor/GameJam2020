@@ -16,7 +16,7 @@ class Menu(View):
         self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250), "Commencer", "game"))
         self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90), "Options du jeu","opts"))
         self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+90), "Aide", "help"))
-        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+90+70), "Credits", "cred"))
+        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+90+70), "Crédits", "cred"))
         self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+90+70+90), "Quitter le jeu", "exit"))
 
 
@@ -102,7 +102,7 @@ class Opts(View):
 
     def draw(self):
         super().draw()
-        text_volume = self.default_font.render("Volume : " + "{0:.0f}".format(pygame.mixer.music.get_volume()*100) + "%", 1, self.color)
+        text_volume = self.normal_font.render("Volume : " + "{0:.0f}".format(pygame.mixer.music.get_volume()*100) + "%", 1, self.color)
         self.game.window.blit(text_volume, (self.game.window.get_width() / 2 - text_volume.get_rect().centerx, 215))
 
 
@@ -110,17 +110,17 @@ class Cred(View):
 
     def __init__(self, game):
         super().__init__(game, "cred")
-        self.set_title("Realise par")
+        self.set_title("Réalisé par")
         self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+90+70+90), "Retour", "menu"))
 
     def draw(self):
         super().draw()
 
-        dev1 = self.normal_font.render("Lead programmeur - Emmanuel Turbet-Delof", 1, self.color)
-        dev2 = self.normal_font.render("Level designer - Yann Galan", 1, self.color)
-        dev3 = self.normal_font.render("Game designer - Loic Allemand", 1, self.color)
-        dev4 = self.normal_font.render("Programmeur - Yassine El Mimouni", 1, self.color)
-        dev5 = self.normal_font.render("Programmeur - Loic Chareron", 1, self.color)
+        dev1 = self.normal_font.render("Lead programmeur : Emmanuel Turbet-Delof", 1, self.color)
+        dev2 = self.normal_font.render("Level designer : Yann Galan", 1, self.color)
+        dev3 = self.normal_font.render("Game designer : Loïc Allemand", 1, self.color)
+        dev4 = self.normal_font.render("Programmeur : Yassine El Mimouni", 1, self.color)
+        dev5 = self.normal_font.render("Programmeur : Loïc Chareron", 1, self.color)
 
         self.game.window.blit(dev1, (self.game.window.get_width() / 2 - dev1.get_rect().centerx, 250))
         self.game.window.blit(dev2, (self.game.window.get_width() / 2 - dev2.get_rect().centerx, 300))
@@ -141,7 +141,7 @@ class Gameover(View):
 
     def __init__(self, game):
         super().__init__(game, "gameover")
-        self.set_title("Gameover")
+        self.set_title("Perdu !")
         self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+90+70+90), "Menu", "menu"))
 
 
@@ -149,5 +149,5 @@ class Win(View):
 
     def __init__(self, game):
         super().__init__(game, "win")
-        self.set_title("You win !")
+        self.set_title("Vous avez gagné !")
         self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+90+70+90), "Menu", "menu"))

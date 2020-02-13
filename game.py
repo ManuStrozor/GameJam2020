@@ -23,7 +23,7 @@ class Score:
 
     def __init__(self, game):
         self.game = game
-        self.font = pygame.font.SysFont('Consolas', 20)
+        self.font = pygame.font.Font("assets/font/space_light.otf", 20)
 
     def update(self):
         self.time = (pygame.time.get_ticks() - self.game.start_time) / 1000

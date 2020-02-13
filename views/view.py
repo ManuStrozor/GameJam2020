@@ -15,9 +15,8 @@ class View:
         self.game = game
         self.name = name
         self.state = 0
-        self.title_font = pygame.font.Font("assets/font/spacebar.ttf", 40)
-        self.normal_font = pygame.font.Font("assets/font/spacebar.ttf", 20)
-        self.default_font = pygame.font.SysFont("ComicSans", 32)
+        self.title_font = pygame.font.Font("assets/font/space_black.otf", 40)
+        self.normal_font = pygame.font.Font("assets/font/space_regular.otf", 20)
         self.color = CLOUD
         self.background = None
         self.title = None
@@ -130,7 +129,7 @@ class Button:
     hover_sounded = False
 
     def __init__(self, size, pos, text, target):
-        self.font = pygame.font.Font("assets/font/spacebar.ttf", 20)
+        self.font = pygame.font.Font("assets/font/space_light.otf", 20)
 
         self.init_surface(size, pos)
 
