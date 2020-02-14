@@ -15,8 +15,8 @@ class Menu(View):
         self.set_title("Lonely Space")
 
         self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250), "Commencer", "game"))
-        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90), "Options du jeu","opts"))
-        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+90), "Aide", "help"))
+        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90), "Options","opts"))
+        self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+90), "Règles du jeu", "rules"))
         self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+90+70), "Crédits", "cred"))
         self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+90+70+90), "Quitter le jeu", "exit"))
 
@@ -38,7 +38,7 @@ class Pause(View):
             if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1\
                     and self.curr_btn.rect.collidepoint(pygame.mouse.get_pos()):
                 if self.curr_btn.target == "save":
-                    print("Sauvegarder le jeu")
+                    self.save_game()
                 else:
                     self.game.goto(self.curr_btn.target)
             if e.type == pygame.KEYDOWN:
@@ -47,13 +47,17 @@ class Pause(View):
                 elif e.key == pygame.K_RETURN or e.key == pygame.K_KP_ENTER:
                     if self.curr_btn is not None:
                         if self.curr_btn.target == "save":
-                            print("Sauvegarder le jeu")
+                            self.save_game()
                         else:
                             self.game.goto(self.curr_btn.target)
                 elif e.key == pygame.K_ESCAPE:
-                    self.game.goto(self.game.last_view)
+                    self.game.goto("game")
             if e.type == pygame.QUIT:
                 self.game.exit()
+
+    def save_game(self):
+        print("Sauvegarder le jeu")
+        pass
 
 
 class Opts(View):
@@ -130,11 +134,11 @@ class Cred(View):
         self.game.window.blit(dev5, (self.game.window.get_width() / 2 - dev5.get_rect().centerx, 450))
 
 
-class Help(View):
+class Rules(View):
 
     def __init__(self, game):
-        super().__init__(game, "help")
-        self.set_title("Aide")
+        super().__init__(game, "rules")
+        self.set_title("Comment jouer ?")
         self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+90+70+90), "Retour", "menu"))
 
 
@@ -145,6 +149,23 @@ class Gameover(View):
         self.set_title("Perdu !")
         self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+90+70+90), "Menu", "menu"))
 
+    def update(self):
+        self.update_focus()
+        for e in pygame.event.get():
+            if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1\
+                    and self.curr_btn is not None and self.curr_btn.rect.collidepoint(pygame.mouse.get_pos()):
+                self.game.goto(self.curr_btn.target)
+            if e.type == pygame.KEYDOWN:
+                if e.key == pygame.K_DOWN or e.key == pygame.K_RIGHT or e.key == pygame.K_UP or e.key == pygame.K_LEFT:
+                    self.keyboard_navigation(e.key)
+                elif e.key == pygame.K_RETURN or e.key == pygame.K_KP_ENTER:
+                    if self.curr_btn is not None:
+                        self.game.goto(self.curr_btn.target)
+                elif e.key == pygame.K_ESCAPE:
+                    self.game.goto("menu")
+            if e.type == pygame.QUIT:
+                self.game.exit()
+
 
 class Win(View):
 
@@ -152,6 +173,23 @@ class Win(View):
         super().__init__(game, "win")
         self.set_title("Vous avez gagné !")
         self.buttons.append(Button((WIDTH, HEIGHT), (game.window.get_width()/2 - WIDTH/2, 250+90+90+70+90), "Menu", "menu"))
+
+    def update(self):
+        self.update_focus()
+        for e in pygame.event.get():
+            if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1\
+                    and self.curr_btn is not None and self.curr_btn.rect.collidepoint(pygame.mouse.get_pos()):
+                self.game.goto(self.curr_btn.target)
+            if e.type == pygame.KEYDOWN:
+                if e.key == pygame.K_DOWN or e.key == pygame.K_RIGHT or e.key == pygame.K_UP or e.key == pygame.K_LEFT:
+                    self.keyboard_navigation(e.key)
+                elif e.key == pygame.K_RETURN or e.key == pygame.K_KP_ENTER:
+                    if self.curr_btn is not None:
+                        self.game.goto(self.curr_btn.target)
+                elif e.key == pygame.K_ESCAPE:
+                    self.game.goto("menu")
+            if e.type == pygame.QUIT:
+                self.game.exit()
 
     def draw(self):
         super().draw()

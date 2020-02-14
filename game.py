@@ -4,7 +4,7 @@ from pygame.locals import *
 from level import gen_levels
 from player import Player
 from utils import time_to_str, float_to_str
-from views.views import Menu, Pause, Opts, Cred, Help, Gameover, Win
+from views.views import Menu, Pause, Opts, Cred, Rules, Gameover, Win
 
 
 class Score:
@@ -67,7 +67,7 @@ class Game:
         self.MARGIN_X = (window.get_width() - self.WIDTH) / 2
         self.MARGIN_Y = (window.get_height() - self.HEIGHT) / 2
 
-        self.views = [Menu(self), Pause(self), Opts(self), Cred(self), Help(self), Gameover(self), Win(self)]
+        self.views = [Menu(self), Pause(self), Opts(self), Cred(self), Rules(self), Gameover(self), Win(self)]
         self.last_view = None
         self.curr_view = "menu"
 
